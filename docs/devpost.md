@@ -27,7 +27,7 @@ Next.js 15 + TypeScript, mobile-first PWA, Tailwind. **Claude (claude-opus-5-5) 
 - **Two-audience, two-language writing** for the brief
 - **Structuring** of spoken symptom logs, with a second-layer emergency check
 
-Accounts with **Auth0** (Google or email sign-up); each account's case files stay on the device (IndexedDB), and the Claude-powered API routes only answer signed-in users. The server is stateless. Hosted on Vultr (Docker + Caddy HTTPS) at <domain>. Read-aloud via ElevenLabs' multilingual voice (if built and demoed).
+Accounts with **Auth0** (Google or email sign-up); each account's case files stay on the device (IndexedDB), and the Claude-powered API routes only answer signed-in users. The server is stateless. Hosted on Vercel at https://lacuno-app.vercel.app. Read-aloud via ElevenLabs' multilingual voice (if built and demoed).
 
 ## Where it could go wrong (and what we did)
 - **Misread handwriting:** family confirmation beside the original; unreadable text is flagged.
@@ -47,7 +47,7 @@ Native apps (widgets, voice and smartwatch logging, Apple Health / Health Connec
 Talk to more families, run the doctor test with more clinicians, and open the waitlist through caregiver communities.
 
 ## Built with
-nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, indexeddb, web-speech-api, docker, caddy, vultr, godaddy-registry
+nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, indexeddb, web-speech-api, vercel
 
 ## Tracks to opt into
-MLH Best Use of Auth0 · Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · MLH Best Use of Vultr · MLH Best Domain from GoDaddy Registry · Commit Fellowship (if team) · MLH Gen AI / ElevenLabs only if listed at mlh.link/calhacks13 · DEV Writing Challenge (after the event)
+MLH Best Use of Auth0 · Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · Commit Fellowship (if team) · MLH Gen AI / ElevenLabs only if listed at mlh.link/calhacks13 · DEV Writing Challenge (after the event)

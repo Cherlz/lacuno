@@ -5,7 +5,7 @@ _From **lacuna**, Latin for "the gap": Lacuno finds the gaps nobody checked._
 **The case conference they never got.**
 Other apps store your records. Lacuno connects the dots.
 
-Live: `https://<your-domain>` · Hosted on Vultr *(fill in once deployed)*
+Live: **https://lacuno-app.vercel.app** · Hosted on Vercel
 
 ---
 
@@ -115,7 +115,7 @@ Measured with the built-in **Impact** screen (`/impact`): family before/after ch
 
 Next.js 15 (App Router, TypeScript) · Tailwind CSS 4 · Anthropic TypeScript SDK · Zod · Auth0 (`@auth0/nextjs-auth0`) · IndexedDB (`idb`) · Web Speech API · ElevenLabs (optional) · installable PWA.
 
-Hosting: **Vultr Cloud Compute** (Ubuntu), running the app in Docker behind Caddy for automatic HTTPS. One command sets up or updates the server: `bash <(curl -fsSL https://raw.githubusercontent.com/Cherlz/throughline/main/deploy/setup.sh)` (see `deploy/`). Domain: GoDaddy Registry, _TODO_.
+Hosting: **Vercel** at https://lacuno-app.vercel.app (deploys from `main` on every push; secrets set as environment variables). A Docker image with Caddy HTTPS is also included for self-hosting on any server (`deploy/setup.sh`).
 
 ## What's real vs. simulated
 
