@@ -45,6 +45,7 @@ All calls use `claude-opus-5-5` through the Anthropic TypeScript SDK, with **str
 | Disagreement map | `src/app/api/map` | Reasons across conflicting records from different doctors; merges the same idea written differently; finds gaps and loose ends |
 | Case conference | `src/app/api/lens` | Six independent calls, one per specialty lens, run in parallel, each with its own focus and the same safety rules |
 | Brief | `src/app/api/brief` | Writes for two audiences in two languages; notes uncertain translations |
+| Medicine-check agent | `src/lib/medcheck.ts` | Tool use: Claude looks up each medicine in the **openFDA drug label API** (translating local and brand names, retrying alternatives), then compares the official label with the patient's symptoms. Every quoted side effect is verified word-for-word against the label text openFDA returned; anything else is dropped. Results are framed as questions for the doctor, with a link to the full label |
 | Fact-checker agent | `src/lib/verify.ts` | A second, independent Claude pass audits every statement in the map, specialist views and brief against the records it cites; removes unsupported or diagnosis-like statements and corrects overstated ones. The app shows "✓ Fact-checked: N points checked" |
 | Episode log | `src/app/api/episode` | Structures messy spoken or typed descriptions; second-layer danger check |
 

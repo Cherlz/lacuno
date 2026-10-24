@@ -187,3 +187,27 @@ export type EpisodeStructured = z.infer<typeof EpisodeSchema>;
 
 /** Result of the fact-checker agent on one analysis. null = the check could not run. */
 export type CheckSummary = { checked: number; removed: number; corrected: number };
+
+// ---------- Medicine check (openFDA agent) ----------
+
+export const MedCheckSchema = z.object({
+  medicines: z.array(
+    z.object({
+      name_in_record: z.string().describe("Medicine name as written in the records"),
+      generic_name: z.string().nullable().describe("Generic (international) name, in English"),
+      fda_label_found: z.boolean(),
+      label_id: z.string().nullable().describe("The label_id returned by the lookup tool, if found"),
+      overlaps: z.array(
+        z.object({
+          symptom: z.string().describe("The patient's symptom, in the family language"),
+          label_quote: z.string().describe("EXACT words copied from the FDA label text returned by the tool"),
+          section: z.string(),
+        }),
+      ),
+      question_for_doctor: z.string().nullable().describe("A neutral question for the doctor, in the family language. Never advise stopping or changing the medicine."),
+      source_ids: z.array(z.string()).describe("IDs of the records that mention this medicine"),
+    }),
+  ),
+  note: z.string().describe("One or two sentences in the family language on what was and wasn't checked"),
+});
+export type MedCheck = z.infer<typeof MedCheckSchema>;

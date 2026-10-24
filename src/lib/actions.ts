@@ -6,7 +6,7 @@ import { keepSourced } from "./sources";
 import { localDangerCheck } from "./danger";
 import { languageByCode } from "./languages";
 import { SAMPLE_CASES } from "./samples";
-import type { Brief, CheckSummary, DisagreementMap, EpisodeStructured, Extraction, LensReview } from "./schemas";
+import type { Brief, CheckSummary, DisagreementMap, EpisodeStructured, Extraction, LensReview, MedCheck } from "./schemas";
 
 export async function postJSON<T>(url: string, body: unknown): Promise<T> {
   let res: Response;
@@ -135,12 +135,18 @@ export async function runLens(key: string) {
   await db.putAnalysis({ id: `lens:${key}`, createdAt: Date.now(), basis, data: keepSourced(review, validIds(payload)), check });
 }
 
+export async function runMedCheck() {
+  const { payload, basis } = await currentCase();
+  const { medcheck, lookups } = await postJSON<{ medcheck: MedCheck; lookups: number }>("/api/medcheck", { caseFile: payload });
+  await db.putAnalysis({ id: "medcheck", createdAt: Date.now(), basis, data: keepSourced(medcheck, validIds(payload)), lookups });
+}
+
 export async function runBrief(doctorLanguage: string, familyLanguage: string) {
   const { payload, basis } = await currentCase();
   const analyses = await db.listAnalyses();
   const map = analyses.find((a) => a.id === "map")?.data;
   const lenses = Object.fromEntries(
-    analyses.filter((a) => a.id.startsWith("lens:")).map((a) => [a.id.slice(5), a.data]),
+    analyses.filter((a) => a.id.startsWith("lens:") || a.id === "medcheck").map((a) => [a.id.replace("lens:", ""), a.data]),
   );
   const { brief, check } = await postJSON<{ brief: Brief; check: CheckSummary | null }>("/api/brief", {
     caseFile: payload,

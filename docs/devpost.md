@@ -40,6 +40,7 @@ We built Lacuno for **adult children coordinating care for a parent who has seen
   - **Six parallel specialty calls** for the case conference, under shared safety rules
   - **Two-audience, two-language writing** for the brief, with translation notes
   - **Structuring spoken symptom logs**, plus a second-layer emergency check
+- **Medicine-check agent with a real external API:** using tool use, Claude looks up every medicine in the official **openFDA drug label database** (translating local brand names and retrying alternatives), then lists label-listed side effects that match the patient's symptoms as questions for the doctor. Every quote is verified word-for-word against the label text openFDA returned.
 - **Fact-checker agent:** after every analysis, a second, independent Claude pass audits each statement against the records it cites. Unsupported or diagnosis-like statements are removed, overstated ones are corrected, and the app shows "✓ Fact-checked: N points checked against the records".
 - **Safety in code, not just prompts:** every finding must carry source record IDs; findings with missing or unknown sources are removed on the server and again on the device. An on-device keyword check catches emergency signs before anything is sent.
 - **Auth0** for sign-up and sign-in. Each account's case files are stored **on the device** (IndexedDB); the server stores nothing, and the Claude-powered routes only answer signed-in users.
@@ -99,7 +100,7 @@ Every Claude call in the app is real. The "Ibu Sari" and "Rosa" cases are fictio
 
 ---
 
-**Built with:** nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, auth0, indexeddb, pwa, web-speech-api, vercel
+**Built with:** nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, openfda, zod, auth0, indexeddb, pwa, web-speech-api, vercel
 
 **Prize tracks to opt into:**
 - Anthropic: Claude for Public Benefit
