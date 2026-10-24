@@ -66,7 +66,7 @@ Put your name next to what you take, in the team chat.
 | 1 | **UI/UX polish**: Records, Review results, Brief, overall look | | Make it calmer and clearer: less text per screen, stronger hierarchy, consistent spacing. Check on a phone. |
 | — | Real push notifications (optional) | | Calendar reminders are done. Push would need Upstash Redis (Vercel → Storage), VAPID keys, `web-push`, and a daily Vercel Cron. iPhone only after installing the app. |
 | 8 | Health data import (stretch) | | Import an Apple Health / Google Fit export (sleep, heart rate) as questions for the doctor. Phone-as-camera is done. |
-| 4 | Demo video on the Help page | | After the video is recorded: embed it at the top of `src/app/help/page.tsx` |
+| 4 | Demo video on the Help page | | No code needed: after uploading to YouTube, add `NEXT_PUBLIC_DEMO_VIDEO_URL` (the YouTube link) in Vercel → Environment Variables and redeploy. It appears at the top of the Help page. |
 
 ### C. Setup tasks (no coding)
 | # | Task | Owner | Notes |

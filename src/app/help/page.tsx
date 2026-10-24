@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { SUPPORT_EMAIL } from "@/lib/contact";
+import { SUPPORT_EMAIL, demoVideoId } from "@/lib/contact";
 
 export const metadata: Metadata = { title: "How to use Lacuno" };
 
@@ -76,6 +76,7 @@ const FAQ = [
 ];
 
 export default function Help() {
+  const video = demoVideoId();
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
@@ -84,6 +85,18 @@ export default function Help() {
           Six steps, about 15 minutes the first time. The app always shows a <strong className="text-ink">“Do this next”</strong> button, so you can&apos;t get lost.
         </p>
       </div>
+
+      {video && (
+        <div className="overflow-hidden rounded-2xl border border-line bg-black">
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${video}?rel=0`}
+            title="Lacuno in 2 minutes"
+            className="aspect-video w-full"
+            allow="accelerometer; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      )}
 
       <ol className="space-y-4">
         {STEPS.map((s, i) => (
