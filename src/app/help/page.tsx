@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "How to use ThroughLine" };
+export const metadata: Metadata = { title: "How to use Lacuno" };
 
 const STEPS = [
   {
@@ -28,7 +28,7 @@ const STEPS = [
     title: "Check each record",
     where: "Records (one at a time)",
     body: [
-      "ThroughLine shows what it read next to the original. Compare names, dates, medicines and doses.",
+      "Lacuno shows what it read next to the original. Compare names, dates, medicines and doses.",
       "Tap any text to fix it. Tap ✕ to remove a line that's wrong.",
       "Orange box = a part we couldn't read. We never guess. If you can read it, type it in; if not, leave it.",
       "Tap the green Confirm button. The next record opens by itself. Only confirmed records are used later.",
@@ -66,10 +66,10 @@ const STEPS = [
 ];
 
 const FAQ = [
-  ["Is this a diagnosis?", "No. ThroughLine never says what the cause is or which idea is most likely. It organises what real doctors wrote and turns gaps into questions for your next doctor."],
+  ["Is this a diagnosis?", "No. Lacuno never says what the cause is or which idea is most likely. It organises what real doctors wrote and turns gaps into questions for your next doctor."],
   ["Where are the records saved?", "Only on this device, separately for each account. To read a record, the page is sent to our AI provider (Anthropic) through our server, which keeps nothing."],
   ["What if it reads something wrong?", "That's why you check every record before it's used. You can fix any line, and every point in the review and brief links back to its original page."],
-  ["What if it's an emergency?", "Call your local emergency number first. If you log sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, ThroughLine shows only: “Seek emergency care now.”"],
+  ["What if it's an emergency?", "Call your local emergency number first. If you log sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, Lacuno shows only: “Seek emergency care now.”"],
   ["Can I use it on another phone?", "Case files stay on the device where you made them. Sign in on the same device to see them."],
   ["How do I delete everything?", "Tap the patient's name at the top → Delete case file from this device."],
 ];
@@ -78,7 +78,7 @@ export default function Help() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">How to use ThroughLine</h1>
+        <h1 className="text-3xl font-bold tracking-tight">How to use Lacuno</h1>
         <p className="mt-2 text-lg text-muted">
           Six steps, about 15 minutes the first time. The app always shows a <strong className="text-ink">“Do this next”</strong> button, so you can&apos;t get lost.
         </p>

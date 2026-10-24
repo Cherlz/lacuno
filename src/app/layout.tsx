@@ -8,12 +8,12 @@ import "./globals.css";
 const inter = Inter({ variable: "--font-sans-loaded", subsets: ["latin", "latin-ext", "vietnamese", "cyrillic"] });
 
 export const metadata: Metadata = {
-  title: "ThroughLine — connect the dots in your medical records",
+  title: "Lacuno — connect the dots in your medical records",
   description:
-    "Upload every record. ThroughLine shows where the doctors disagree, gives the case the multi-specialist review it never got, and hands the next doctor a one-page brief in their own language.",
+    "Upload every record. Lacuno shows where the doctors disagree, gives the case the multi-specialist review it never got, and hands the next doctor a one-page brief in their own language.",
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg", apple: "/icon-192.png" },
-  appleWebApp: { capable: true, title: "ThroughLine", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "Lacuno", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {

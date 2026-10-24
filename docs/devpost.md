@@ -1,15 +1,16 @@
 # Devpost draft
 
-**Title:** ThroughLine
+**Title:** Lacuno
+**Name:** from *lacuna*, Latin for "the gap"
 **Tagline:** The case conference they never got.
 
 ## Inspiration
 My mother has had dizziness, fatigue and weakness for years. Four doctors, four different ideas: inner ear, bones, nerves, "just tiredness". Each saw a few minutes of the story. None saw the whole picture. My family carries the papers between them, in Indonesian, from clinic to clinic.
 
-We built ThroughLine for **adult children coordinating care for a parent who has seen several doctors without a diagnosis**, often across clinics and languages.
+We built Lacuno for **adult children coordinating care for a parent who has seen several doctors without a diagnosis**, often across clinics and languages.
 
 ## What it does
-Upload every record (photos or PDFs, handwritten, any language). ThroughLine:
+Upload every record (photos or PDFs, handwritten, any language). Lacuno:
 1. **Reads** each record and asks the family to check it next to the original. Unreadable text is flagged, never guessed.
 2. **Maps the disagreement:** every possibility a doctor raised, what fits, what doesn't, and what nobody ever checked.
 3. **Convenes a case conference:** six specialty reviewers each read the whole case and list what they'd check and what to ask. No one names a cause.

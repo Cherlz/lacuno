@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
             <Logo />
-            <span className="text-xl">ThroughLine</span>
+            <span className="text-xl">Lacuno</span>
           </Link>
           <div className="flex min-w-0 items-center gap-1.5 text-sm">
             {c.patient?.isSample && <Pill tone="warn">Sample case</Pill>}
@@ -45,7 +45,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {c.patient.name}
               </Link>
             )}
-            <Link href="/help" className="flex h-10 items-center rounded-lg px-3 font-semibold text-brand hover:bg-brand-soft" title="How to use ThroughLine">
+            <Link href="/help" className="flex h-10 items-center rounded-lg px-3 font-semibold text-brand hover:bg-brand-soft" title="How to use Lacuno">
               Help
             </Link>
             {account.enabled && account.signedIn && <AccountMenu name={account.name} picture={account.picture} />}

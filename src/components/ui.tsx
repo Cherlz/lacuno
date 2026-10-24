@@ -81,7 +81,7 @@ export function PageTitle({ title, subtitle, action }: { title: string; subtitle
 export function Disclaimer() {
   return (
     <p className="rounded-xl bg-surface-2 px-4 py-3 text-sm text-muted">
-      <strong className="text-ink">This is not a diagnosis.</strong> ThroughLine organises what your doctors wrote and
+      <strong className="text-ink">This is not a diagnosis.</strong> Lacuno organises what your doctors wrote and
       turns gaps into questions. Nothing here says which cause is most likely. Bring this to your doctor.
     </p>
   );
