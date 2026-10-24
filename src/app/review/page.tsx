@@ -11,28 +11,89 @@ import type { DisagreementMap, LensReview } from "@/lib/schemas";
 import { useCase } from "@/lib/useCase";
 
 export default function Review() {
+  return (
+    <CaseGate>
+      <ReviewScreen />
+    </CaseGate>
+  );
+}
+
+function ReviewScreen() {
+  const { analyses } = useCase();
   const [tab, setTab] = useState<"map" | "conference">("map");
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("tab") === "conference") setTab("conference");
   }, []);
+  const started = analyses.some((a) => a.id === "map" || a.id.startsWith("lens:"));
+
   return (
-    <CaseGate>
-      <PageTitle
-        title="Case review"
-        subtitle="What every doctor said, side by side — and what nobody has checked yet."
-        action={<ButtonLink href="/brief" variant="secondary">Make the brief →</ButtonLink>}
-      />
-      <div className="mb-4"><Disclaimer /></div>
-      <div role="tablist" className="mb-5 grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1">
-        {([["map", "Disagreement map"], ["conference", "Case conference"]] as const).map(([k, label]) => (
-          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
-            className={`min-h-11 rounded-lg font-semibold ${tab === k ? "bg-surface text-ink shadow-sm" : "text-muted"}`}>
-            {label}
-          </button>
-        ))}
-      </div>
-      {tab === "map" ? <MapView /> : <ConferenceView />}
-    </CaseGate>
+    <div className="space-y-5">
+      <PageTitle title="Review the case" subtitle="Where the doctors differ, and what each specialist would check." />
+      <Disclaimer />
+      {!started ? (
+        <StartReview />
+      ) : (
+        <>
+          <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1">
+            {([["map", "Where doctors differ"], ["conference", "Specialist views"]] as const).map(([k, label]) => (
+              <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+                className={`min-h-12 rounded-lg font-semibold ${tab === k ? "bg-surface text-ink shadow-sm" : "text-muted"}`}>
+                {label}
+              </button>
+            ))}
+          </div>
+          {tab === "map" ? <MapView /> : <ConferenceView />}
+          <div className="flex justify-center pt-2">
+            <ButtonLink href="/brief" className="min-h-14 w-full text-lg sm:w-auto sm:px-10">Next: make the doctor brief →</ButtonLink>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** One button that runs the whole review: the disagreement map and all six specialists at once. */
+function StartReview() {
+  const { docs } = useCase();
+  const jobs = [{ key: "map", label: "Comparing every doctor's notes" }, ...LENSES.map((l) => ({ key: l.key, label: `${l.icon} ${l.name}` }))];
+  const [state, setState] = useState<Record<string, "busy" | "done" | string>>({});
+  const running = Object.values(state).some((v) => v === "busy");
+  const failed = jobs.filter((j) => state[j.key] && state[j.key] !== "busy" && state[j.key] !== "done");
+
+  const runJob = async (key: string) => {
+    setState((s) => ({ ...s, [key]: "busy" }));
+    try {
+      await (key === "map" ? runMap() : runLens(key));
+      setState((s) => ({ ...s, [key]: "done" }));
+    } catch (e) {
+      setState((s) => ({ ...s, [key]: (e as Error).message }));
+    }
+  };
+  const runAll = () => jobs.forEach((j) => void runJob(j.key));
+
+  return (
+    <Card className="space-y-4 text-center">
+      <p className="text-lg">
+        Lacuno will read all {docs.filter((d) => d.confirmed).length} checked records together, find where the doctors disagree, and ask six
+        specialists what they would check. It takes about 1–2 minutes.
+      </p>
+      {!Object.keys(state).length && (
+        <Button onClick={runAll} className="min-h-14 w-full text-lg sm:w-auto sm:px-10">Review my case</Button>
+      )}
+      {Object.keys(state).length > 0 && (
+        <ul className="mx-auto max-w-sm space-y-2 text-left">
+          {jobs.map((j) => (
+            <li key={j.key} className="flex items-center justify-between gap-3">
+              <span>{j.label}</span>
+              {state[j.key] === "busy" ? <Spinner /> : state[j.key] === "done" ? <span className="font-bold text-ok">✓</span> : <span className="text-danger">✕</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+      {!running && failed.length > 0 && (
+        <ErrorBox message={`${failed.length} part${failed.length > 1 ? "s" : ""} didn't finish: ${state[failed[0].key]}`} onRetry={() => failed.forEach((j) => void runJob(j.key))} />
+      )}
+    </Card>
   );
 }
 

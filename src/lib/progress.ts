@@ -34,11 +34,11 @@ export function nextAction(c: CaseState): NextAction {
   if (!confirmed) {
     return { step: "records", title: "Add the records", detail: "None of the records could be read yet. Try clearer photos.", href: "/records" };
   }
-  if (!map || map.basis !== c.basis) {
-    return { step: "review", title: map ? "Update the disagreement map" : "Build the disagreement map", detail: "See what each doctor said, side by side, and what was never checked.", href: "/review" };
+  if (!map || !lenses) {
+    return { step: "review", title: "Review the case", detail: "See where the doctors disagree, what was never checked, and what six specialists would look at.", href: "/review" };
   }
-  if (!lenses) {
-    return { step: "review", title: "Hold the case conference", detail: "Six specialty reviewers each read the whole record.", href: "/review?tab=conference" };
+  if (map.basis !== c.basis) {
+    return { step: "review", title: "Update the review", detail: "Records changed since the review. Refresh it so the brief uses everything.", href: "/review" };
   }
   if (!brief || brief.basis !== c.basis) {
     return { step: "brief", title: brief ? "Update the doctor brief" : "Write the doctor brief", detail: "One page for the next doctor, plus a version for the family.", href: "/brief" };

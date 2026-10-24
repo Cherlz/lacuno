@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CaseGate, StaleBanner } from "@/components/CaseGate";
+import { CaseGate } from "@/components/CaseGate";
 import { DoctorBrief, FamilyBrief, ReadAloud } from "@/components/BriefViews";
 import { Button, Card, ErrorBox, PageTitle, Spinner } from "@/components/ui";
 import { runBrief } from "@/lib/actions";
@@ -28,6 +28,7 @@ function BriefScreen() {
   const [view, setView] = useState<"doctor" | "family">("doctor");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showLangs, setShowLangs] = useState(false);
   const hasMap = analyses.some((a) => a.id === "map");
 
   useEffect(() => {
@@ -48,26 +49,36 @@ function BriefScreen() {
     <div className="space-y-5">
       <div className="no-print space-y-5">
         <PageTitle title="Doctor brief" subtitle="One page the next doctor can read in about a minute, plus a plain version for the family." />
-        <Card className="flex flex-wrap items-end gap-3">
-          <label className="text-sm font-medium text-muted">
-            Doctor reads
-            <select className={`${select} mt-1 block`} value={doctorLang} onChange={(e) => setDoctorLang(e.target.value)}>
-              {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.native}</option>)}
-            </select>
-          </label>
-          <label className="text-sm font-medium text-muted">
-            Family reads
-            <select className={`${select} mt-1 block`} value={familyLang} onChange={(e) => setFamilyLang(e.target.value)}>
-              {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.native}</option>)}
-            </select>
-          </label>
-          <Button onClick={generate} disabled={busy} className="flex-1 sm:flex-none">
-            {busy ? <Spinner label="Writing the brief…" /> : saved ? "Write again" : "Write the brief"}
-          </Button>
+        <Card className="space-y-3">
+          <p>
+            Doctor reads <strong>{languageByCode(doctorLang).native}</strong> · family reads <strong>{languageByCode(familyLang).native}</strong>{" "}
+            <button className="text-brand underline" onClick={() => setShowLangs(!showLangs)}>{showLangs ? "done" : "change"}</button>
+          </p>
+          {showLangs && (
+            <div className="flex flex-wrap gap-3">
+              <label className="text-sm font-medium text-muted">
+                Doctor reads
+                <select className={`${select} mt-1 block`} value={doctorLang} onChange={(e) => setDoctorLang(e.target.value)}>
+                  {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.native}</option>)}
+                </select>
+              </label>
+              <label className="text-sm font-medium text-muted">
+                Family reads
+                <select className={`${select} mt-1 block`} value={familyLang} onChange={(e) => setFamilyLang(e.target.value)}>
+                  {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.native}</option>)}
+                </select>
+              </label>
+            </div>
+          )}
+          {saved && saved.basis !== basis && <p className="text-warn">Records changed since this brief was written.</p>}
+          {(!saved || langChanged || saved.basis !== basis) && (
+            <Button onClick={generate} disabled={busy} className="min-h-14 w-full text-lg">
+              {busy ? <Spinner label="Writing the brief… (about 30 seconds)" /> : saved ? "Write it again" : "Write the brief"}
+            </Button>
+          )}
         </Card>
-        {!hasMap && !saved && <p className="text-sm text-muted">Tip: build the disagreement map and case conference first for a sharper brief. It works without them too.</p>}
+        {!hasMap && !saved && <p className="text-sm text-muted">Tip: review the case first for a sharper brief. It works without it too.</p>}
         {error && <ErrorBox message={error} onRetry={generate} />}
-        {saved && <StaleBanner show={saved.basis !== basis || !!langChanged} onRefresh={generate} busy={busy} />}
       </div>
 
       {saved && (
