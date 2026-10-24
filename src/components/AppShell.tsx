@@ -2,33 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { nextAction, stepStatus, type StepKey } from "@/lib/progress";
 import { useCase } from "@/lib/useCase";
 import { useAccount } from "./Account";
+import { setUpInstall } from "./InstallApp";
 import { SourceProvider } from "./Sources";
 import { Pill } from "./ui";
 
-const NAV = [
+const NAV: { href: string; label: string; icon: string; step?: StepKey }[] = [
   { href: "/", label: "Home", icon: "🏠" },
-  { href: "/records", label: "Records", icon: "📄" },
-  { href: "/review", label: "Review", icon: "🧭" },
-  { href: "/brief", label: "Brief", icon: "📋" },
+  { href: "/records", label: "Records", icon: "📄", step: "records" },
+  { href: "/review", label: "Review", icon: "🧭", step: "review" },
+  { href: "/brief", label: "Brief", icon: "📋", step: "brief" },
   { href: "/episodes", label: "Log", icon: "➕" },
-];
-
-const STEPS: { key: StepKey; label: string; href: string }[] = [
-  { key: "records", label: "Records", href: "/records" },
-  { key: "review", label: "Review", href: "/review" },
-  { key: "brief", label: "Brief", href: "/brief" },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const c = useCase();
   const account = useAccount();
+  const next = nextAction(c);
   const active = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
-  const showSteps = c.patient && STEPS.some((s) => pathname.startsWith(s.href));
+  // Steps show a tick when done, so the menu doubles as the progress bar.
+  const status = (step?: StepKey) => (step && c.patient ? stepStatus(step, next) : null);
+  useEffect(setUpInstall, []);
 
   return (
     <SourceProvider>
@@ -39,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="text-xl">Lacuno</span>
           </Link>
           <div className="flex min-w-0 items-center gap-1.5 text-sm">
-            {c.patient?.isSample && <Pill tone="warn">Sample case</Pill>}
+            {c.patient?.isSample && <Pill tone="warn">Sample</Pill>}
             {c.patient && (
               <Link href="/setup" className="hidden max-w-40 truncate rounded-lg px-2 py-2 text-muted hover:bg-surface-2 sm:block" title="Edit profile">
                 {c.patient.name}
@@ -56,82 +54,62 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}
           </div>
         </div>
-        <nav className="mx-auto hidden max-w-5xl gap-1 px-4 pb-2 sm:flex">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className={`rounded-lg px-3 py-2 font-semibold ${active(n.href) ? "bg-brand-soft text-brand" : "text-muted hover:bg-surface-2"}`}
-            >
-              {n.label}
-            </Link>
-          ))}
-          <Link
-            href="/impact"
-            className={`ml-auto rounded-lg px-3 py-2 font-semibold ${active("/impact") ? "bg-brand-soft text-brand" : "text-muted hover:bg-surface-2"}`}
-          >
-            Impact
+        <nav className="mx-auto hidden max-w-5xl items-center gap-1 px-4 pb-2 sm:flex">
+          {NAV.slice(0, 4).map((n, i) => {
+            const st = status(n.step);
+            return (
+              <span key={n.href} className="flex items-center gap-1">
+                {i > 1 && <span aria-hidden className="text-muted">→</span>}
+                <Link
+                  href={n.href}
+                  aria-current={active(n.href) ? "page" : undefined}
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 font-semibold ${
+                    active(n.href) ? "bg-brand-soft text-brand" : "text-muted hover:bg-surface-2"
+                  }`}
+                >
+                  {n.step && <StepDot index={i} status={st} />}
+                  {n.label}
+                </Link>
+              </span>
+            );
+          })}
+          <Link href="/episodes" className={`ml-auto rounded-lg border border-line px-3 py-2 font-semibold ${active("/episodes") ? "bg-brand-soft text-brand" : "bg-surface hover:bg-surface-2"}`}>
+            ➕ Log a symptom
           </Link>
         </nav>
-        {showSteps && <StepBar />}
       </header>
 
       <main className="mx-auto max-w-5xl px-4 pb-32 pt-5 sm:pb-12">{children}</main>
 
       <nav className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] sm:hidden">
         <div className="grid grid-cols-5">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className={`flex min-h-16 flex-col items-center justify-center gap-0.5 text-sm font-semibold ${active(n.href) ? "text-brand" : "text-muted"}`}
-            >
-              <span aria-hidden className="text-xl">{n.icon}</span>
-              {n.label}
-            </Link>
-          ))}
+          {NAV.map((n, i) => {
+            const st = status(n.step);
+            return (
+              <Link
+                key={n.href}
+                href={n.href}
+                aria-current={active(n.href) ? "page" : undefined}
+                className={`flex min-h-16 flex-col items-center justify-center gap-0.5 text-sm font-semibold ${active(n.href) ? "text-brand" : "text-muted"}`}
+              >
+                {n.step && st ? <StepDot index={i} status={st} /> : <span aria-hidden className="text-xl leading-6">{n.icon}</span>}
+                {n.label}
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </SourceProvider>
   );
 }
 
-/** "Step 1 → 2 → 3" with a single clear "Next" button. */
-function StepBar() {
-  const c = useCase();
-  const pathname = usePathname();
-  const next = nextAction(c);
-  const here = pathname.startsWith(next.href.split("?")[0]);
+function StepDot({ index, status }: { index: number; status: "done" | "current" | "todo" | null }) {
+  const tone =
+    status === "done" ? "bg-ok text-white" : status === "current" ? "bg-brand text-brand-ink" : "border border-line text-muted";
   return (
-    <div className="border-t border-line bg-surface">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-2">
-        <ol className="flex items-center gap-1 text-sm font-semibold">
-          {STEPS.map((s, i) => {
-            const st = stepStatus(s.key, next);
-            return (
-              <li key={s.key} className="flex items-center gap-1">
-                {i > 0 && <span aria-hidden className="text-muted">→</span>}
-                <Link
-                  href={s.href}
-                  className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 ${
-                    st === "current" ? "bg-brand text-brand-ink" : st === "done" ? "bg-ok-soft text-ok" : "text-muted"
-                  }`}
-                  aria-current={st === "current" ? "step" : undefined}
-                >
-                  <span>{st === "done" ? "✓" : i + 1}</span>
-                  {s.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ol>
-        {!here && !next.waiting && (
-          <Link href={next.href} className="rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
-            Next: {next.title} →
-          </Link>
-        )}
-      </div>
-    </div>
+    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${tone}`} aria-hidden>
+      {status === "done" ? "✓" : index}
+    </span>
   );
 }
 

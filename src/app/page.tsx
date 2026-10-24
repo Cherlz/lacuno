@@ -1,13 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAccount } from "@/components/Account";
 import { Logo } from "@/components/AppShell";
-import { Button, ButtonLink, Card, Pill, Spinner } from "@/components/ui";
+import { InstallApp } from "@/components/InstallApp";
+import { Button, ButtonLink, Card, Spinner } from "@/components/ui";
 import { loadSample } from "@/lib/actions";
 import { languageByCode } from "@/lib/languages";
-import { LENSES } from "@/lib/lenses";
 import { nextAction } from "@/lib/progress";
 import { SAMPLE_CASES } from "@/lib/samples";
 import { useCase } from "@/lib/useCase";
@@ -89,50 +90,11 @@ function Welcome() {
 }
 
 function Dashboard() {
-  const { patient, docs, episodes, analyses, basis } = useCase();
+  const { patient, docs, episodes } = useCase();
   const p = patient!;
-  const confirmed = docs.filter((d) => d.confirmed).length;
-  const toConfirm = docs.filter((d) => d.status === "ready" && !d.confirmed).length;
-  const reading = docs.filter((d) => d.status === "extracting").length;
-  const map = analyses.find((a) => a.id === "map");
-  const lensCount = analyses.filter((a) => a.id.startsWith("lens:")).length;
-  const brief = analyses.find((a) => a.id === "brief");
-  const stale = (a?: { basis: string }) => a && a.basis !== basis;
-
-  const steps = [
-    {
-      n: 1,
-      title: "Collect records",
-      href: "/records",
-      done: confirmed > 0 && toConfirm === 0 && reading === 0,
-      detail: docs.length
-        ? `${confirmed} confirmed${toConfirm ? ` · ${toConfirm} to check` : ""}${reading ? ` · ${reading} reading` : ""}`
-        : "Upload photos or PDFs of notes, labs, scans, prescriptions",
-    },
-    {
-      n: 2,
-      title: "Case review",
-      href: "/review",
-      done: !!map && !stale(map),
-      detail: map
-        ? `Disagreement map ready · ${lensCount}/${LENSES.length} specialty reviews${stale(map) ? " · records changed, refresh" : ""}`
-        : "Where doctors disagree, and what each specialty would check",
-    },
-    {
-      n: 3,
-      title: "Doctor brief",
-      href: "/brief",
-      done: !!brief && !stale(brief),
-      detail: brief
-        ? `Ready in ${languageByCode(p.doctorLanguage).name} + ${languageByCode(p.familyLanguage).name}${stale(brief) ? " · records changed, refresh" : ""}`
-        : "One page for the next doctor, plus a family version",
-    },
-  ];
-
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-2xl space-y-5">
       <div>
-        <p className="text-sm text-muted">Case file</p>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{p.name}</h1>
         <p className="text-muted">
           {p.age && `${p.age} · `}
@@ -143,36 +105,20 @@ function Dashboard() {
       <NextCard />
 
       <ButtonLink href="/episodes?now=1" variant="secondary" className="min-h-14 w-full text-lg">
-        ➕ Log a symptom episode now
+        ➕ Log a symptom now
       </ButtonLink>
 
-      <ol className="space-y-3">
-        {steps.map((s) => (
-          <li key={s.n}>
-            <a href={s.href} className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 hover:border-brand">
-              <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-bold ${s.done ? "bg-ok-soft text-ok" : "bg-brand-soft text-brand"}`}>
-                {s.done ? "✓" : s.n}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-semibold">{s.title}</span>
-                <span className="block text-sm text-muted">{s.detail}</span>
-              </span>
-              <span aria-hidden className="text-muted">›</span>
-            </a>
-          </li>
-        ))}
-      </ol>
+      <p className="text-center text-sm text-muted">
+        {docs.length} record{docs.length === 1 ? "" : "s"} · {episodes.length} symptom{episodes.length === 1 ? "" : "s"} logged · family reads {languageByCode(p.familyLanguage).native}, doctor reads{" "}
+        {languageByCode(p.doctorLanguage).native} ·{" "}
+        <Link href="/setup" className="underline">change</Link>
+      </p>
 
-      <div className="flex flex-wrap gap-2 text-sm text-muted">
-        <Pill>{docs.length} records</Pill>
-        <Pill>{episodes.length} episodes logged</Pill>
-        <Pill tone="brand">Family: {languageByCode(p.familyLanguage).native}</Pill>
-        <Pill tone="brand">Doctor: {languageByCode(p.doctorLanguage).native}</Pill>
-      </div>
+      <InstallApp />
 
-      <a href="/impact" className="block rounded-2xl border border-dashed border-line p-4 text-sm text-muted hover:border-brand">
-        <strong className="text-ink">Testing with a family or doctor?</strong> Record before/after confidence and time a doctor reading the brief →
-      </a>
+      <p className="text-center text-sm">
+        <Link href="/impact" className="text-muted underline">Testing with a family or doctor? Record feedback</Link>
+      </p>
     </div>
   );
 }

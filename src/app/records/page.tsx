@@ -67,7 +67,7 @@ export default function Records() {
           <p className="text-lg font-bold">
             Checking record {confirmed.length + 1} of {totalToCheck}
           </p>
-          <p>Compare what we read with the original next to it. Fix anything wrong, then tap the green <strong>Confirm</strong> button at the bottom.</p>
+          <p>Compare what we read with the original. If it matches, tap <strong>✓ Looks right</strong>. If not, tap <strong>✎ Fix something</strong>.</p>
         </div>
       )}
       {toConfirm.length === 0 && confirmed.length > 0 && !others.some((d) => d.status === "extracting") && (
@@ -114,7 +114,7 @@ function DocCard({ doc, active, onOpen }: { doc: CaseDoc; active: boolean; onOpe
           {doc.extraction?.specialty && <Pill>{doc.extraction.specialty}</Pill>}
         </div>
       </div>
-      <Button variant="ghost" className="min-h-10 px-3 text-sm" onClick={remove} aria-label="Remove record">Remove</Button>
+      <button className="min-h-10 px-1 text-sm text-muted underline" onClick={remove} aria-label="Remove record">Remove</button>
     </div>
   );
 
@@ -175,6 +175,7 @@ function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void })
   const [x, setX] = useState<Extraction>(doc.extraction!);
   const [readings, setReadings] = useState<Record<number, string>>({});
   const [showOriginal, setShowOriginal] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const setField = <K extends keyof Extraction>(k: K, v: Extraction[K]) => setX({ ...x, [k]: v });
   function updateItem<K extends "suspected" | "tests_ordered" | "results" | "medicines">(k: K, i: number, patch: Partial<Extraction[K][number]>) {
@@ -225,6 +226,8 @@ function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void })
           </section>
         )}
 
+        {editing ? (
+          <>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Date"><input className={input} value={x.date ?? ""} onChange={(e) => setField("date", e.target.value || null)} /></Field>
           <Field label="Doctor"><input className={input} value={x.doctor_name ?? ""} onChange={(e) => setField("doctor_name", e.target.value || null)} /></Field>
@@ -280,8 +283,23 @@ function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void })
           ))}
         </ListSection>
 
-        <Button className="min-h-14 w-full text-lg" onClick={confirmDoc}>✓ Confirm: this matches the document</Button>
-        <p className="text-center text-xs text-muted">Read by Claude from the original ({x.original_language}). Check names, numbers and doses carefully.</p>
+          </>
+        ) : (
+          <ReadView x={x} />
+        )}
+
+        {editing ? (
+          <div className="grid gap-2 sm:grid-cols-[1fr_2fr]">
+            <Button variant="secondary" onClick={() => { setX(doc.extraction!); setEditing(false); }}>Undo my changes</Button>
+            <Button className="min-h-14 text-lg" onClick={confirmDoc}>✓ Save and confirm</Button>
+          </div>
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-[1fr_2fr]">
+            <Button variant="secondary" className="min-h-14 text-lg" onClick={() => setEditing(true)}>✎ Fix something</Button>
+            <Button className="min-h-14 text-lg" onClick={confirmDoc}>✓ Looks right</Button>
+          </div>
+        )}
+        <p className="text-center text-sm text-muted">Compare with the original. Check names, numbers and doses carefully.</p>
       </div>
     </div>
   );
@@ -314,5 +332,47 @@ function Item({ original, onRemove, children }: { original: string; onRemove: ()
       </div>
       <button type="button" onClick={onRemove} className="h-9 w-9 shrink-0 rounded-lg text-muted hover:bg-danger-soft hover:text-danger" aria-label="Remove this line">✕</button>
     </li>
+  );
+}
+
+/** The reading, shown as plain text so it's quick to compare with the original. */
+function ReadView({ x }: { x: Extraction }) {
+  const meta = [x.date, x.doctor_name, x.specialty, x.facility].filter(Boolean).join(" · ");
+  const sections: { title: string; items: { text: string; flag?: string }[] }[] = [
+    { title: "Doctor suspected", items: x.suspected.map((s) => ({ text: `${s.possibility} (${s.certainty_as_written})` })) },
+    { title: "Tests ordered", items: x.tests_ordered.map((t) => ({ text: t.name })) },
+    {
+      title: "Results",
+      items: x.results.map((r) => ({
+        text: `${r.test}: ${r.value}${r.unit ? ` ${r.unit}` : ""}${r.reference_range ? ` (normal ${r.reference_range})` : ""}`,
+        flag: r.flag !== "normal" && r.flag !== "unknown" ? r.flag : undefined,
+      })),
+    },
+    {
+      title: "Medicines",
+      items: x.medicines.map((m) => ({
+        text: [m.name, m.dose, m.frequency].filter(Boolean).join(" · ") + (m.change !== "unknown" && m.change !== "continued" ? ` (${m.change})` : ""),
+      })),
+    },
+  ];
+  return (
+    <div className="space-y-4 rounded-xl bg-surface-2 p-4">
+      {meta && <p className="font-semibold">{meta}</p>}
+      <p className="text-lg leading-relaxed">{x.summary}</p>
+      {sections.filter((sec) => sec.items.length).map((sec) => (
+        <div key={sec.title}>
+          <h4 className="text-sm font-semibold uppercase tracking-wide text-muted">{sec.title}</h4>
+          <ul className="mt-1 space-y-1">
+            {sec.items.map((it, i) => (
+              <li key={i} className="flex flex-wrap items-center gap-2">
+                <span aria-hidden className="text-muted">•</span>
+                {it.text}
+                {it.flag && <Pill tone="warn">{it.flag}</Pill>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
   );
 }
