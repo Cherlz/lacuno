@@ -1,21 +1,25 @@
 import { ExtractionSchema } from "@/lib/schemas";
 import { errorResponse, structured, textBlock } from "@/lib/claude";
 import type Anthropic from "@anthropic-ai/sdk";
+import { z } from "zod";
+import { LanguageName, rateLimit, readBody } from "@/lib/guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
+const Body = z.object({
+  mimeType: z.enum([...IMAGE_TYPES, "application/pdf", "text/plain"]),
+  data: z.string().regex(/^[A-Za-z0-9+/]+=*$/).optional(), // base64, no data: prefix
+  text: z.string().max(20000).optional(), // typed transcript (sample documents)
+  familyLanguage: LanguageName,
+});
 type ImageType = (typeof IMAGE_TYPES)[number];
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as {
-      mimeType: string;
-      data?: string; // base64, no data: prefix
-      text?: string; // typed transcript (sample documents)
-      familyLanguage: string;
-    };
+    rateLimit(req, "extract", 60);
+    const body = await readBody(req, Body, 6 * 1024 * 1024);
 
     let source: Anthropic.Beta.BetaContentBlockParam;
     if (body.text) {

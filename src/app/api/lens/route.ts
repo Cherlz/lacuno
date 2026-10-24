@@ -2,6 +2,8 @@ import { LensReviewSchema } from "@/lib/schemas";
 import { errorResponse, structured, textBlock } from "@/lib/claude";
 import { validIds, type CasePayload } from "@/lib/case";
 import { keepSourced } from "@/lib/sources";
+import { z } from "zod";
+import { CaseFileSchema, rateLimit, readBody } from "@/lib/guard";
 import { lensByKey } from "@/lib/lenses";
 
 export const runtime = "nodejs";
@@ -9,7 +11,12 @@ export const maxDuration = 180;
 
 export async function POST(req: Request) {
   try {
-    const { caseFile, lens: key } = (await req.json()) as { caseFile: CasePayload; lens: string };
+    rateLimit(req, "lens", 60);
+    const { caseFile, lens: key } = (await readBody(
+      req,
+      z.object({ caseFile: CaseFileSchema, lens: z.string().max(20) }),
+      1024 * 1024,
+    )) as { caseFile: CasePayload; lens: string };
     const lens = lensByKey(key);
     if (!lens) return Response.json({ error: "Unknown specialty." }, { status: 400 });
     if (!caseFile.documents.length) {

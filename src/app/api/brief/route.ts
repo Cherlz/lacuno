@@ -2,19 +2,26 @@ import { BriefSchema } from "@/lib/schemas";
 import { errorResponse, structured, textBlock } from "@/lib/claude";
 import { validIds, type CasePayload } from "@/lib/case";
 import { keepSourced } from "@/lib/sources";
+import { z } from "zod";
+import { CaseFileSchema, LanguageName, rateLimit, readBody } from "@/lib/guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
 
 export async function POST(req: Request) {
   try {
-    const { caseFile, map, lenses, doctorLanguage, familyLanguage } = (await req.json()) as {
-      caseFile: CasePayload;
-      map?: unknown;
-      lenses?: unknown;
-      doctorLanguage: string;
-      familyLanguage: string;
-    };
+    rateLimit(req, "brief", 15);
+    const { caseFile, map, lenses, doctorLanguage, familyLanguage } = (await readBody(
+      req,
+      z.object({
+        caseFile: CaseFileSchema,
+        map: z.unknown().optional(),
+        lenses: z.unknown().optional(),
+        doctorLanguage: LanguageName,
+        familyLanguage: LanguageName,
+      }),
+      2 * 1024 * 1024,
+    )) as { caseFile: CasePayload; map?: unknown; lenses?: unknown; doctorLanguage: string; familyLanguage: string };
     if (!caseFile.documents.length) {
       return Response.json({ error: "Confirm at least one document first." }, { status: 400 });
     }

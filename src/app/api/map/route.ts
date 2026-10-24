@@ -2,13 +2,16 @@ import { DisagreementMapSchema } from "@/lib/schemas";
 import { errorResponse, structured, textBlock } from "@/lib/claude";
 import { validIds, type CasePayload } from "@/lib/case";
 import { keepSourced } from "@/lib/sources";
+import { z } from "zod";
+import { CaseFileSchema, rateLimit, readBody } from "@/lib/guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
 
 export async function POST(req: Request) {
   try {
-    const { caseFile } = (await req.json()) as { caseFile: CasePayload };
+    rateLimit(req, "map", 15);
+    const { caseFile } = (await readBody(req, z.object({ caseFile: CaseFileSchema }), 1024 * 1024)) as { caseFile: CasePayload };
     if (!caseFile.documents.length) {
       return Response.json({ error: "Confirm at least one document first." }, { status: 400 });
     }
