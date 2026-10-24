@@ -13,7 +13,7 @@ Live: **https://lacuno-app.vercel.app** · Hosted on Vercel
 
 Adult children coordinating care for a parent who has seen several doctors and still has no clear diagnosis, often carrying records across clinics and languages.
 
-This started with our own family. My mother has had dizziness, fatigue and weakness for years. One doctor suspected her inner ear, another her bones, another something else. Each saw a few minutes of the story and started from zero. None of them saw the whole picture. We carry the papers between visits.
+This started with our own family. My mother has had dizziness, fatigue and weakness for years. Different doctors suggested different causes: her inner ear, her bones. Each saw a few minutes of the story and started from zero. None of them saw the whole picture. We carry the papers between visits.
 
 ## The problem
 
