@@ -6,6 +6,7 @@ import { Button, ButtonLink, Card, ErrorBox, PageTitle, Pill, Spinner } from "@/
 import { addFiles, extractDoc } from "@/lib/actions";
 import { deleteDoc, putDoc, type CaseDoc } from "@/lib/db";
 import type { Extraction } from "@/lib/schemas";
+import { reviewExtraction } from "@/lib/metrics";
 import { useCase } from "@/lib/useCase";
 
 const input = "w-full rounded-lg border border-line bg-surface px-2.5 min-h-11 text-base focus:border-brand focus:outline-none";
@@ -155,7 +156,11 @@ function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void })
       if (r) corrections.push(`${u.where}: family reads it as "${r}"`);
       return !r;
     });
-    await putDoc({ ...doc, extraction: { ...x, unclear }, corrections, confirmed: true });
+    const final = { ...x, unclear };
+    const typed = corrections.length - (doc.corrections?.length ?? 0);
+    // Measured only on the first confirmation, against Claude's untouched reading.
+    const review = doc.review ?? (doc.aiExtraction ? reviewExtraction(doc.aiExtraction, final, typed) : undefined);
+    await putDoc({ ...doc, extraction: final, corrections, review, confirmed: true });
     onDone();
   };
 

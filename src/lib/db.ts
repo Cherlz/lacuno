@@ -29,8 +29,23 @@ export type CaseDoc = {
   extraction?: Extraction;
   confirmed: boolean;
   corrections?: string[]; // readings typed in by the family for unclear text
+  aiExtraction?: Extraction; // Claude's untouched reading, kept to measure accuracy
+  review?: ExtractionReview;
   isSample: boolean;
 };
+
+export type ExtractionReview = {
+  aiItems: number; // fields and list items Claude extracted
+  keptUnchanged: number;
+  editedOrRemoved: number;
+  unclearFlagged: number;
+  correctionsTyped: number;
+};
+
+// Tester feedback for measuring impact. Ratings and quotes only, no medical content.
+export type Feedback =
+  | { id: string; kind: "family"; createdAt: number; phase: "before" | "after"; confidence: number; helped?: "yes" | "somewhat" | "no"; quote?: string; mayQuote: boolean; tester?: string }
+  | { id: string; kind: "doctor"; createdAt: number; mode: "records" | "brief"; seconds: number; usefulness?: number; wouldWant?: "yes" | "maybe" | "no"; quote?: string; mayQuote: boolean; tester?: string };
 
 export type Episode = {
   id: string;
@@ -51,16 +66,20 @@ interface ThroughlineDB extends DBSchema {
   docs: { key: string; value: CaseDoc; indexes: { createdAt: number } };
   episodes: { key: string; value: Episode; indexes: { createdAt: number } };
   analyses: { key: string; value: Analysis };
+  feedback: { key: string; value: Feedback };
 }
 
 let dbPromise: Promise<IDBPDatabase<ThroughlineDB>> | null = null;
 function db() {
-  dbPromise ??= openDB<ThroughlineDB>("throughline", 1, {
-    upgrade(d) {
-      d.createObjectStore("kv");
-      d.createObjectStore("docs", { keyPath: "id" }).createIndex("createdAt", "createdAt");
-      d.createObjectStore("episodes", { keyPath: "id" }).createIndex("createdAt", "createdAt");
-      d.createObjectStore("analyses", { keyPath: "id" });
+  dbPromise ??= openDB<ThroughlineDB>("throughline", 2, {
+    upgrade(d, oldVersion) {
+      if (oldVersion < 1) {
+        d.createObjectStore("kv");
+        d.createObjectStore("docs", { keyPath: "id" }).createIndex("createdAt", "createdAt");
+        d.createObjectStore("episodes", { keyPath: "id" }).createIndex("createdAt", "createdAt");
+        d.createObjectStore("analyses", { keyPath: "id" });
+      }
+      if (oldVersion < 2) d.createObjectStore("feedback", { keyPath: "id" });
     },
   });
   return dbPromise;
@@ -126,7 +145,21 @@ export async function putAnalysis(a: Analysis) {
   changed();
 }
 
-export async function clearAll() {
+export async function listFeedback() {
+  return (await (await db()).getAll("feedback")).sort((a, b) => a.createdAt - b.createdAt);
+}
+export async function putFeedback(f: Feedback) {
+  await (await db()).put("feedback", f);
+  changed();
+}
+export async function deleteFeedback(id: string) {
+  await (await db()).delete("feedback", id);
+  changed();
+}
+
+/** Clears the case file. Tester feedback is kept unless includeFeedback is set. */
+export async function clearAll(includeFeedback = false) {
+  if (includeFeedback) await (await db()).clear("feedback");
   const d = await db();
   await Promise.all([d.clear("kv"), d.clear("docs"), d.clear("episodes"), d.clear("analyses")]);
   changed();

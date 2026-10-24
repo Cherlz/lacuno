@@ -146,6 +146,10 @@ function Dashboard() {
         <Pill tone="brand">Family: {languageByCode(p.familyLanguage).native}</Pill>
         <Pill tone="brand">Doctor: {languageByCode(p.doctorLanguage).native}</Pill>
       </div>
+
+      <a href="/impact" className="block rounded-2xl border border-dashed border-line p-4 text-sm text-muted hover:border-brand">
+        <strong className="text-ink">Testing with a family or doctor?</strong> Record before/after confidence and time a doctor reading the brief →
+      </a>
     </div>
   );
 }
