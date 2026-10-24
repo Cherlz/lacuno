@@ -96,3 +96,21 @@ export function UncertaintyNote({ uncertainty, needsCheck }: { uncertainty: "low
     </p>
   );
 }
+
+/** Shows what the fact-checker agent did to an analysis. */
+export function FactCheckBadge({ check }: { check?: { checked: number; removed: number; corrected: number } | null }) {
+  if (check === undefined) return null;
+  if (check === null) {
+    return (
+      <p className="rounded-xl border border-warn/40 bg-warn-soft px-3 py-2 text-sm text-warn">
+        The fact-check didn&apos;t run this time. Refresh to check every point against the records.
+      </p>
+    );
+  }
+  const fixes = [check.removed && `${check.removed} removed`, check.corrected && `${check.corrected} corrected`].filter(Boolean).join(", ");
+  return (
+    <p className="inline-flex flex-wrap items-center gap-1.5 rounded-full bg-ok-soft px-3 py-1 text-sm font-semibold text-ok">
+      ✓ Fact-checked: {check.checked} points checked against the records{fixes && ` · ${fixes}`}
+    </p>
+  );
+}

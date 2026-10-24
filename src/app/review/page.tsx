@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { CaseGate, StaleBanner } from "@/components/CaseGate";
 import { SourceChips } from "@/components/Sources";
-import { Button, ButtonLink, Card, Disclaimer, ErrorBox, PageTitle, Spinner, UncertaintyNote } from "@/components/ui";
+import { Button, ButtonLink, Card, Disclaimer, ErrorBox, FactCheckBadge, PageTitle, Spinner, UncertaintyNote } from "@/components/ui";
 import { runLens, runMap } from "@/lib/actions";
 import type { Analysis } from "@/lib/db";
 import { LENSES } from "@/lib/lenses";
@@ -130,6 +130,7 @@ function MapView() {
       <StaleBanner show={map.basis !== basis} onRefresh={run} busy={busy} />
       {busy && <Spinner label="Updating…" />}
       {error && <ErrorBox message={error} onRetry={run} />}
+      <FactCheckBadge check={map.check} />
       <MapContent map={map.data} />
       <p className="text-xs text-muted">Made {new Date(map.createdAt).toLocaleString()} from confirmed records only.</p>
     </div>
@@ -260,6 +261,7 @@ function ConferenceView() {
               {!r && !busy[l.key] && !errors[l.key] && (
                 <Button variant="secondary" className="min-h-10 w-full" onClick={() => void runOne(l.key)}>Run this review</Button>
               )}
+              {r && !busy[l.key] && <FactCheckBadge check={r.check} />}
               {r && !busy[l.key] && <LensContent review={r.data} />}
             </Card></div>
           );

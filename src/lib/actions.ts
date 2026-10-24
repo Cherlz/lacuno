@@ -6,7 +6,7 @@ import { keepSourced } from "./sources";
 import { localDangerCheck } from "./danger";
 import { languageByCode } from "./languages";
 import { SAMPLE_CASES } from "./samples";
-import type { Brief, DisagreementMap, EpisodeStructured, Extraction, LensReview } from "./schemas";
+import type { Brief, CheckSummary, DisagreementMap, EpisodeStructured, Extraction, LensReview } from "./schemas";
 
 export async function postJSON<T>(url: string, body: unknown): Promise<T> {
   let res: Response;
@@ -125,14 +125,14 @@ async function currentCase() {
 
 export async function runMap() {
   const { payload, basis } = await currentCase();
-  const { map } = await postJSON<{ map: DisagreementMap }>("/api/map", { caseFile: payload });
-  await db.putAnalysis({ id: "map", createdAt: Date.now(), basis, data: keepSourced(map, validIds(payload)) });
+  const { map, check } = await postJSON<{ map: DisagreementMap; check: CheckSummary | null }>("/api/map", { caseFile: payload });
+  await db.putAnalysis({ id: "map", createdAt: Date.now(), basis, data: keepSourced(map, validIds(payload)), check });
 }
 
 export async function runLens(key: string) {
   const { payload, basis } = await currentCase();
-  const { review } = await postJSON<{ review: LensReview }>("/api/lens", { caseFile: payload, lens: key });
-  await db.putAnalysis({ id: `lens:${key}`, createdAt: Date.now(), basis, data: keepSourced(review, validIds(payload)) });
+  const { review, check } = await postJSON<{ review: LensReview; check: CheckSummary | null }>("/api/lens", { caseFile: payload, lens: key });
+  await db.putAnalysis({ id: `lens:${key}`, createdAt: Date.now(), basis, data: keepSourced(review, validIds(payload)), check });
 }
 
 export async function runBrief(doctorLanguage: string, familyLanguage: string) {
@@ -142,14 +142,14 @@ export async function runBrief(doctorLanguage: string, familyLanguage: string) {
   const lenses = Object.fromEntries(
     analyses.filter((a) => a.id.startsWith("lens:")).map((a) => [a.id.slice(5), a.data]),
   );
-  const { brief } = await postJSON<{ brief: Brief }>("/api/brief", {
+  const { brief, check } = await postJSON<{ brief: Brief; check: CheckSummary | null }>("/api/brief", {
     caseFile: payload,
     map,
     lenses,
     doctorLanguage: languageByCode(doctorLanguage).name,
     familyLanguage: languageByCode(familyLanguage).name,
   });
-  await db.putAnalysis({ id: "brief", createdAt: Date.now(), basis, data: keepSourced(brief, validIds(payload)), doctorLanguage, familyLanguage });
+  await db.putAnalysis({ id: "brief", createdAt: Date.now(), basis, data: keepSourced(brief, validIds(payload)), doctorLanguage, familyLanguage, check });
 }
 
 /** Returns true immediately if the local check finds a danger sign. */

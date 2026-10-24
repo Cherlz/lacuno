@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { CaseGate } from "@/components/CaseGate";
 import { DoctorBrief, FamilyBrief, ReadAloud } from "@/components/BriefViews";
-import { Button, Card, ErrorBox, PageTitle, Spinner } from "@/components/ui";
+import { Button, Card, ErrorBox, FactCheckBadge, PageTitle, Spinner } from "@/components/ui";
 import { runBrief } from "@/lib/actions";
 import type { Analysis } from "@/lib/db";
 import { LANGUAGES, isRtl, languageByCode } from "@/lib/languages";
@@ -83,6 +83,7 @@ function BriefScreen() {
 
       {saved && (
         <>
+          <div className="no-print"><FactCheckBadge check={saved.check} /></div>
           <div className="no-print flex flex-wrap items-center justify-between gap-3">
             <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1">
               {(["doctor", "family"] as const).map((v) => (

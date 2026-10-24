@@ -40,6 +40,7 @@ We built Lacuno for **adult children coordinating care for a parent who has seen
   - **Six parallel specialty calls** for the case conference, under shared safety rules
   - **Two-audience, two-language writing** for the brief, with translation notes
   - **Structuring spoken symptom logs**, plus a second-layer emergency check
+- **Fact-checker agent:** after every analysis, a second, independent Claude pass audits each statement against the records it cites. Unsupported or diagnosis-like statements are removed, overstated ones are corrected, and the app shows "✓ Fact-checked: N points checked against the records".
 - **Safety in code, not just prompts:** every finding must carry source record IDs; findings with missing or unknown sources are removed on the server and again on the device. An on-device keyword check catches emergency signs before anything is sent.
 - **Auth0** for sign-up and sign-in. Each account's case files are stored **on the device** (IndexedDB); the server stores nothing, and the Claude-powered routes only answer signed-in users.
 - Hosted on **Vercel**. Built with **Claude Code**.
@@ -50,7 +51,7 @@ We built Lacuno for **adult children coordinating care for a parent who has seen
 |---|---|---|
 | Misread handwriting or scan | Patient gets a wrong summary | Every record is checked by the family next to the original; unreadable text is flagged, never guessed |
 | Analysis that looks like a diagnosis | Patient trusts the app over doctors | No diagnosis and no ranking, enforced in every prompt; specialists give checks and questions only; disclaimer on every analysis screen |
-| Hallucinated details | Doctor is misled | Every statement cites its source record; unsourced findings are deleted before display; tap any point to see the original page |
+| Hallucinated details | Doctor is misled | An independent fact-checker agent audits every statement against its sources; unsourced findings are deleted before display; tap any point to see the original page |
 | Translation errors | Doctor or family misunderstands | Original wording shown with each item; uncertain terms listed in translation notes |
 | Missing an emergency | Patient waits instead of getting care | Instant on-device check plus Claude's check; full-screen "Seek emergency care now" |
 | Privacy breach | Patient | Records stay on the device; the server keeps nothing; separate case files per account |
