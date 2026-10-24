@@ -95,7 +95,7 @@ function BriefScreen() {
             </div>
             <div className="flex gap-2">
               {view === "family" && <ReadAloud brief={saved.data} lang={saved.familyLanguage} />}
-              <Button variant="secondary" onClick={() => window.print()}>⬇ Save as PDF / print</Button>
+              <Button onClick={() => window.print()}>⬇ Save as PDF</Button>
             </div>
           </div>
 

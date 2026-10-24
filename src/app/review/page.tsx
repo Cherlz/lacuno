@@ -37,7 +37,7 @@ function ReviewScreen() {
           <div role="tablist" className="grid grid-cols-3 gap-1 rounded-xl bg-surface-2 p-1">
             {([["map", "Doctors differ"], ["conference", "Specialists"], ["meds", "Medicines"]] as const).map(([k, label]) => (
               <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
-                className={`min-h-12 rounded-lg font-semibold ${tab === k ? "bg-surface text-ink shadow-sm" : "text-muted"}`}>
+                className={`min-h-12 whitespace-nowrap rounded-lg px-1 text-sm font-semibold sm:text-base ${tab === k ? "bg-surface text-ink shadow-sm" : "text-muted"}`}>
                 {label}
               </button>
             ))}
@@ -149,10 +149,22 @@ function MapContent({ map }: { map: DisagreementMap }) {
 
       <section className="space-y-4">
         <h2 className="text-xl font-bold">Possibilities raised by doctors</h2>
-        <p className="-mt-3 text-sm text-muted">In the order they were first raised. Not ranked.</p>
+        <p className="-mt-3 text-sm text-muted">In the order they were first raised. Not ranked. Tap one to see the details.</p>
         {map.possibilities.map((p, i) => (
-          <Card key={i} className="space-y-3">
-            <h3 className="text-lg font-bold">{p.name}</h3>
+          <details key={i} open={i === 0} className="group rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_3px_rgba(16,40,40,0.06)] sm:p-5">
+            <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-2">
+              <span>
+                <span className="block text-lg font-bold">{p.name}</span>
+                <span className="block text-sm text-muted">Raised by {p.raised_by.map((r) => r.doctor).join(", ")}</span>
+              </span>
+              <span className="flex flex-wrap items-center gap-1.5 text-xs font-semibold">
+                <span className="rounded-full bg-ok-soft px-2 py-0.5 text-ok">✓ {p.fits.length} fit</span>
+                <span className="rounded-full bg-surface-2 px-2 py-0.5 text-muted">✗ {p.does_not_fit.length} don&apos;t</span>
+                <span className="rounded-full bg-warn-soft px-2 py-0.5 text-warn">? {p.not_yet_checked.length} unchecked</span>
+                <span aria-hidden className="ml-1 text-muted transition group-open:rotate-90">›</span>
+              </span>
+            </summary>
+            <div className="mt-3 space-y-3">
             <ul className="space-y-1 text-sm text-muted">
               {p.raised_by.map((r, j) => (
                 <li key={j}>
@@ -166,7 +178,8 @@ function MapContent({ map }: { map: DisagreementMap }) {
               <Column tone="neutral" icon="✗" title="What doesn't fit" items={p.does_not_fit.map((f) => ({ text: f.point, ids: f.source_ids }))} />
               <Column tone="warn" icon="?" title="Not yet checked" items={p.not_yet_checked.map((f) => ({ text: f.item, sub: f.why_it_matters, ids: f.source_ids }))} />
             </div>
-          </Card>
+            </div>
+          </details>
         ))}
       </section>
 
@@ -281,12 +294,6 @@ function LensContent({ review }: { review: LensReview }) {
   }
   return (
     <div className="space-y-3 text-sm">
-      {review.relevant_findings.length > 0 && (
-        <div>
-          <h4 className="mb-1 font-semibold">Relevant in the records</h4>
-          <ul className="list-disc space-y-1 pl-5">{review.relevant_findings.map((f, i) => <li key={i}>{f.point} <SourceChips ids={f.source_ids} /></li>)}</ul>
-        </div>
-      )}
       {review.to_check_or_rule_out.length > 0 && (
         <div className="rounded-xl bg-warn-soft p-3">
           <h4 className="mb-1 font-semibold text-warn">Would want checked or ruled out</h4>
@@ -302,6 +309,12 @@ function LensContent({ review }: { review: LensReview }) {
           <h4 className="mb-1 font-semibold">Questions to ask</h4>
           <ul className="space-y-1">{review.questions_to_ask.map((q, i) => <li key={i}>💬 {q}</li>)}</ul>
         </div>
+      )}
+      {review.relevant_findings.length > 0 && (
+        <details>
+          <summary className="cursor-pointer font-semibold text-muted">What they noticed in the records ({review.relevant_findings.length})</summary>
+          <ul className="mt-1 list-disc space-y-1 pl-5">{review.relevant_findings.map((f, i) => <li key={i}>{f.point} <SourceChips ids={f.source_ids} /></li>)}</ul>
+        </details>
       )}
       <UncertaintyNote uncertainty={review.uncertainty} needsCheck={review.needs_human_check} />
     </div>
