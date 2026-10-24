@@ -1,4 +1,4 @@
-# Throughline + Caddy (automatic HTTPS). Started by deploy/setup.sh.
+# Lacuno + Caddy (automatic HTTPS). Started by deploy/setup.sh.
 services:
   app:
     build: ..

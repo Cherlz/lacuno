@@ -61,7 +61,7 @@ export type Analysis =
   | { id: `lens:${string}`; createdAt: number; basis: string; data: LensReview }
   | { id: "brief"; createdAt: number; basis: string; data: Brief; doctorLanguage: string; familyLanguage: string };
 
-interface ThroughlineDB extends DBSchema {
+interface LacunoDB extends DBSchema {
   kv: { key: string; value: Patient };
   docs: { key: string; value: CaseDoc; indexes: { createdAt: number } };
   episodes: { key: string; value: Episode; indexes: { createdAt: number } };
@@ -71,11 +71,11 @@ interface ThroughlineDB extends DBSchema {
 
 // Each signed-in account gets its own database on this device, so family
 // members sharing a phone don't see each other's case files.
-let dbName = "throughline";
-let dbPromise: Promise<IDBPDatabase<ThroughlineDB>> | null = null;
+let dbName = "lacuno";
+let dbPromise: Promise<IDBPDatabase<LacunoDB>> | null = null;
 
 export function setAccount(accountId: string | null) {
-  const name = accountId ? `throughline:${accountId}` : "throughline";
+  const name = accountId ? `lacuno:${accountId}` : "lacuno";
   if (name === dbName) return;
   dbName = name;
   void dbPromise?.then((d) => d.close());
@@ -84,7 +84,7 @@ export function setAccount(accountId: string | null) {
 }
 
 function db() {
-  dbPromise ??= openDB<ThroughlineDB>(dbName, 2, {
+  dbPromise ??= openDB<LacunoDB>(dbName, 2, {
     upgrade(d, oldVersion) {
       if (oldVersion < 1) {
         d.createObjectStore("kv");
