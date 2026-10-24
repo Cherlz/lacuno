@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { SUPPORT_EMAIL } from "@/lib/contact";
 
 export const metadata: Metadata = { title: "How to use Lacuno" };
 
@@ -7,7 +8,7 @@ const STEPS = [
   {
     icon: "👤",
     title: "Start a case",
-    where: "Home → Start a case",
+    where: "Get started → Start a case",
     body: [
       "Type a name or nickname (for example “Mum”), their age, and the main problems in your own words.",
       "Pick the family's language (for summaries and voice) and the next doctor's language (for the doctor brief).",
@@ -114,8 +115,21 @@ export default function Help() {
         </div>
       </section>
 
+      {SUPPORT_EMAIL && (
+        <section id="contact" className="scroll-mt-24 rounded-2xl bg-brand-soft p-5">
+          <h2 className="text-2xl font-bold">Still stuck? Email us</h2>
+          <p className="mt-1">Tell us what you were trying to do. Please don&apos;t include medical records or personal health details in the email.</p>
+          <a
+            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`}
+            className="mt-3 inline-flex min-h-12 items-center rounded-xl bg-brand px-5 font-semibold text-brand-ink"
+          >
+            ✉️ Email {SUPPORT_EMAIL}
+          </a>
+        </section>
+      )}
+
       <div className="flex flex-wrap gap-3">
-        <Link href="/" className="inline-flex min-h-12 items-center rounded-xl bg-brand px-5 font-semibold text-brand-ink">Go to my case</Link>
+        <Link href="/case" className="inline-flex min-h-12 items-center rounded-xl bg-brand px-5 font-semibold text-brand-ink">Go to my case</Link>
         <Link href="/records" className="inline-flex min-h-12 items-center rounded-xl border border-line bg-surface px-5 font-semibold">Add records</Link>
       </div>
     </div>

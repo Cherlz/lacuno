@@ -27,7 +27,7 @@ export default function Setup() {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     await savePatient({ ...form, isSample: patient?.isSample ?? false, updatedAt: Date.now() });
-    router.push(patient ? "/" : "/records");
+    router.push(patient ? "/case" : "/records");
   };
 
   const reset = async () => {

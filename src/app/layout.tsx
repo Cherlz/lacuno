@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import { AccountGate } from "@/components/Account";
 import { AppShell } from "@/components/AppShell";
 import { authEnabled } from "@/lib/auth0";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-sans-loaded", subsets: ["latin", "latin-ext", "vietnamese", "cyrillic"] });
+const fraunces = Fraunces({ variable: "--font-display-loaded", subsets: ["latin", "latin-ext"], weight: ["600", "700"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_BASE_URL ?? "https://lacuno-app.vercel.app"),
@@ -33,7 +34,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} ${fraunces.variable} antialiased`}>
         <AccountGate enabled={authEnabled}>
           <AppShell>{children}</AppShell>
         </AccountGate>
