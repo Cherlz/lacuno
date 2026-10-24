@@ -153,7 +153,7 @@ function Column({ tone, icon, title, items }: { tone: "ok" | "neutral" | "warn";
 }
 
 function ConferenceView() {
-  const { analyses, basis } = useCase();
+  const { analyses, basis, docs } = useCase();
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const runOne = async (key: string) => {
@@ -171,19 +171,22 @@ function ConferenceView() {
 
   return (
     <div className="space-y-4">
-      <Card className="flex flex-wrap items-center justify-between gap-3">
-        <p className="max-w-xl text-sm text-muted">
+      <Card className="space-y-4">
+        <ConferenceTable reviews={reviews} busy={busy} errors={errors} records={docs.filter((d) => d.confirmed).length} />
+        <p className="mx-auto max-w-xl text-center text-sm text-muted">
           Six specialty reviewers each read the <strong className="text-ink">whole</strong> record and report only what matters to their area: what they&apos;d want checked, and questions to ask. None of them names a cause.
         </p>
-        <Button onClick={runAll} disabled={anyBusy}>
-          {anyBusy ? <Spinner label="Reviewing…" /> : Object.keys(reviews).length ? (anyStale ? "Refresh all reviews" : "Run all again") : "Run the case conference"}
-        </Button>
+        <div className="flex justify-center">
+          <Button onClick={runAll} disabled={anyBusy}>
+            {anyBusy ? <Spinner label="Reviewing…" /> : Object.keys(reviews).length ? (anyStale ? "Refresh all reviews" : "Run all again") : "Convene the case conference"}
+          </Button>
+        </div>
       </Card>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {LENSES.map((l) => {
           const r = reviews[l.key];
           return (
-            <Card key={l.key} className={`space-y-3 ${r && !r.data.relevant ? "opacity-70" : ""}`}>
+            <div key={l.key} id={`lens-${l.key}`} className="scroll-mt-28"><Card className={`h-full space-y-3 ${r && !r.data.relevant ? "opacity-70" : ""}`}>
               <div className="flex items-center justify-between gap-2">
                 <h3 className="text-lg font-bold"><span aria-hidden>{l.icon}</span> {l.name}</h3>
                 {r && r.basis !== basis && <span className="text-xs text-warn">records changed</span>}
@@ -194,7 +197,7 @@ function ConferenceView() {
                 <Button variant="secondary" className="min-h-10 w-full" onClick={() => void runOne(l.key)}>Run this review</Button>
               )}
               {r && !busy[l.key] && <LensContent review={r.data} />}
-            </Card>
+            </Card></div>
           );
         })}
       </div>
@@ -231,6 +234,52 @@ function LensContent({ review }: { review: LensReview }) {
         </div>
       )}
       <UncertaintyNote uncertainty={review.uncertainty} needsCheck={review.needs_human_check} />
+    </div>
+  );
+}
+
+type LensAnalysis = Extract<Analysis, { id: `lens:${string}` }>;
+
+/** The six reviewers seated around the case file, with each one's status. */
+function ConferenceTable({ reviews, busy, errors, records }: {
+  reviews: Record<string, LensAnalysis>; busy: Record<string, boolean>; errors: Record<string, string>; records: number;
+}) {
+  return (
+    <div className="relative mx-auto aspect-square w-full max-w-[22rem]">
+      <div className="absolute inset-[22%] rounded-full border-2 border-dashed border-line" aria-hidden />
+      <div className="absolute inset-[34%] flex flex-col items-center justify-center rounded-full bg-brand text-center text-brand-ink shadow-lg">
+        <span className="text-2xl" aria-hidden>📁</span>
+        <span className="text-xs font-semibold leading-tight">Case file<br />{records} records</span>
+      </div>
+      {LENSES.map((l, i) => {
+        const angle = ((-90 + i * 60) * Math.PI) / 180;
+        const r = reviews[l.key];
+        const status = busy[l.key] ? "busy" : errors[l.key] ? "error" : !r ? "idle" : r.data.relevant ? "done" : "quiet";
+        const ring = {
+          busy: "border-brand animate-pulse",
+          error: "border-danger",
+          idle: "border-line",
+          done: "border-ok",
+          quiet: "border-line opacity-60",
+        }[status];
+        const count = r ? r.data.to_check_or_rule_out.length : 0;
+        return (
+          <a
+            key={l.key}
+            href={`#lens-${l.key}`}
+            className="absolute flex w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center text-center"
+            style={{ left: `${50 + 39 * Math.cos(angle)}%`, top: `${50 + 39 * Math.sin(angle)}%` }}
+          >
+            <span className={`relative flex h-14 w-14 items-center justify-center rounded-full border-[3px] bg-surface text-2xl shadow-sm ${ring}`}>
+              <span aria-hidden>{l.icon}</span>
+              {status === "done" && count > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-warn px-1 text-xs font-bold text-white" title={`${count} things to check`}>{count}</span>
+              )}
+            </span>
+            <span className="mt-1 text-[11px] font-semibold leading-tight">{l.name}</span>
+          </a>
+        );
+      })}
     </div>
   );
 }

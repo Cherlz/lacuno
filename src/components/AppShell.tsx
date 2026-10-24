@@ -47,6 +47,12 @@ export function AppShell({ children }: { children: ReactNode }) {
               {n.label}
             </Link>
           ))}
+          <Link
+            href="/impact"
+            className={`ml-auto rounded-lg px-3 py-2 text-sm font-semibold ${active("/impact") ? "bg-brand-soft text-brand" : "text-muted hover:bg-surface-2"}`}
+          >
+            Impact
+          </Link>
         </nav>
       </header>
 

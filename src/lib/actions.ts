@@ -91,7 +91,7 @@ export async function extractDoc(id: string) {
       familyLanguage: await familyLanguageName(),
     });
     const latest = (await db.getDoc(id)) ?? doc;
-    await db.putDoc({ ...latest, status: "ready", extraction, confirmed: false });
+    await db.putDoc({ ...latest, status: "ready", extraction, aiExtraction: extraction, review: undefined, confirmed: false });
   } catch (e) {
     const latest = (await db.getDoc(id)) ?? doc;
     await db.putDoc({ ...latest, status: "error", error: (e as Error).message });

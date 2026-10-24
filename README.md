@@ -1,47 +1,149 @@
 # Throughline
 
-**Other apps store your records. Throughline connects the dots.**
+**The case conference they never got.**
+Other apps store your records. Throughline connects the dots.
 
-For families coordinating care for someone who has seen several doctors without a clear diagnosis. Upload every record (photos or PDFs, any language, handwritten is fine); Throughline shows where the doctors disagree, gives the case the multi-specialist review it never got, and hands the next doctor a one-page brief in their own language.
+Live: `https://<your-domain>` · Hosted on DigitalOcean App Platform *(fill in once deployed)*
 
-## Core flow
+---
 
-1. **Collect** (`/records`): Claude reads each document and extracts date, doctor, specialty, suspected causes, tests, results and medicines, quoting the original text. Unreadable text is flagged, never guessed. The family confirms or corrects each record; only confirmed records are used downstream.
-2. **Case review** (`/review`)
-   - *Disagreement map*: every possibility a real doctor raised, who raised it and when, what fits, what doesn't, what was never checked, plus loose ends (tests ordered with no result, etc.).
-   - *Case conference*: six specialty lenses (balance/ear, nervous system, heart, hormones, muscles/bones, pharmacist) each review the whole record and list only what is relevant, what they'd check, and questions to ask.
-3. **Brief** (`/brief`): a 60-second doctor version in the doctor's language and a plain family version in the family's language. Save as PDF via print. Read-aloud uses the browser voice.
-4. **Episode log** (`/episodes`): voice or text in any language, structured by Claude. Emergency signs show "Seek emergency care now" and nothing else.
+## The community
 
-## Safeguards
+Adult children coordinating care for a parent who has seen several doctors and still has no clear diagnosis, often carrying records across clinics and languages.
 
-| Risk | Safeguard |
+This started with our own family. My mother has had dizziness, fatigue and weakness for years. One doctor suspected her inner ear, another her bones, another something else. Each saw a few minutes of the story and started from zero. None of them saw the whole picture. We carry the papers between visits.
+
+## The problem
+
+- Each specialist sees only their slice and rarely sees the others' notes.
+- Short visits mean every new doctor starts from zero.
+- Details between visits get forgotten.
+- Records are handwritten, messy, spread across systems, or in a different language from the doctor's.
+- Families without medical training end up doing the coordinating.
+
+## What it does
+
+<!-- Add screenshots: records with a flagged line, disagreement map, case conference, brief in two languages -->
+
+1. **Collect.** Photograph or upload every record: notes, labs, scan reports, prescriptions, in any language. Claude reads each one and extracts the date, doctor, specialty, what they suspected, tests, results and medicines, quoting the original text under every item. Text it cannot read is flagged, not guessed. The family checks each record against the original and confirms it. Only confirmed records go any further.
+2. **Disagreement map.** Every possibility a real doctor raised, who raised it and when, what in the records fits, what doesn't, and what was never checked. Also *loose ends*: tests ordered with no result on file, abnormal results nobody mentioned again.
+3. **Case conference.** Six specialty reviewers sit around the case file (balance and ear, nervous system, heart, hormones and metabolism, muscles and bones, and a pharmacist). Each reads the *whole* record and reports only what matters to its area: what it would want checked or ruled out, and questions to ask. None of them names a cause.
+4. **Doctor brief.** One page a doctor can read in about 60 seconds, in the doctor's language, plus a warm plain-language version in the family's language. Save as PDF; the family version can be read aloud.
+5. **Episode log.** One button. Say or type what happened, in any language; Claude structures it. Emergency warning signs show **"Seek emergency care now"** and nothing else.
+
+## How Claude is used
+
+All calls use `claude-opus-5-5` through the Anthropic TypeScript SDK, with **structured outputs** (Zod schemas) so every response is typed and validated.
+
+| Step | Where | What Claude does |
+|---|---|---|
+| Document reading | `src/app/api/extract` | Vision and PDF input. Reads handwritten, photographed and multilingual records; extracts structured fields with the original text quoted; flags unreadable text with an uncertainty level |
+| Disagreement map | `src/app/api/map` | Reasons across conflicting records from different doctors; merges the same idea written differently; finds gaps and loose ends |
+| Case conference | `src/app/api/lens` | Six independent calls, one per specialty lens, run in parallel, each with its own focus and the same safety rules |
+| Brief | `src/app/api/brief` | Writes for two audiences in two languages; notes uncertain translations |
+| Episode log | `src/app/api/episode` | Structures messy spoken or typed descriptions; second-layer danger check |
+
+It is a multi-step pipeline with human confirmation points: **read → family confirms → cross-check → specialty reviews → compose the brief**. Shared safety rules live in `src/lib/claude.ts`; output schemas live in `src/lib/schemas.ts`. Server-side refusal fallback is enabled, so if a safety classifier declines a medical document, the request is retried on a fallback model.
+
+**Why not just ask Claude in a chat?** A case file that grows over months, data the family has checked, a source link on every claim, built-in safety checks, finished outputs (a PDF brief), and a flow for families who would never write a good prompt.
+
+## Where it could go wrong
+
+| Risk | Who it hurts | Safeguard (in the product) |
+|---|---|---|
+| Misreading handwriting or a scan | Patient gets a wrong summary | Every extraction is checked by the family next to the original. Unreadable text is flagged in amber, never guessed, and the family can type what it says |
+| Analysis that looks like a diagnosis | Patient trusts the app over doctors | Rules in every prompt: no diagnosis, no ranking, no "most likely". Lenses give checks and questions only. Disclaimer on every analysis screen |
+| Hallucinated details | Doctor is misled | Every finding must cite source record IDs. Findings with missing or unknown sources are **removed** (on the server and again on the device). Each one links to the original page |
+| Translation errors | Doctor or family misunderstands | Original wording is shown under every extracted item; uncertain terms are listed in "translation notes" on the brief |
+| Missing an emergency | Patient waits instead of getting care | An instant on-device keyword check (English, Indonesian, Spanish) runs before anything is sent, and Claude runs a second check. Either one triggers a full-screen emergency message |
+| Privacy breach | Patient | Case data lives only on the device. Our server stores nothing |
+| Families relying on the app instead of care | Patient | Every output points back to the doctor. The goal is better appointments, not replacing them |
+
+Known limits today: the on-device danger check covers three languages (Claude covers the rest); the app's own menus are English only (all generated content follows the chosen languages); the emergency call button dials 112.
+
+## Privacy and responsible design
+
+- **Local-first.** Patient profile, documents, extractions, analyses and episodes are stored in the browser (IndexedDB). There is no database and no account.
+- **What leaves the device.** To read and analyse records, the document (or the confirmed text) is sent to Anthropic's API through our server, which keeps nothing. If ElevenLabs read-aloud is enabled, the family summary text is sent to ElevenLabs to generate audio.
+- **Secrets.** API keys live in server environment variables only, never in the browser or the repo.
+- **Deleting.** "Delete case file from this device" on the profile screen removes everything.
+
+## Impact
+
+Measured with the built-in **Impact** screen (`/impact`): family before/after check-ins, a timed doctor test (original records vs. the brief), and extraction accuracy calculated automatically from what the family kept or corrected. Results export as JSON.
+
+| Metric | Result |
 |---|---|
-| Misread handwriting | Every extraction is confirmed by the family next to the original; unclear text is flagged with no guessing |
-| Looks like a diagnosis | Safety rules in every prompt; no ranking; lenses give questions, not answers; disclaimer on analysis screens |
-| Hallucinated details | Every finding carries `source_ids`; findings with missing or unknown sources are removed (server and client) and each one links to its source document |
-| Translation errors | Original text shown beside each extracted item; uncertain terms listed in translation notes |
-| Missed emergency | An instant offline keyword check (EN/ID/ES) runs first, with Claude's check as a second layer |
-| Privacy | All case data lives in the browser (IndexedDB). API routes are stateless and store nothing |
+| Families tested | _TODO_ |
+| Family confidence before → after (1–10) | _TODO_ |
+| "Did this help you prepare for your next visit?" | _TODO_ |
+| Doctor time to understand: records only → brief | _TODO_ |
+| Doctor usefulness (1–5) / would want it from patients | _TODO_ |
+| Extraction items kept unchanged after family check (real records) | _TODO_ |
+
+> _Tester and doctor quotes go here, with permission._
+
+## Path to production
+
+**Product.** Native iOS and Android apps (home-screen widget and voice-assistant logging, smartwatch episode logging, Apple Health / Health Connect data for sleep and heart rate). App-store releases allow for TestFlight and Play testing tracks plus review periods.
+
+**Integrations.** Import from hospital portals through SMART on FHIR with patient consent; consent-based links to national platforms (e.g. Indonesia's SATUSEHAT); a read-only, expiring share link (QR) to the brief for the doctor's device; doctors adding notes back through that link.
+
+**Compliance.** Data minimisation by design (local-first, stateless server). For a production launch: HIPAA (US) with a BAA-covered model provider and hosting, GDPR (EU), and Indonesia's Personal Data Protection Law (UU PDP No. 27/2022). Medical-device positioning stays clearly outside diagnosis: organising and summarising records, with clinical decisions left to clinicians.
+
+**Cost.** Roughly one extraction call per page, plus one map, six lens calls and one brief per review. _TODO: measure the average cost per case from real runs._
+
+**Go-to-market.** Patient advocacy groups for undiagnosed conditions, caregiver communities, and clinics that receive referrals with long histories.
+
+**Quality.** An evaluation set of anonymised, labelled records to track extraction accuracy and safety-rule adherence on every prompt change.
+
+## Accessibility
+
+- 17 languages for summaries, briefs and voice logging, with right-to-left support for Arabic.
+- Mobile-first: large touch targets (at least 44 px), bottom navigation, camera capture, photos downscaled before upload for slow connections and low-cost phones.
+- Read-aloud of the family brief (ElevenLabs multilingual voice when configured, otherwise the browser voice) for relatives who struggle with reading or have low vision.
+- Voice episode logging in the family's language; typing always works.
+- Plain-language family version, written for someone with no medical training.
+- Dark mode, and a print layout for the PDF.
+
+## Tech stack and hosting
+
+Next.js 15 (App Router, TypeScript) · Tailwind CSS 4 · Anthropic TypeScript SDK · Zod · IndexedDB (`idb`) · Web Speech API · ElevenLabs (optional) · installable PWA.
+
+Hosting: **DigitalOcean App Platform** via `.do/app.yaml` (`doctl apps create --spec .do/app.yaml`, then add the secrets in the dashboard). Domain: _TODO_.
+
+## What's real vs. simulated
+
+- **Real:** every Claude call, the extraction, map, case conference, brief and episode structuring. Nothing in the app is pre-written output.
+- **Sample data:** the "Ibu Sari" and "Rosa" cases are fictional documents written for demonstration and are labelled **Sample** everywhere they appear, including on the brief and the PDF.
+- **Demo patient 1:** _TODO: the builder's mother's records, used with permission, names blurred._
 
 ## Run locally
 
 ```bash
-cp .env.example .env.local   # add ANTHROPIC_API_KEY
+cp .env.example .env.local
 npm install
 npm run dev
 ```
 
-Click "explore a sample case" on the home page to load a fictional, clearly labelled case (Indonesian → English, or Spanish → English).
+Environment variables (names only):
 
-## Stack
+- `ANTHROPIC_API_KEY` (required)
+- `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, `ELEVENLABS_MODEL_ID` (optional)
 
-Next.js 15 (App Router, TypeScript), Tailwind CSS 4, the Anthropic TypeScript SDK (`claude-opus-5-5`, structured outputs with Zod, server-side refusal fallback), and IndexedDB via `idb`. Installable as a PWA (manifest). Deploy to DigitalOcean App Platform with `.do/app.yaml`.
+On the home page, choose a sample case to try the full flow without real records.
 
-## Layout
+## Built with Claude Code
 
-- `src/lib/schemas.ts`: Zod schemas for every Claude output
-- `src/lib/claude.ts`: the shared safety rules and structured-output call
-- `src/app/api/*`: extract, map, lens, brief and episode routes (stateless)
-- `src/lib/db.ts`, `useCase.ts`, `actions.ts`: local-first storage and client actions
+The app was built with Claude Code: scaffolding, the API routes and schemas, the local-first data layer, and the UI. Claude Code also drove a headless-browser walkthrough of the whole flow on a phone-sized screen to catch layout and state bugs. Claude was used to write the fictional sample records. _TODO: describe the safety-rule stress test once run (e.g. adversarial records asking for a diagnosis, emergency phrasings in several languages)._
+
+## Project layout
+
+- `src/lib/schemas.ts`: output schemas for every Claude call
+- `src/lib/claude.ts`: shared safety rules, the structured-output call and error handling
+- `src/app/api/*`: stateless routes (`extract`, `map`, `lens`, `brief`, `episode`, `speak`)
+- `src/lib/db.ts`, `useCase.ts`, `actions.ts`: on-device storage and client actions
+- `src/lib/danger.ts`: on-device emergency check
+- `src/lib/sources.ts`: removes any finding without a valid source
+- `src/lib/metrics.ts`, `src/app/impact`: impact measurement
 - `src/lib/samples.ts`: fictional sample cases
