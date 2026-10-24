@@ -1,103 +1,151 @@
-import Image from "next/image";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Logo } from "@/components/AppShell";
+import { Button, ButtonLink, Card, Pill, Spinner } from "@/components/ui";
+import { loadSample } from "@/lib/actions";
+import { languageByCode } from "@/lib/languages";
+import { LENSES } from "@/lib/lenses";
+import { SAMPLE_CASES } from "@/lib/samples";
+import { useCase } from "@/lib/useCase";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const c = useCase();
+  if (!c.loaded) return <Spinner label="Loading…" />;
+  return c.patient ? <Dashboard /> : <Welcome />;
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+function Welcome() {
+  const router = useRouter();
+  const [loading, setLoading] = useState<string | null>(null);
+  const start = async (key: string) => {
+    setLoading(key);
+    await loadSample(key);
+    router.push("/records");
+  };
+  return (
+    <div className="mx-auto max-w-2xl space-y-6">
+      <section className="pt-4 text-center">
+        <div className="mb-4 flex justify-center">
+          <Logo size={56} />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Other apps store your records. Throughline connects the dots.</h1>
+        <p className="mx-auto mt-4 max-w-xl text-lg text-muted">
+          Seeing doctor after doctor without an answer? Upload every record, in any language. See where the doctors
+          disagree, get the multi-specialist review the case never had, and hand the next doctor a one-page brief in
+          their language.
+        </p>
+      </section>
+
+      <Card className="space-y-3">
+        <ButtonLink href="/setup" className="w-full text-lg">
+          Start a case
+        </ButtonLink>
+        <p className="text-center text-sm text-muted">Takes about a minute. You need photos or PDFs of past records.</p>
+      </Card>
+
+      <Card>
+        <h2 className="font-semibold">Or explore a sample case</h2>
+        <p className="mb-3 text-sm text-muted">Fictional records, clearly labelled. Loading one replaces anything on this device.</p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {SAMPLE_CASES.map((s) => (
+            <Button key={s.key} variant="secondary" className="h-auto flex-col items-start py-3 text-left" disabled={!!loading} onClick={() => start(s.key)}>
+              <span>{loading === s.key ? <Spinner label="Loading…" /> : s.label}</span>
+              <span className="text-xs font-normal text-muted">{s.description}</span>
+            </Button>
+          ))}
+        </div>
+      </Card>
+
+      <ul className="grid gap-3 text-sm sm:grid-cols-3">
+        <li className="rounded-xl bg-surface-2 p-3"><strong>Private.</strong> Records stay on this device. The server keeps nothing.</li>
+        <li className="rounded-xl bg-surface-2 p-3"><strong>Never a diagnosis.</strong> It organises what doctors said and turns gaps into questions.</li>
+        <li className="rounded-xl bg-surface-2 p-3"><strong>Every claim is sourced.</strong> Tap any point to see the page it came from.</li>
+      </ul>
+    </div>
+  );
+}
+
+function Dashboard() {
+  const { patient, docs, episodes, analyses, basis } = useCase();
+  const p = patient!;
+  const confirmed = docs.filter((d) => d.confirmed).length;
+  const toConfirm = docs.filter((d) => d.status === "ready" && !d.confirmed).length;
+  const reading = docs.filter((d) => d.status === "extracting").length;
+  const map = analyses.find((a) => a.id === "map");
+  const lensCount = analyses.filter((a) => a.id.startsWith("lens:")).length;
+  const brief = analyses.find((a) => a.id === "brief");
+  const stale = (a?: { basis: string }) => a && a.basis !== basis;
+
+  const steps = [
+    {
+      n: 1,
+      title: "Collect records",
+      href: "/records",
+      done: confirmed > 0 && toConfirm === 0 && reading === 0,
+      detail: docs.length
+        ? `${confirmed} confirmed${toConfirm ? ` · ${toConfirm} to check` : ""}${reading ? ` · ${reading} reading` : ""}`
+        : "Upload photos or PDFs of notes, labs, scans, prescriptions",
+    },
+    {
+      n: 2,
+      title: "Case review",
+      href: "/review",
+      done: !!map && !stale(map),
+      detail: map
+        ? `Disagreement map ready · ${lensCount}/${LENSES.length} specialty reviews${stale(map) ? " · records changed, refresh" : ""}`
+        : "Where doctors disagree, and what each specialty would check",
+    },
+    {
+      n: 3,
+      title: "Doctor brief",
+      href: "/brief",
+      done: !!brief && !stale(brief),
+      detail: brief
+        ? `Ready in ${languageByCode(p.doctorLanguage).name} + ${languageByCode(p.familyLanguage).name}${stale(brief) ? " · records changed, refresh" : ""}`
+        : "One page for the next doctor, plus a family version",
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted">Case file</p>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{p.name}</h1>
+        <p className="text-muted">
+          {p.age && `${p.age} · `}
+          {p.mainComplaints}
+        </p>
+      </div>
+
+      <ButtonLink href="/episodes?now=1" variant="primary" className="min-h-16 w-full text-lg">
+        ➕ Log episode now
+      </ButtonLink>
+
+      <ol className="space-y-3">
+        {steps.map((s) => (
+          <li key={s.n}>
+            <a href={s.href} className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 hover:border-brand">
+              <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg font-bold ${s.done ? "bg-ok-soft text-ok" : "bg-brand-soft text-brand"}`}>
+                {s.done ? "✓" : s.n}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">{s.title}</span>
+                <span className="block text-sm text-muted">{s.detail}</span>
+              </span>
+              <span aria-hidden className="text-muted">›</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+
+      <div className="flex flex-wrap gap-2 text-sm text-muted">
+        <Pill>{docs.length} records</Pill>
+        <Pill>{episodes.length} episodes logged</Pill>
+        <Pill tone="brand">Family: {languageByCode(p.familyLanguage).native}</Pill>
+        <Pill tone="brand">Doctor: {languageByCode(p.doctorLanguage).native}</Pill>
+      </div>
     </div>
   );
 }
