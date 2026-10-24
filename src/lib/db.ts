@@ -56,6 +56,14 @@ export type Episode = {
   isSample: boolean;
 };
 
+export type Appointment = {
+  id: string;
+  what: string; // e.g. "Neurologist, dr. Andi"
+  start: string; // local date-time "YYYY-MM-DDTHH:MM"
+  place: string;
+  createdAt: number;
+};
+
 export type Analysis =
   | { id: "map"; createdAt: number; basis: string; data: DisagreementMap; check?: CheckSummary | null }
   | { id: `lens:${string}`; createdAt: number; basis: string; data: LensReview; check?: CheckSummary | null }
@@ -68,6 +76,7 @@ interface LacunoDB extends DBSchema {
   episodes: { key: string; value: Episode; indexes: { createdAt: number } };
   analyses: { key: string; value: Analysis };
   feedback: { key: string; value: Feedback };
+  appointments: { key: string; value: Appointment };
 }
 
 // Each signed-in account gets its own database on this device, so family
@@ -85,7 +94,7 @@ export function setAccount(accountId: string | null) {
 }
 
 function db() {
-  dbPromise ??= openDB<LacunoDB>(dbName, 2, {
+  dbPromise ??= openDB<LacunoDB>(dbName, 3, {
     upgrade(d, oldVersion) {
       if (oldVersion < 1) {
         d.createObjectStore("kv");
@@ -94,6 +103,7 @@ function db() {
         d.createObjectStore("analyses", { keyPath: "id" });
       }
       if (oldVersion < 2) d.createObjectStore("feedback", { keyPath: "id" });
+      if (oldVersion < 3) d.createObjectStore("appointments", { keyPath: "id" });
     },
   });
   return dbPromise;
@@ -171,10 +181,22 @@ export async function deleteFeedback(id: string) {
   changed();
 }
 
+export async function listAppointments() {
+  return (await (await db()).getAll("appointments")).sort((a, b) => a.start.localeCompare(b.start));
+}
+export async function putAppointment(a: Appointment) {
+  await (await db()).put("appointments", a);
+  changed();
+}
+export async function deleteAppointment(id: string) {
+  await (await db()).delete("appointments", id);
+  changed();
+}
+
 /** Clears the case file. Tester feedback is kept unless includeFeedback is set. */
 export async function clearAll(includeFeedback = false) {
   if (includeFeedback) await (await db()).clear("feedback");
   const d = await db();
-  await Promise.all([d.clear("kv"), d.clear("docs"), d.clear("episodes"), d.clear("analyses")]);
+  await Promise.all([d.clear("kv"), d.clear("docs"), d.clear("episodes"), d.clear("analyses"), d.clear("appointments")]);
   changed();
 }

@@ -11,10 +11,11 @@ export type CaseState = {
   episodes: db.Episode[];
   analyses: db.Analysis[];
   feedback: db.Feedback[];
+  appointments: db.Appointment[];
   basis: string;
 };
 
-const EMPTY: CaseState = { loaded: false, patient: null, docs: [], episodes: [], analyses: [], feedback: [], basis: "" };
+const EMPTY: CaseState = { loaded: false, patient: null, docs: [], episodes: [], analyses: [], feedback: [], appointments: [], basis: "" };
 
 // One shared snapshot for the whole app, so every component sees the same
 // loaded state immediately instead of each starting empty.
@@ -25,16 +26,17 @@ let started = false;
 let seq = 0;
 async function reload() {
   const mine = ++seq;
-  const [patient, docs, episodes, analyses, feedback] = await Promise.all([
+  const [patient, docs, episodes, analyses, feedback, appointments] = await Promise.all([
     db.getPatient(),
     db.listDocs(),
     db.listEpisodes(),
     db.listAnalyses(),
     db.listFeedback(),
+    db.listAppointments(),
   ]);
   if (mine !== seq) return; // a newer reload is in flight
   const basis = patient ? caseBasis(buildCasePayload(patient, docs, episodes)) : "";
-  snapshot = { loaded: true, patient, docs, episodes, analyses, feedback, basis };
+  snapshot = { loaded: true, patient, docs, episodes, analyses, feedback, appointments, basis };
   listeners.forEach((fn) => fn());
 }
 
