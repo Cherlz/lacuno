@@ -17,7 +17,7 @@ const csp = [
   // PeerJS only introduces the laptop and phone; photos then go device to device.
   `connect-src 'self' https://0.peerjs.com wss://0.peerjs.com${peerHost}`,
   "media-src 'self' blob:",
-  "frame-src 'self' blob:",
+  "frame-src 'self' blob: https://www.youtube-nocookie.com",
   "worker-src 'self'",
   "manifest-src 'self'",
   "object-src 'none'",
