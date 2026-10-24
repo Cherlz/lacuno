@@ -8,6 +8,7 @@ import { deleteDoc, putDoc, type CaseDoc } from "@/lib/db";
 import type { Extraction } from "@/lib/schemas";
 import { reviewExtraction } from "@/lib/metrics";
 import { useCase } from "@/lib/useCase";
+import { PhoneCameraButton } from "@/components/PhoneCamera";
 
 const input = "w-full rounded-lg border border-line bg-surface px-2.5 min-h-11 text-base focus:border-brand focus:outline-none";
 
@@ -52,6 +53,7 @@ export default function Records() {
           <span className="flex gap-2">
             <Button className="min-h-11" onClick={() => cameraRef.current?.click()}>📷 Photo</Button>
             <Button variant="secondary" className="min-h-11" onClick={() => filesRef.current?.click()}>📁 Files</Button>
+            <span className="hidden sm:inline-flex"><PhoneCameraButton /></span>
           </span>
         </div>
       ) : null}
@@ -66,6 +68,7 @@ export default function Records() {
           <Button onClick={() => cameraRef.current?.click()} className="text-lg">📷 Take a photo</Button>
           <Button variant="secondary" onClick={() => filesRef.current?.click()} className="text-lg">📁 Choose files</Button>
         </div>
+        <div className="mt-2 hidden justify-center sm:flex"><PhoneCameraButton /></div>
         <p className="mt-3 text-sm text-muted">One page per photo works best. Photos and PDFs. You can also drop files here.</p>
         <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }} />
         <input ref={filesRef} type="file" accept="image/*,application/pdf" multiple className="hidden" onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }} />

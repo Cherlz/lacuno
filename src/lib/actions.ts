@@ -25,7 +25,7 @@ export async function postJSON<T>(url: string, body: unknown): Promise<T> {
 }
 
 // Downscale photos so uploads are fast on mobile data and cheap to process.
-async function compressImage(file: Blob): Promise<Blob> {
+export async function compressImage(file: Blob): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const max = 2000;
   const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));

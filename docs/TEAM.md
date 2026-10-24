@@ -64,8 +64,8 @@ Put your name next to what you take, in the team chat.
 | # | Task | Owner | Notes |
 |---|---|---|---|
 | 1 | **UI/UX polish**: Records, Review results, Brief, overall look | | Make it calmer and clearer: less text per screen, stronger hierarchy, consistent spacing. Check on a phone. |
-| 10 | **Phone reminders** ("Add to calendar") | | Let the family add "Doctor visit, date/time, bring your Lacuno brief" to the phone calendar via a downloadable `.ics` file. No server needed. |
-| 8 | **Phone as camera** + **health data import** | | Stretch goals. (a) Laptop shows a QR code; phone takes photos that arrive on the laptop. (b) Import Apple Health / Google Fit export (sleep, heart rate) as questions for the doctor. |
+| — | Real push notifications (optional) | | Calendar reminders are done. Push would need Upstash Redis (Vercel → Storage), VAPID keys, `web-push`, and a daily Vercel Cron. iPhone only after installing the app. |
+| 8 | Health data import (stretch) | | Import an Apple Health / Google Fit export (sleep, heart rate) as questions for the doctor. Phone-as-camera is done. |
 | 4 | Demo video on the Help page | | After the video is recorded: embed it at the top of `src/app/help/page.tsx` |
 
 ### C. Setup tasks (no coding)
@@ -79,4 +79,4 @@ Put your name next to what you take, in the team chat.
 | — | Claude API credits | | Ask at the Anthropic booth / Cal Hacks Discord; redeem at console.anthropic.com → Billing |
 
 ### Already done (don't redo)
-Claude reading of records (photos/PDFs, any language) · disagreement map · six specialist reviews · bilingual brief + PDF · symptom log with emergency screen and Call 911 · Auth0 accounts · fact-checker agent · openFDA medicine-check agent · security hardening (headers, validation, rate limits) · homepage + guided flow + Help page · installable app · rename to Lacuno.
+Claude reading of records (photos/PDFs, any language) · disagreement map · six specialist reviews · bilingual brief + PDF · symptom log with emergency screen and Call 911 · Auth0 accounts · fact-checker agent · openFDA medicine-check agent · security hardening (headers, validation, rate limits) · homepage + guided flow + Help page · installable app · rename to Lacuno · visit reminders (Add to calendar) · phone as camera (QR, peer-to-peer) · UI polish round 2.
