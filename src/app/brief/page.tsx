@@ -103,7 +103,7 @@ function BriefScreen() {
               </section>
             )}
             <footer className="mt-5 border-t border-line pt-3 text-xs text-muted">
-              Prepared by the family with Throughline from {docs.filter((d) => d.confirmed).length} family-confirmed records
+              Prepared by the family with ThroughLine from {docs.filter((d) => d.confirmed).length} family-confirmed records
               {patient!.isSample && " (SAMPLE — fictional case)"} · {new Date(saved.createdAt).toLocaleDateString()} · Not a diagnosis.
               Each point names its source record; originals are with the family.
             </footer>

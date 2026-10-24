@@ -70,7 +70,7 @@ export const ExtractionSchema = z.object({
         why: z.string(),
       }),
     )
-    .describe("Every word or number you could not read with confidence. Never guess silently."),
+    .describe("Only words or numbers that are physically unreadable on the page. Never guess them."),
   uncertainty: Uncertainty,
   needs_human_check: z.boolean(),
 });

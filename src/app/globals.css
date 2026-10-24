@@ -58,6 +58,7 @@
 }
 
 html {
+  font-size: 106.25%; /* 17px base: easier to read on phones */
   -webkit-text-size-adjust: 100%;
 }
 body {

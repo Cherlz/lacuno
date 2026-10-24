@@ -1,6 +1,6 @@
 {
-  "name": "Throughline",
-  "short_name": "Throughline",
+  "name": "ThroughLine",
+  "short_name": "ThroughLine",
   "description": "Connect the dots across every doctor's records.",
   "start_url": "/",
   "display": "standalone",

@@ -1,17 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { AccountGate } from "@/components/Account";
 import { AppShell } from "@/components/AppShell";
+import { authEnabled } from "@/lib/auth0";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-sans-loaded", subsets: ["latin", "latin-ext", "vietnamese", "cyrillic"] });
 
 export const metadata: Metadata = {
-  title: "Throughline — connect the dots in your medical records",
+  title: "ThroughLine — connect the dots in your medical records",
   description:
-    "Upload every record. Throughline shows where the doctors disagree, gives the case the multi-specialist review it never got, and hands the next doctor a one-page brief in their own language.",
+    "Upload every record. ThroughLine shows where the doctors disagree, gives the case the multi-specialist review it never got, and hands the next doctor a one-page brief in their own language.",
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg", apple: "/icon-192.png" },
-  appleWebApp: { capable: true, title: "Throughline", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "ThroughLine", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -24,7 +26,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <AppShell>{children}</AppShell>
+        <AccountGate enabled={authEnabled}>
+          <AppShell>{children}</AppShell>
+        </AccountGate>
       </body>
     </html>
   );

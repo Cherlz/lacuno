@@ -1,7 +1,7 @@
-# Throughline
+# ThroughLine
 
 **The case conference they never got.**
-Other apps store your records. Throughline connects the dots.
+Other apps store your records. ThroughLine connects the dots.
 
 Live: `https://<your-domain>` · Hosted on Vultr *(fill in once deployed)*
 
@@ -29,7 +29,9 @@ This started with our own family. My mother has had dizziness, fatigue and weakn
 2. **Disagreement map.** Every possibility a real doctor raised, who raised it and when, what in the records fits, what doesn't, and what was never checked. Also *loose ends*: tests ordered with no result on file, abnormal results nobody mentioned again.
 3. **Case conference.** Six specialty reviewers sit around the case file (balance and ear, nervous system, heart, hormones and metabolism, muscles and bones, and a pharmacist). Each reads the *whole* record and reports only what matters to its area: what it would want checked or ruled out, and questions to ask. None of them names a cause.
 4. **Doctor brief.** One page a doctor can read in about 60 seconds, in the doctor's language, plus a warm plain-language version in the family's language. Save as PDF; the family version can be read aloud.
-5. **Episode log.** One button. Say or type what happened, in any language; Claude structures it. Emergency warning signs show **"Seek emergency care now"** and nothing else.
+5. **Accounts.** Sign up or sign in with Auth0 (Google or email). Each account gets its own case files on the device, so family members sharing a phone don't see each other's records, and only signed-in people can use the Claude-powered features.
+6. **Guided flow.** A "Do this next" card and a Records → Review → Brief step bar on every screen, one record checked at a time, and a How-to-use page (`/help`).
+7. **Episode log.** One button. Say or type what happened, in any language; Claude structures it. Emergency warning signs show **"Seek emergency care now"** and nothing else.
 
 ## How Claude is used
 
@@ -63,7 +65,8 @@ Known limits today: the on-device danger check covers three languages (Claude co
 
 ## Privacy and responsible design
 
-- **Local-first.** Patient profile, documents, extractions, analyses and episodes are stored in the browser (IndexedDB). There is no database and no account.
+- **Local-first.** Patient profile, documents, extractions, analyses and episodes are stored in the browser (IndexedDB), in a separate store for each signed-in account. Accounts (Auth0) only identify who is using the app; no medical data is stored with them. Account separation keeps case files apart in the app; it is not encryption of the device's storage.
+- **Protected AI routes.** When accounts are on, every API route requires a signed-in session, so the Claude key can't be used anonymously.
 - **What leaves the device.** To read and analyse records, the document (or the confirmed text) is sent to Anthropic's API through our server, which keeps nothing. If ElevenLabs read-aloud is enabled, the family summary text is sent to ElevenLabs to generate audio.
 - **Secrets.** API keys live in server environment variables only, never in the browser or the repo.
 - **Deleting.** "Delete case file from this device" on the profile screen removes everything.
@@ -85,7 +88,7 @@ Measured with the built-in **Impact** screen (`/impact`): family before/after ch
 
 ## Path to production
 
-**Product.** Native iOS and Android apps (home-screen widget and voice-assistant logging, smartwatch episode logging, Apple Health / Health Connect data for sleep and heart rate). App-store releases allow for TestFlight and Play testing tracks plus review periods.
+**Product.** End-to-end encrypted sync of case files across a family's devices (the account system is already in place). Native iOS and Android apps (home-screen widget and voice-assistant logging, smartwatch episode logging, Apple Health / Health Connect data for sleep and heart rate). App-store releases allow for TestFlight and Play testing tracks plus review periods.
 
 **Integrations.** Import from hospital portals through SMART on FHIR with patient consent; consent-based links to national platforms (e.g. Indonesia's SATUSEHAT); a read-only, expiring share link (QR) to the brief for the doctor's device; doctors adding notes back through that link.
 
@@ -108,7 +111,7 @@ Measured with the built-in **Impact** screen (`/impact`): family before/after ch
 
 ## Tech stack and hosting
 
-Next.js 15 (App Router, TypeScript) · Tailwind CSS 4 · Anthropic TypeScript SDK · Zod · IndexedDB (`idb`) · Web Speech API · ElevenLabs (optional) · installable PWA.
+Next.js 15 (App Router, TypeScript) · Tailwind CSS 4 · Anthropic TypeScript SDK · Zod · Auth0 (`@auth0/nextjs-auth0`) · IndexedDB (`idb`) · Web Speech API · ElevenLabs (optional) · installable PWA.
 
 Hosting: **Vultr Cloud Compute** (Ubuntu), running the app in Docker behind Caddy for automatic HTTPS. One command sets up or updates the server: `bash <(curl -fsSL https://raw.githubusercontent.com/Cherlz/throughline/main/deploy/setup.sh)` (see `deploy/`). Domain: GoDaddy Registry, _TODO_.
 
@@ -130,6 +133,7 @@ Environment variables (names only):
 
 - `ANTHROPIC_API_KEY` (required)
 - `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, `ELEVENLABS_MODEL_ID` (optional)
+- `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, `AUTH0_SECRET`, `APP_BASE_URL` (optional; turns on accounts)
 
 On the home page, choose a sample case to try the full flow without real records.
 
