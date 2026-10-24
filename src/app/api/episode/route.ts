@@ -1,16 +1,19 @@
 import { EpisodeSchema } from "@/lib/schemas";
 import { errorResponse, structured, textBlock } from "@/lib/claude";
+import { z } from "zod";
+import { LanguageName, rateLimit, readBody } from "@/lib/guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
-    const { transcript, familyLanguage, now } = (await req.json()) as {
-      transcript: string;
-      familyLanguage: string;
-      now: string;
-    };
+    rateLimit(req, "episode", 30);
+    const { transcript, familyLanguage, now } = await readBody(
+      req,
+      z.object({ transcript: z.string().max(5000), familyLanguage: LanguageName, now: z.string().max(100) }),
+      32 * 1024,
+    );
     if (!transcript?.trim()) return Response.json({ error: "Describe what happened first." }, { status: 400 });
 
     const episode = await structured({

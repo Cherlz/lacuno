@@ -1,3 +1,7 @@
+import { z } from "zod";
+import { errorResponse } from "@/lib/claude";
+import { rateLimit, readBody } from "@/lib/guard";
+
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
@@ -8,8 +12,13 @@ export async function POST(req: Request) {
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) return Response.json({ error: "Read-aloud service not configured" }, { status: 501 });
 
-  const { text } = (await req.json()) as { text?: string };
-  if (!text?.trim()) return Response.json({ error: "Nothing to read" }, { status: 400 });
+  let text: string;
+  try {
+    rateLimit(req, "speak", 20);
+    ({ text } = await readBody(req, z.object({ text: z.string().min(1).max(5000) }), 32 * 1024));
+  } catch (err) {
+    return errorResponse(err);
+  }
 
   const voice = process.env.ELEVENLABS_VOICE_ID ?? "21m00Tcm4TlvDq8ikWAM";
   const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_128`, {

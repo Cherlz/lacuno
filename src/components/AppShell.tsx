@@ -28,7 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const status = (step?: StepKey) => (step && c.patient ? stepStatus(step, next) : null);
   useEffect(setUpInstall, []);
 
-  if (pathname === "/") return <MarketingShell signedIn={!account.enabled || account.signedIn}>{children}</MarketingShell>;
+  if (pathname === "/" || pathname === "/help") return <MarketingShell signedIn={!account.enabled || account.signedIn}>{children}</MarketingShell>;
 
   return (
     <SourceProvider>
@@ -107,22 +107,23 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 /** Website-style header for the public landing page. */
 function MarketingShell({ signedIn, children }: { signedIn: boolean; children: ReactNode }) {
+  const pathname = usePathname();
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
             <Logo />
-            <span className="text-xl">Lacuno</span>
+            <span className="text-lg sm:text-xl">Lacuno</span>
           </Link>
-          <nav className="flex items-center gap-1 text-sm font-semibold sm:text-base">
-            <a href="#how" className="hidden rounded-lg px-3 py-2 text-muted hover:bg-surface-2 sm:block">How it works</a>
-            <a href="#safety" className="hidden rounded-lg px-3 py-2 text-muted hover:bg-surface-2 sm:block">Safety</a>
-            <Link href="/help" className="rounded-lg px-3 py-2 text-muted hover:bg-surface-2">Help</Link>
+          <nav className="flex items-center gap-0.5 whitespace-nowrap text-sm font-semibold sm:gap-1 sm:text-base">
+            <Link href="/#how" className="rounded-lg px-2 py-2 text-muted hover:bg-surface-2 sm:px-3">How it works</Link>
+            <Link href="/#safety" className="hidden rounded-lg px-3 py-2 text-muted hover:bg-surface-2 min-[480px]:block">Safety</Link>
+            <Link href="/help" className={`rounded-lg px-3 py-2 hover:bg-surface-2 ${pathname === "/help" ? "text-brand" : "text-muted"}`}>Help</Link>
             {signedIn ? (
-              <Link href="/case" className="rounded-lg bg-brand px-4 py-2 text-brand-ink">Open my case</Link>
+              <Link href="/case" className="rounded-lg bg-brand px-3 py-2 text-brand-ink sm:px-4"><span className="sm:hidden">My case</span><span className="hidden sm:inline">Open my case</span></Link>
             ) : (
-              <a href="/auth/login?returnTo=/case" className="rounded-lg bg-brand px-4 py-2 text-brand-ink">Sign in</a>
+              <a href="/auth/login?returnTo=/case" className="rounded-lg bg-brand px-3 py-2 text-brand-ink sm:px-4">Sign in</a>
             )}
           </nav>
         </div>
