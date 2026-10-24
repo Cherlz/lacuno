@@ -44,10 +44,19 @@ export default function Records() {
       <PageTitle
         title="Records"
         subtitle="Doctor notes, lab results, scan reports, prescriptions — any language, handwritten is fine."
-        action={confirmed.length > 0 && toConfirm.length === 0 ? <ButtonLink href="/review">Review the case →</ButtonLink> : undefined}
       />
 
+      {docs.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-line bg-surface px-4 py-3">
+          <span className="font-semibold">Add more records</span>
+          <span className="flex gap-2">
+            <Button className="min-h-11" onClick={() => cameraRef.current?.click()}>📷 Photo</Button>
+            <Button variant="secondary" className="min-h-11" onClick={() => filesRef.current?.click()}>📁 Files</Button>
+          </span>
+        </div>
+      ) : null}
       <div
+        hidden={docs.length > 0}
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={(e) => { e.preventDefault(); setDragging(false); onFiles(e.dataTransfer.files); }}
@@ -145,11 +154,14 @@ function DocCard({ doc, active, onOpen }: { doc: CaseDoc; active: boolean; onOpe
   }
   if (doc.confirmed && !editing) {
     return (
-      <Card>
-        {header}
-        <p className="text-muted">{doc.extraction.summary}</p>
-        <Button variant="ghost" className="mt-2 min-h-10 px-3 text-sm" onClick={() => setEditing(true)}>View or edit</Button>
-      </Card>
+      <button onClick={() => setEditing(true)} className="flex w-full items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-3 text-left hover:border-brand">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ok-soft font-bold text-ok" aria-hidden>✓</span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-semibold">{docLabel(doc)}</span>
+          <span className="block truncate text-sm text-muted">{doc.extraction.specialty ?? doc.extraction.document_type.replace(/_/g, " ")}{doc.isSample ? " · sample" : ""}</span>
+        </span>
+        <span className="text-sm text-brand">View</span>
+      </button>
     );
   }
   if (!doc.confirmed && !active) {

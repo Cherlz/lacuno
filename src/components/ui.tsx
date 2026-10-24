@@ -30,7 +30,7 @@ export function ButtonLink({
 }
 
 export function Card({ className = "", children }: { className?: string; children: ReactNode }) {
-  return <div className={`rounded-2xl border border-line bg-surface p-4 sm:p-5 ${className}`}>{children}</div>;
+  return <div className={`rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_3px_rgba(16,40,40,0.06)] sm:p-5 ${className}`}>{children}</div>;
 }
 
 export function Spinner({ label }: { label?: string }) {
@@ -70,7 +70,7 @@ export function PageTitle({ title, subtitle, action }: { title: string; subtitle
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
         {subtitle && <p className="mt-1 text-muted">{subtitle}</p>}
       </div>
       {action}
@@ -80,10 +80,15 @@ export function PageTitle({ title, subtitle, action }: { title: string; subtitle
 
 export function Disclaimer() {
   return (
-    <p className="rounded-xl bg-surface-2 px-4 py-3 text-sm text-muted">
-      <strong className="text-ink">This is not a diagnosis.</strong> Lacuno organises what your doctors wrote and
-      turns gaps into questions. Nothing here says which cause is most likely. Bring this to your doctor.
-    </p>
+    <details className="rounded-xl bg-surface-2 px-4 py-2.5 text-sm text-muted">
+      <summary className="cursor-pointer">
+        <strong className="text-ink">Not a diagnosis.</strong> Bring this to your doctor.
+      </summary>
+      <p className="mt-1">
+        Lacuno organises what your doctors wrote and turns gaps into questions. Nothing here says which cause is most
+        likely, and every point links to the record it came from.
+      </p>
+    </details>
   );
 }
 
