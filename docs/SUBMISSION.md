@@ -35,7 +35,7 @@
 | 0:30–1:00 | Records: photo a page, the reading appears, tap **Looks right**; show a flagged unreadable line | "Claude reads every record, any language, even handwriting. When it can't read something, it says so instead of guessing, and the family checks every record." |
 | 1:00–1:40 | **Review my case** → Where doctors differ → Specialist views | "One tap compares every doctor: what each one suspected, what fits, what doesn't, and what was never checked. Then six specialists each review the whole record and list what they'd check. None of them diagnoses." |
 | 1:40–2:05 | Brief: English doctor version, switch to Indonesian family version, Save as PDF; tap a 📄 source | "The next doctor gets one page in English they can read in a minute. My family gets the same story in Indonesian. Every point links back to the page it came from." |
-| 2:05–2:20 | Log a symptom, then the emergency screen | "Between visits, we log symptoms by voice. Emergency signs override everything." |
+| 2:05–2:20 | Medicines tab (an FDA label match), then Log a symptom → emergency screen | "A second agent checks every medicine against official FDA labels and turns matches into questions for the doctor. Between visits we log symptoms by voice, and emergency signs override everything." |
 | 2:20–2:35 | Impact numbers / a quote | "_TODO: your real test results, e.g. a doctor understood the case in X seconds instead of Y._ Lacuno: the case conference they never got." |
 
 ## Judge Q&A (short answers)
