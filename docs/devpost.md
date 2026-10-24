@@ -47,7 +47,7 @@ Native apps (widgets, voice and smartwatch logging, Apple Health / Health Connec
 Talk to more families, run the doctor test with more clinicians, and open the waitlist through caregiver communities.
 
 ## Built with
-nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, indexeddb, web-speech-api, vercel
+nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, auth0, indexeddb, web-speech-api, elevenlabs, vercel
 
 ## Tracks to opt into
-MLH Best Use of Auth0 · Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · Commit Fellowship (if team) · MLH Gen AI / ElevenLabs only if listed at mlh.link/calhacks13 · DEV Writing Challenge (after the event)
+Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · Most Technically Complex · MLH Best Use of Gen AI · MLH Best Use of Auth0 · MLH Best .Tech Domain (if registered) · MLH ElevenLabs (only if the key is set and it works in the demo) · Commit Fellowship (if team) · DEV Writing Challenge (after the event)
