@@ -1,26 +1,79 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --surface-2: #efeee8;
+  --ink: #1d2729;
+  --muted: #5d6a6c;
+  --line: #dedcd3;
+  --brand: #0e6b68;
+  --brand-ink: #ffffff;
+  --brand-soft: #dcefed;
+  --warn: #9a5b00;
+  --warn-soft: #fbefd9;
+  --danger: #b3261e;
+  --danger-soft: #fde7e5;
+  --ok: #2e6b2f;
+  --ok-soft: #e3f1e1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #111617;
+    --surface: #1a2122;
+    --surface-2: #232c2d;
+    --ink: #e8eeee;
+    --muted: #9fb0b1;
+    --line: #2f3a3b;
+    --brand: #4fc2bc;
+    --brand-ink: #062322;
+    --brand-soft: #143534;
+    --warn: #f0b85a;
+    --warn-soft: #3a2c12;
+    --danger: #ff8a80;
+    --danger-soft: #3d1715;
+    --ok: #8fd18f;
+    --ok-soft: #173118;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --font-sans: var(--font-sans-loaded), ui-sans-serif, system-ui, "Noto Sans", sans-serif;
 }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* The brief prints as a clean one-page document ("Save as PDF"). */
+@media print {
+  @page { margin: 14mm; }
+  body { background: #fff !important; color: #000 !important; }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .print-sheet { box-shadow: none !important; border: none !important; padding: 0 !important; background: #fff !important; color: #000 !important; }
+  .print-sheet * { color: #000 !important; }
+  .print-sheet .source-chip { border: none !important; padding: 0 !important; background: none !important; font-size: 9px; color: #555 !important; }
+}
+.print-only { display: none; }

@@ -1,0 +1,49 @@
+import { ExtractionSchema } from "@/lib/schemas";
+import { errorResponse, structured, textBlock } from "@/lib/claude";
+import type Anthropic from "@anthropic-ai/sdk";
+
+export const runtime = "nodejs";
+export const maxDuration = 120;
+
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
+type ImageType = (typeof IMAGE_TYPES)[number];
+
+export async function POST(req: Request) {
+  try {
+    const body = (await req.json()) as {
+      mimeType: string;
+      data?: string; // base64, no data: prefix
+      text?: string; // typed transcript (sample documents)
+      familyLanguage: string;
+    };
+
+    let source: Anthropic.Beta.BetaContentBlockParam;
+    if (body.text) {
+      source = textBlock(`<document>\n${body.text}\n</document>`);
+    } else if (body.data && body.mimeType === "application/pdf") {
+      source = { type: "document", source: { type: "base64", media_type: "application/pdf", data: body.data } };
+    } else if (body.data && IMAGE_TYPES.includes(body.mimeType as ImageType)) {
+      source = { type: "image", source: { type: "base64", media_type: body.mimeType as ImageType, data: body.data } };
+    } else {
+      return Response.json({ error: "Please upload a photo (JPG/PNG) or a PDF." }, { status: 400 });
+    }
+
+    const extraction = await structured({
+      schema: ExtractionSchema,
+      effort: "medium",
+      system: `Task: read ONE medical document (photo, scan, PDF or transcript) and extract its contents.
+
+- The document may be handwritten, crumpled, partly cut off, or in any language. Read carefully.
+- Write summary, specialty, possibility names and test names in ${body.familyLanguage}. Keep original_text fields exactly as written in the original language.
+- "suspected" lists only possibilities the doctor actually wrote (including "rule out", "?", "susp.", "dd/" differential lists). Do not add your own ideas.
+- Medicine and lab names: if you are not sure of a word or number, put it in "unclear" and do not invent it. A wrong medicine name or dose is worse than a missing one.
+- Set needs_human_check to true whenever anything is unclear, and uncertainty to match how much you could read.
+- If this is not a medical document, set readable=false and leave the lists empty.`,
+      content: [source, textBlock("Extract this document.")],
+    });
+
+    return Response.json({ extraction });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
