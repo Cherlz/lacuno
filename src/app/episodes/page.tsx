@@ -75,8 +75,9 @@ function Episodes() {
           </Button>
         </div>
         <p className="text-sm text-muted">
-          If this is happening now and includes sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing — call emergency services first.
+          If this is happening now and includes sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, call emergency services first.
         </p>
+        <a href="tel:911" className="flex min-h-12 items-center justify-center rounded-xl bg-danger font-bold text-white">📞 Emergency? Call 911</a>
       </Card>
 
       <section className="space-y-3">
@@ -125,8 +126,14 @@ function Emergency({ onBack }: { onBack: () => void }) {
     <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 bg-danger p-6 text-center text-white" role="alert" aria-live="assertive">
       <p className="text-6xl" aria-hidden>⚠</p>
       <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl">Seek emergency care now</h1>
-      <p className="max-w-md text-xl">Call your local emergency number (for example 911, 112 or 119) or go to the nearest emergency department.</p>
-      <a href="tel:112" className="rounded-2xl bg-white px-8 py-4 text-xl font-bold text-danger">📞 Call emergency services</a>
+      <p className="max-w-md text-xl">Call emergency services or go to the nearest emergency department.</p>
+      <a href="tel:911" className="flex min-h-20 w-full max-w-sm items-center justify-center rounded-2xl bg-white px-8 text-3xl font-extrabold text-danger shadow-lg">
+        📞 Call 911
+      </a>
+      <p className="text-white/90">
+        Outside the US?{" "}
+        <a href="tel:112" className="font-bold underline">Call 112</a> (most countries, including Indonesia and Europe)
+      </p>
       <button onClick={onBack} className="mt-6 text-sm text-white/80 underline">Go back to the app</button>
     </div>
   );
