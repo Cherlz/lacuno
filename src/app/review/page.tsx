@@ -35,7 +35,7 @@ function ReviewScreen() {
       ) : (
         <>
           <div role="tablist" className="grid grid-cols-3 gap-1 rounded-xl bg-surface-2 p-1">
-            {([["map", "Where doctors differ"], ["conference", "Specialists"], ["meds", "Medicines"]] as const).map(([k, label]) => (
+            {([["map", "Doctors differ"], ["conference", "Specialists"], ["meds", "Medicines"]] as const).map(([k, label]) => (
               <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
                 className={`min-h-12 rounded-lg font-semibold ${tab === k ? "bg-surface text-ink shadow-sm" : "text-muted"}`}>
                 {label}
