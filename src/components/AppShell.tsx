@@ -11,7 +11,7 @@ import { SourceProvider } from "./Sources";
 import { Pill } from "./ui";
 
 const NAV: { href: string; label: string; icon: string; step?: StepKey }[] = [
-  { href: "/", label: "Home", icon: "🏠" },
+  { href: "/case", label: "My case", icon: "🏠" },
   { href: "/records", label: "Records", icon: "📄", step: "records" },
   { href: "/review", label: "Review", icon: "🧭", step: "review" },
   { href: "/brief", label: "Brief", icon: "📋", step: "brief" },
@@ -23,10 +23,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const c = useCase();
   const account = useAccount();
   const next = nextAction(c);
-  const active = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const active = (href: string) => pathname.startsWith(href);
   // Steps show a tick when done, so the menu doubles as the progress bar.
   const status = (step?: StepKey) => (step && c.patient ? stepStatus(step, next) : null);
   useEffect(setUpInstall, []);
+
+  if (pathname === "/") return <MarketingShell signedIn={!account.enabled || account.signedIn}>{children}</MarketingShell>;
 
   return (
     <SourceProvider>
@@ -100,6 +102,33 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </nav>
     </SourceProvider>
+  );
+}
+
+/** Website-style header for the public landing page. */
+function MarketingShell({ signedIn, children }: { signedIn: boolean; children: ReactNode }) {
+  return (
+    <>
+      <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
+            <Logo />
+            <span className="text-xl">Lacuno</span>
+          </Link>
+          <nav className="flex items-center gap-1 text-sm font-semibold sm:text-base">
+            <a href="#how" className="hidden rounded-lg px-3 py-2 text-muted hover:bg-surface-2 sm:block">How it works</a>
+            <a href="#safety" className="hidden rounded-lg px-3 py-2 text-muted hover:bg-surface-2 sm:block">Safety</a>
+            <Link href="/help" className="rounded-lg px-3 py-2 text-muted hover:bg-surface-2">Help</Link>
+            {signedIn ? (
+              <Link href="/case" className="rounded-lg bg-brand px-4 py-2 text-brand-ink">Open my case</Link>
+            ) : (
+              <a href="/auth/login?returnTo=/case" className="rounded-lg bg-brand px-4 py-2 text-brand-ink">Sign in</a>
+            )}
+          </nav>
+        </div>
+      </header>
+      <main className="mx-auto max-w-6xl px-4 pt-6">{children}</main>
+    </>
   );
 }
 

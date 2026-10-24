@@ -8,5 +8,5 @@ export const authEnabled = Boolean(
 );
 
 export const auth0 = authEnabled
-  ? new Auth0Client({ authorizationParameters: { scope: "openid profile email" } })
+  ? new Auth0Client({ authorizationParameters: { scope: "openid profile email" }, signInReturnToPath: "/case" })
   : null;

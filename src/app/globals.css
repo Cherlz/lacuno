@@ -55,6 +55,7 @@
   --color-ok: var(--ok);
   --color-ok-soft: var(--ok-soft);
   --font-sans: var(--font-sans-loaded), ui-sans-serif, system-ui, "Noto Sans", sans-serif;
+  --font-display: var(--font-display-loaded), ui-serif, Georgia, serif;
 }
 
 html {
