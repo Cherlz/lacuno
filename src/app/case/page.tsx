@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAccount } from "@/components/Account";
+import { Appointments } from "@/components/Appointments";
 import { InstallApp } from "@/components/InstallApp";
 import { Button, ButtonLink, Card, Spinner } from "@/components/ui";
 import { loadSample } from "@/lib/actions";
@@ -86,6 +87,8 @@ function Dashboard() {
       </div>
 
       <NextCard />
+
+      <Appointments />
 
       <ButtonLink href="/episodes?now=1" variant="secondary" className="min-h-14 w-full text-lg">
         ➕ Log a symptom now
