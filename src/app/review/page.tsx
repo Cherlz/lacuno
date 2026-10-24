@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CaseGate, StaleBanner } from "@/components/CaseGate";
 import { SourceChips } from "@/components/Sources";
 import { Button, ButtonLink, Card, Disclaimer, ErrorBox, PageTitle, Spinner, UncertaintyNote } from "@/components/ui";
@@ -12,6 +12,9 @@ import { useCase } from "@/lib/useCase";
 
 export default function Review() {
   const [tab, setTab] = useState<"map" | "conference">("map");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("tab") === "conference") setTab("conference");
+  }, []);
   return (
     <CaseGate>
       <PageTitle

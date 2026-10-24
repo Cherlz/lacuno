@@ -36,8 +36,9 @@ export async function POST(req: Request) {
 - The document may be handwritten, crumpled, partly cut off, or in any language. Read carefully.
 - Write summary, specialty, possibility names and test names in ${body.familyLanguage}. Keep original_text fields exactly as written in the original language.
 - "suspected" lists only possibilities the doctor actually wrote (including "rule out", "?", "susp.", "dd/" differential lists). Do not add your own ideas.
-- Medicine and lab names: if you are not sure of a word or number, put it in "unclear" and do not invent it. A wrong medicine name or dose is worse than a missing one.
-- Set needs_human_check to true whenever anything is unclear, and uncertainty to match how much you could read.
+- "unclear" is ONLY for words or numbers you cannot read on the page (smudged, cut off, illegible handwriting, marked as unreadable). Do not list things that are readable but ambiguous in meaning (date formats, initials, a "?" the doctor wrote, vague instructions); handle those in the fields themselves, e.g. keep certainty_as_written as "?". Usually there are zero or one or two unclear items.
+- Medicine names, doses and lab values you cannot read must go in "unclear" and must not be invented. A wrong medicine name or dose is worse than a missing one.
+- Set needs_human_check to true when anything is unclear, and uncertainty to match how much you could read.
 - If this is not a medical document, set readable=false and leave the lists empty.`,
       content: [source, textBlock("Extract this document.")],
     });

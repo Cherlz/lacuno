@@ -28,7 +28,7 @@ export default function Impact() {
     <div className="space-y-6">
       <PageTitle
         title="Impact & tester feedback"
-        subtitle="Measure whether Throughline actually helps. Ratings and quotes only; no medical details are saved here."
+        subtitle="Measure whether ThroughLine actually helps. Ratings and quotes only; no medical details are saved here."
       />
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -140,7 +140,7 @@ function FamilyCheckIn() {
     <Card className="space-y-4">
       <div>
         <h2 className="text-xl font-bold">Family check-in</h2>
-        <p className="text-sm text-muted">Ask once before they use Throughline, and again after they have their brief.</p>
+        <p className="text-sm text-muted">Ask once before they use ThroughLine, and again after they have their brief.</p>
       </div>
       <Choice label="When is this?" options={[["before", "Before using it"], ["after", "After using it"]]} value={phase} onChange={setPhase} />
       <Scale max={10} label="How confident do you feel about the next doctor's visit? (1 = not at all, 10 = very)" value={confidence} onChange={setConfidence} />
@@ -221,7 +221,7 @@ function DoctorTest() {
       </div>
       {seconds == null ? (
         <>
-          <Choice label="What will they read?" options={[["records", "Original records only"], ["brief", "Throughline brief"]]} value={mode} onChange={setMode} />
+          <Choice label="What will they read?" options={[["records", "Original records only"], ["brief", "ThroughLine brief"]]} value={mode} onChange={setMode} />
           {!canRun && (
             <p className="text-sm text-warn">
               {mode === "brief" ? <>Write the brief first. <ButtonLink href="/brief" variant="ghost" className="min-h-9 px-2">Go to brief</ButtonLink></> : "Confirm some records first."}

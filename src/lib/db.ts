@@ -69,9 +69,22 @@ interface ThroughlineDB extends DBSchema {
   feedback: { key: string; value: Feedback };
 }
 
+// Each signed-in account gets its own database on this device, so family
+// members sharing a phone don't see each other's case files.
+let dbName = "throughline";
 let dbPromise: Promise<IDBPDatabase<ThroughlineDB>> | null = null;
+
+export function setAccount(accountId: string | null) {
+  const name = accountId ? `throughline:${accountId}` : "throughline";
+  if (name === dbName) return;
+  dbName = name;
+  void dbPromise?.then((d) => d.close());
+  dbPromise = null;
+  changed();
+}
+
 function db() {
-  dbPromise ??= openDB<ThroughlineDB>("throughline", 2, {
+  dbPromise ??= openDB<ThroughlineDB>(dbName, 2, {
     upgrade(d, oldVersion) {
       if (oldVersion < 1) {
         d.createObjectStore("kv");

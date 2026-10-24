@@ -1,15 +1,15 @@
 # Devpost draft
 
-**Title:** Throughline
+**Title:** ThroughLine
 **Tagline:** The case conference they never got.
 
 ## Inspiration
 My mother has had dizziness, fatigue and weakness for years. Four doctors, four different ideas: inner ear, bones, nerves, "just tiredness". Each saw a few minutes of the story. None saw the whole picture. My family carries the papers between them, in Indonesian, from clinic to clinic.
 
-We built Throughline for **adult children coordinating care for a parent who has seen several doctors without a diagnosis**, often across clinics and languages.
+We built ThroughLine for **adult children coordinating care for a parent who has seen several doctors without a diagnosis**, often across clinics and languages.
 
 ## What it does
-Upload every record (photos or PDFs, handwritten, any language). Throughline:
+Upload every record (photos or PDFs, handwritten, any language). ThroughLine:
 1. **Reads** each record and asks the family to check it next to the original. Unreadable text is flagged, never guessed.
 2. **Maps the disagreement:** every possibility a doctor raised, what fits, what doesn't, and what nobody ever checked.
 3. **Convenes a case conference:** six specialty reviewers each read the whole case and list what they'd check and what to ask. No one names a cause.
@@ -26,7 +26,7 @@ Next.js 15 + TypeScript, mobile-first PWA, Tailwind. **Claude (claude-opus-5-5) 
 - **Two-audience, two-language writing** for the brief
 - **Structuring** of spoken symptom logs, with a second-layer emergency check
 
-Records stay on the device (IndexedDB); the server is stateless. Hosted on Vultr (Docker + Caddy HTTPS) at <domain>. Read-aloud via ElevenLabs' multilingual voice (if built and demoed).
+Accounts with **Auth0** (Google or email sign-up); each account's case files stay on the device (IndexedDB), and the Claude-powered API routes only answer signed-in users. The server is stateless. Hosted on Vultr (Docker + Caddy HTTPS) at <domain>. Read-aloud via ElevenLabs' multilingual voice (if built and demoed).
 
 ## Where it could go wrong (and what we did)
 - **Misread handwriting:** family confirmation beside the original; unreadable text is flagged.
@@ -49,4 +49,4 @@ Talk to more families, run the doctor test with more clinicians, and open the wa
 nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, indexeddb, web-speech-api, docker, caddy, vultr, godaddy-registry
 
 ## Tracks to opt into
-Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · MLH Best Use of Vultr · MLH Best Domain from GoDaddy Registry · Commit Fellowship (if team) · MLH Gen AI / ElevenLabs only if listed at mlh.link/calhacks13 · DEV Writing Challenge (after the event)
+MLH Best Use of Auth0 · Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · MLH Best Use of Vultr · MLH Best Domain from GoDaddy Registry · Commit Fellowship (if team) · MLH Gen AI / ElevenLabs only if listed at mlh.link/calhacks13 · DEV Writing Challenge (after the event)

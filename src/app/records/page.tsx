@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DocPreview, docLabel } from "@/components/Sources";
 import { Button, ButtonLink, Card, ErrorBox, PageTitle, Pill, Spinner } from "@/components/ui";
 import { addFiles, extractDoc } from "@/lib/actions";
@@ -16,6 +16,7 @@ export default function Records() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const filesRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+  const [chosenId, setChosenId] = useState<string | null>(null);
 
   if (!loaded) return <Spinner label="Loading…" />;
   if (!patient) {
@@ -31,8 +32,12 @@ export default function Records() {
   const toConfirm = docs.filter((d) => d.status === "ready" && !d.confirmed);
   const confirmed = docs.filter((d) => d.confirmed);
   const others = docs.filter((d) => d.status !== "ready");
-  // Newest first within each group; unconfirmed first so they get attention.
-  const ordered = [...others, ...toConfirm, ...confirmed];
+  // One record is open for checking at a time; when it's confirmed the next one opens.
+  const activeId = toConfirm.some((d) => d.id === chosenId) ? chosenId : toConfirm[0]?.id ?? null;
+  const active = toConfirm.find((d) => d.id === activeId);
+  const waiting = toConfirm.filter((d) => d.id !== activeId);
+  const totalToCheck = toConfirm.length + confirmed.length;
+  const ordered = [...(active ? [active] : []), ...waiting, ...others, ...confirmed];
 
   return (
     <div className="space-y-5">
@@ -58,21 +63,39 @@ export default function Records() {
       </div>
 
       {toConfirm.length > 0 && (
-        <p className="rounded-xl bg-warn-soft px-4 py-3 text-warn">
-          <strong>{toConfirm.length} to check.</strong> Compare each reading with the original and fix anything wrong. Only confirmed records are used in the review.
-        </p>
+        <div className="rounded-xl bg-brand-soft px-4 py-3">
+          <p className="text-lg font-bold">
+            Checking record {confirmed.length + 1} of {totalToCheck}
+          </p>
+          <p>Compare what we read with the original next to it. Fix anything wrong, then tap the green <strong>Confirm</strong> button at the bottom.</p>
+        </div>
+      )}
+      {toConfirm.length === 0 && confirmed.length > 0 && !others.some((d) => d.status === "extracting") && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-ok-soft px-4 py-3 text-ok">
+          <p className="text-lg font-bold">✓ All {confirmed.length} records checked</p>
+          <ButtonLink href="/review">Next: review the case →</ButtonLink>
+        </div>
       )}
 
       <div className="space-y-4">
-        {ordered.map((d) => <DocCard key={d.id} doc={d} />)}
+        {ordered.map((d) => (
+          <DocCard key={d.id} doc={d} active={d.id === activeId} onOpen={() => setChosenId(d.id)} />
+        ))}
         {!docs.length && <p className="py-8 text-center text-muted">No records yet.</p>}
       </div>
     </div>
   );
 }
 
-function DocCard({ doc }: { doc: CaseDoc }) {
+function DocCard({ doc, active, onOpen }: { doc: CaseDoc; active: boolean; onOpen: () => void }) {
   const [editing, setEditing] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const wasActive = useRef(active);
+  useEffect(() => {
+    // Bring the next record into view after the previous one is confirmed.
+    if (active && !wasActive.current) cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    wasActive.current = active;
+  }, [active]);
   const remove = async () => {
     if (confirm("Remove this record from the case file?")) await deleteDoc(doc.id);
   };
@@ -129,11 +152,22 @@ function DocCard({ doc }: { doc: CaseDoc }) {
       </Card>
     );
   }
+  if (!doc.confirmed && !active) {
+    return (
+      <Card>
+        {header}
+        <p className="text-muted">{doc.extraction.summary}</p>
+        <Button variant="secondary" className="mt-3" onClick={onOpen}>Check this one now</Button>
+      </Card>
+    );
+  }
   return (
-    <Card>
-      {header}
-      <ExtractionEditor doc={doc} onDone={() => setEditing(false)} />
-    </Card>
+    <div ref={cardRef} className="scroll-mt-40">
+      <Card className={!doc.confirmed ? "border-2 border-brand" : ""}>
+        {header}
+        <ExtractionEditor doc={doc} onDone={() => setEditing(false)} />
+      </Card>
+    </div>
   );
 }
 
@@ -178,7 +212,8 @@ function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void })
       <div className="space-y-4 lg:order-1">
         {x.unclear.length > 0 && (
           <section className="rounded-xl border border-warn/50 bg-warn-soft p-3">
-            <h4 className="font-semibold text-warn">⚠ Could not read clearly — we did not guess</h4>
+            <h4 className="font-semibold text-warn">⚠ We couldn&apos;t read {x.unclear.length === 1 ? "one part" : `${x.unclear.length} parts`}, so we didn&apos;t guess</h4>
+            <p className="mt-1 text-sm text-warn">Look at the original. If you can read it, type it in. If not, leave it empty; the doctor will see it was unreadable.</p>
             <ul className="mt-2 space-y-3">
               {x.unclear.map((u, i) => (
                 <li key={i} className="text-sm">
@@ -245,7 +280,7 @@ function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void })
           ))}
         </ListSection>
 
-        <Button className="w-full text-lg" onClick={confirmDoc}>✓ This matches the document — confirm</Button>
+        <Button className="min-h-14 w-full text-lg" onClick={confirmDoc}>✓ Confirm: this matches the document</Button>
         <p className="text-center text-xs text-muted">Read by Claude from the original ({x.original_language}). Check names, numbers and doses carefully.</p>
       </div>
     </div>
