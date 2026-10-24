@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
+const peerHost = process.env.NEXT_PUBLIC_PEERJS_HOST
+  ? ` http://${process.env.NEXT_PUBLIC_PEERJS_HOST}:* ws://${process.env.NEXT_PUBLIC_PEERJS_HOST}:* https://${process.env.NEXT_PUBLIC_PEERJS_HOST} wss://${process.env.NEXT_PUBLIC_PEERJS_HOST}`
+  : "";
 
 // Content Security Policy: scripts, styles, fonts and API calls only from this
 // site. Images may come from https (account pictures) and blob: (record photos
@@ -11,7 +14,8 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self'",
-  "connect-src 'self'",
+  // PeerJS only introduces the laptop and phone; photos then go device to device.
+  `connect-src 'self' https://0.peerjs.com wss://0.peerjs.com${peerHost}`,
   "media-src 'self' blob:",
   "frame-src 'self' blob:",
   "worker-src 'self'",

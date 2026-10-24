@@ -28,6 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const status = (step?: StepKey) => (step && c.patient ? stepStatus(step, next) : null);
   useEffect(setUpInstall, []);
 
+  if (pathname === "/phone-camera") return <main className="px-4 py-6">{children}</main>;
   if (pathname === "/" || pathname === "/help") return <MarketingShell signedIn={!account.enabled || account.signedIn}>{children}</MarketingShell>;
 
   return (
