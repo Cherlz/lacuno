@@ -34,7 +34,7 @@ function Welcome() {
         <div className="mb-4 flex justify-center">
           <Logo size={56} />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Other apps store your records. ThroughLine connects the dots.</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Other apps store your records. Lacuno connects the dots.</h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted">
           Seeing doctor after doctor without an answer? Upload every record, in any language. See where the doctors
           disagree, get the multi-specialist review the case never had, and hand the next doctor a one-page brief in
@@ -76,7 +76,7 @@ function Welcome() {
       </Card>
 
       <p className="text-center">
-        New here? <a href="/help" className="font-semibold text-brand underline">See how ThroughLine works</a> (2-minute read).
+        New here? <a href="/help" className="font-semibold text-brand underline">See how Lacuno works</a> (2-minute read).
       </p>
 
       <ul className="grid gap-3 text-sm sm:grid-cols-3">

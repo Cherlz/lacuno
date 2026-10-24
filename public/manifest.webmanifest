@@ -1,6 +1,6 @@
 {
-  "name": "ThroughLine",
-  "short_name": "ThroughLine",
+  "name": "Lacuno",
+  "short_name": "Lacuno",
   "description": "Connect the dots across every doctor's records.",
   "start_url": "/",
   "display": "standalone",

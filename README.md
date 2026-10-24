@@ -1,7 +1,9 @@
-# ThroughLine
+# Lacuno
+
+_From **lacuna**, Latin for "the gap": Lacuno finds the gaps nobody checked._
 
 **The case conference they never got.**
-Other apps store your records. ThroughLine connects the dots.
+Other apps store your records. Lacuno connects the dots.
 
 Live: `https://<your-domain>` · Hosted on Vultr *(fill in once deployed)*
 
