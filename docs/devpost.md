@@ -27,9 +27,10 @@ We built Lacuno for **adult children coordinating care for a parent who has seen
    - **Where doctors differ:** every possibility a real doctor raised, who raised it and when, what in the records fits, what doesn't, and what was never checked, plus loose ends such as tests ordered with no result on file.
    - **Specialist views:** six specialty reviewers (balance and ear, nervous system, heart, hormones and metabolism, muscles and bones, and a pharmacist) each read the whole record and list only what matters to their area: what to check, and questions to ask. None of them names a cause.
 3. **Brief.** One page the next doctor can read in about a minute, in the doctor's language, plus a plain version in the family's language. Save as PDF, or listen to the family version read aloud.
-4. **Log symptoms** between visits by voice or text. Emergency warning signs override everything with "Seek emergency care now".
+4. **Medicines.** Each medicine is looked up in the official FDA drug label database (openFDA). Side effects listed on the label that match the symptoms become questions for the doctor, never advice to stop anything.
+5. **Between visits.** Log symptoms by voice or text; emergency warning signs override everything with "Seek emergency care now" and a one-tap **Call 911**. Add the next doctor visit to the phone's calendar for reminders the day before.
 
-**Every claim links back to the page it came from.** The app is guided: a "Do this next" card and a three-step menu (Records → Review → Brief) mean a family never has to work out what to do. It installs on a phone like an app, with no app store.
+**Every claim links back to the page it came from.** The app is guided: a "Do this next" card and a three-step menu (Records → Review → Brief) mean a family never has to work out what to do. It installs on a phone like an app, with no app store. On a laptop, families can scan a QR code and use their phone as the camera; photos go device to device, never through a server.
 
 ## How we built it
 
