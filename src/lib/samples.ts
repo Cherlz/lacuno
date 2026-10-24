@@ -27,7 +27,7 @@ export const SAMPLE_CASES: SampleCase[] = [
     documents: [
       {
         fileName: "THT_Dr_Hendra_2023.txt",
-        text: `${HEADER}KLINIK THT SEHAT — Dr. Hendra Wijaya, Sp.THT
+        text: `${HEADER}KLINIK THT CONTOH — Dr. Hendra Wijaya, Sp.THT
 Tgl: 14/03/2023
 Pasien: Ny. Sari W., 56 th
 S/ Pusing ± 6 bln, rasa melayang, kadang berputar saat bangun tidur. Telinga berdenging kiri (+) kadang.
@@ -37,7 +37,7 @@ P/ Betahistin 3x6mg, Flunarizin 1x5mg (malam)
    Saran audiometri → kontrol 2 minggu`,
       },
       {
-        fileName: "Lab_Prodia_2023.txt",
+        fileName: "Lab_Darah_2023.txt",
         text: `${HEADER}LABORATORIUM KLINIK — Hasil Pemeriksaan
 Tgl sampling: 02/09/2023   Nama: Sari Wulandari   Umur: 56 th
 Hemoglobin        11.2 g/dL     (12.0 - 16.0)   L
@@ -52,7 +52,7 @@ Kreatinin         0.8 mg/dL     (0.6 - 1.1)`,
       },
       {
         fileName: "Penyakit_Dalam_Dr_Rina_2024.txt",
-        text: `${HEADER}RS MITRA — Poli Penyakit Dalam
+        text: `${HEADER}RS CONTOH — Poli Penyakit Dalam
 dr. Rina Kusuma, Sp.PD   20 Januari 2024
 Keluhan: lemas, mudah lelah, pusing masih ada. Obat THT masih diminum.
 TD (duduk) 148/90, N 76. Konjungtiva agak pucat.
@@ -101,7 +101,7 @@ Lanjut obat sebelumnya`,
     documents: [
       {
         fileName: "Medico_familia_2024.txt",
-        text: `${HEADER}Centro de Salud San Miguel — Dra. Laura Gómez (Medicina Familiar)
+        text: `${HEADER}Centro de Salud de Ejemplo — Dra. Laura Gómez (Medicina Familiar)
 Fecha: 08/04/2024
 Paciente refiere cansancio desde hace 1 año, duerme mal, ánimo bajo. Dolor difuso en manos.
 Exploración normal. PA 124/78.
@@ -110,7 +110,7 @@ Plan: sertralina 50 mg/día. Analítica general. Control 6 semanas.`,
       },
       {
         fileName: "Analitica_2024.txt",
-        text: `${HEADER}LABORATORIO CENTRAL — Informe de resultados   Fecha: 22/04/2024
+        text: `${HEADER}LABORATORIO DE EJEMPLO — Informe de resultados   Fecha: 22/04/2024
 TSH              6,8 mUI/L   (0,4 - 4,5)   ALTO
 T4 libre         0,9 ng/dL   (0,8 - 1,8)
 Vitamina D       14 ng/mL    (30 - 100)    BAJO
@@ -120,7 +120,7 @@ ANA              positivo 1:160, patrón moteado`,
       },
       {
         fileName: "Reumatologia_2025.txt",
-        text: `${HEADER}Hospital Universitario — Servicio de Reumatología
+        text: `${HEADER}Hospital de Ejemplo — Servicio de Reumatología
 Dr. Javier Ortiz   15/01/2025
 Remitida por ANA+ y artralgias. Rigidez matutina ~30 min. Hormigueo en ambas manos, peor de noche.
 EF: sin sinovitis franca. Tinel (+) muñeca derecha.
