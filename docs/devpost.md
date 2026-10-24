@@ -26,7 +26,7 @@ Next.js 15 + TypeScript, mobile-first PWA, Tailwind. **Claude (claude-opus-5-5) 
 - **Two-audience, two-language writing** for the brief
 - **Structuring** of spoken symptom logs, with a second-layer emergency check
 
-Records stay on the device (IndexedDB); the server is stateless. Hosted on DigitalOcean App Platform at <domain>. Read-aloud via ElevenLabs' multilingual voice (if built and demoed).
+Records stay on the device (IndexedDB); the server is stateless. Hosted on Vultr (Docker + Caddy HTTPS) at <domain>. Read-aloud via ElevenLabs' multilingual voice (if built and demoed).
 
 ## Where it could go wrong (and what we did)
 - **Misread handwriting:** family confirmation beside the original; unreadable text is flagged.
@@ -46,7 +46,7 @@ Native apps (widgets, voice and smartwatch logging, Apple Health / Health Connec
 Talk to more families, run the doctor test with more clinicians, and open the waitlist through caregiver communities.
 
 ## Built with
-nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, indexeddb, web-speech-api, elevenlabs, digitalocean
+nextjs, typescript, react, tailwindcss, anthropic-claude, claude-code, zod, indexeddb, web-speech-api, docker, caddy, vultr, godaddy-registry
 
 ## Tracks to opt into
-Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · MLH Best Use of Gen AI · MLH Best Use of DigitalOcean · MLH domain prize · ElevenLabs (only if demoed) · Commit Fellowship (if team)
+Anthropic (Claude for Public Benefit) · Microsoft Built for the Real World · Microsoft Customer Impact · Best People-First · Most Creative · MLH Best Use of Vultr · MLH Best Domain from GoDaddy Registry · Commit Fellowship (if team) · MLH Gen AI / ElevenLabs only if listed at mlh.link/calhacks13 · DEV Writing Challenge (after the event)

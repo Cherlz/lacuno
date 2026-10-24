@@ -3,7 +3,7 @@
 **The case conference they never got.**
 Other apps store your records. Throughline connects the dots.
 
-Live: `https://<your-domain>` · Hosted on DigitalOcean App Platform *(fill in once deployed)*
+Live: `https://<your-domain>` · Hosted on Vultr *(fill in once deployed)*
 
 ---
 
@@ -110,7 +110,7 @@ Measured with the built-in **Impact** screen (`/impact`): family before/after ch
 
 Next.js 15 (App Router, TypeScript) · Tailwind CSS 4 · Anthropic TypeScript SDK · Zod · IndexedDB (`idb`) · Web Speech API · ElevenLabs (optional) · installable PWA.
 
-Hosting: **DigitalOcean App Platform** via `.do/app.yaml` (`doctl apps create --spec .do/app.yaml`, then add the secrets in the dashboard). Domain: _TODO_.
+Hosting: **Vultr Cloud Compute** (Ubuntu), running the app in Docker behind Caddy for automatic HTTPS. One command sets up or updates the server: `bash <(curl -fsSL https://raw.githubusercontent.com/Cherlz/throughline/main/deploy/setup.sh)` (see `deploy/`). Domain: GoDaddy Registry, _TODO_.
 
 ## What's real vs. simulated
 
