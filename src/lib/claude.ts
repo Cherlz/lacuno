@@ -7,7 +7,7 @@ import { GuardError } from "./guard";
 export const MODEL = "claude-opus-5-5";
 
 let client: Anthropic | null = null;
-function getClient() {
+export function getClient() {
   // Key comes from ANTHROPIC_API_KEY on the server only; never sent to the browser.
   client ??= new Anthropic();
   return client;

@@ -1,7 +1,7 @@
 "use client";
 
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
-import type { Brief, CheckSummary, DisagreementMap, EpisodeStructured, Extraction, LensReview } from "./schemas";
+import type { Brief, CheckSummary, DisagreementMap, EpisodeStructured, Extraction, LensReview, MedCheck } from "./schemas";
 
 // Everything lives in the browser (IndexedDB). The server never stores case data.
 
@@ -59,7 +59,8 @@ export type Episode = {
 export type Analysis =
   | { id: "map"; createdAt: number; basis: string; data: DisagreementMap; check?: CheckSummary | null }
   | { id: `lens:${string}`; createdAt: number; basis: string; data: LensReview; check?: CheckSummary | null }
-  | { id: "brief"; createdAt: number; basis: string; data: Brief; doctorLanguage: string; familyLanguage: string; check?: CheckSummary | null };
+  | { id: "brief"; createdAt: number; basis: string; data: Brief; doctorLanguage: string; familyLanguage: string; check?: CheckSummary | null }
+  | { id: "medcheck"; createdAt: number; basis: string; data: MedCheck; lookups: number };
 
 interface LacunoDB extends DBSchema {
   kv: { key: string; value: Patient };

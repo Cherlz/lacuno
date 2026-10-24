@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { CaseGate, StaleBanner } from "@/components/CaseGate";
 import { SourceChips } from "@/components/Sources";
 import { Button, ButtonLink, Card, Disclaimer, ErrorBox, FactCheckBadge, PageTitle, Spinner, UncertaintyNote } from "@/components/ui";
-import { runLens, runMap } from "@/lib/actions";
+import { runLens, runMap, runMedCheck } from "@/lib/actions";
 import type { Analysis } from "@/lib/db";
 import { LENSES } from "@/lib/lenses";
-import type { DisagreementMap, LensReview } from "@/lib/schemas";
+import type { DisagreementMap, LensReview, MedCheck } from "@/lib/schemas";
 import { useCase } from "@/lib/useCase";
 
 export default function Review() {
@@ -20,7 +20,7 @@ export default function Review() {
 
 function ReviewScreen() {
   const { analyses } = useCase();
-  const [tab, setTab] = useState<"map" | "conference">("map");
+  const [tab, setTab] = useState<"map" | "conference" | "meds">("map");
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("tab") === "conference") setTab("conference");
   }, []);
@@ -34,15 +34,15 @@ function ReviewScreen() {
         <StartReview />
       ) : (
         <>
-          <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl bg-surface-2 p-1">
-            {([["map", "Where doctors differ"], ["conference", "Specialist views"]] as const).map(([k, label]) => (
+          <div role="tablist" className="grid grid-cols-3 gap-1 rounded-xl bg-surface-2 p-1">
+            {([["map", "Where doctors differ"], ["conference", "Specialists"], ["meds", "Medicines"]] as const).map(([k, label]) => (
               <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
                 className={`min-h-12 rounded-lg font-semibold ${tab === k ? "bg-surface text-ink shadow-sm" : "text-muted"}`}>
                 {label}
               </button>
             ))}
           </div>
-          {tab === "map" ? <MapView /> : <ConferenceView />}
+          {tab === "map" ? <MapView /> : tab === "conference" ? <ConferenceView /> : <MedicinesView />}
           <div className="flex justify-center pt-2">
             <ButtonLink href="/brief" className="min-h-14 w-full text-lg sm:w-auto sm:px-10">Next: make the doctor brief →</ButtonLink>
           </div>
@@ -55,7 +55,11 @@ function ReviewScreen() {
 /** One button that runs the whole review: the disagreement map and all six specialists at once. */
 function StartReview() {
   const { docs } = useCase();
-  const jobs = [{ key: "map", label: "Comparing every doctor's notes" }, ...LENSES.map((l) => ({ key: l.key, label: `${l.icon} ${l.name}` }))];
+  const jobs = [
+    { key: "map", label: "Comparing every doctor's notes" },
+    ...LENSES.map((l) => ({ key: l.key, label: `${l.icon} ${l.name}` })),
+    { key: "medcheck", label: "💊 Checking medicines against FDA labels" },
+  ];
   const [state, setState] = useState<Record<string, "busy" | "done" | string>>({});
   const running = Object.values(state).some((v) => v === "busy");
   const failed = jobs.filter((j) => state[j.key] && state[j.key] !== "busy" && state[j.key] !== "done");
@@ -63,7 +67,7 @@ function StartReview() {
   const runJob = async (key: string) => {
     setState((s) => ({ ...s, [key]: "busy" }));
     try {
-      await (key === "map" ? runMap() : runLens(key));
+      await (key === "map" ? runMap() : key === "medcheck" ? runMedCheck() : runLens(key));
       setState((s) => ({ ...s, [key]: "done" }));
     } catch (e) {
       setState((s) => ({ ...s, [key]: (e as Error).message }));
@@ -75,7 +79,7 @@ function StartReview() {
     <Card className="space-y-4 text-center">
       <p className="text-lg">
         Lacuno will read all {docs.filter((d) => d.confirmed).length} checked records together, find where the doctors disagree, and ask six
-        specialists what they would check. It takes about 1–2 minutes.
+        specialists what they would check. It also checks every medicine against official FDA labels. It takes about 1–2 minutes.
       </p>
       {!Object.keys(state).length && (
         <Button onClick={runAll} className="min-h-14 w-full text-lg sm:w-auto sm:px-10">Review my case</Button>
@@ -347,5 +351,80 @@ function ConferenceTable({ reviews, busy, errors, records }: {
         );
       })}
     </div>
+  );
+}
+
+/** Medicines tab: what the official FDA labels say, next to the patient's symptoms. */
+function MedicinesView() {
+  const { analyses, basis } = useCase();
+  const med = analyses.find((a) => a.id === "medcheck") as Extract<Analysis, { id: "medcheck" }> | undefined;
+  const { busy, error, run } = useRunner(runMedCheck);
+
+  if (!med) {
+    return (
+      <Card className="space-y-3 text-center">
+        <p>Look up every medicine in the official US FDA drug label database and see which listed side effects match the symptoms.</p>
+        {error && <ErrorBox message={error} onRetry={run} />}
+        <Button onClick={run} disabled={busy} className="w-full sm:w-auto">
+          {busy ? <Spinner label="Looking up each medicine…" /> : "Check the medicines"}
+        </Button>
+      </Card>
+    );
+  }
+  return (
+    <div className="space-y-4">
+      <StaleBanner show={med.basis !== basis} onRefresh={run} busy={busy} />
+      {error && <ErrorBox message={error} onRetry={run} />}
+      <p className="rounded-xl bg-surface-2 px-4 py-3 text-sm">
+        <strong>A listed side effect is a possibility, not a cause.</strong> Never stop or change a medicine on your own. Bring these questions to the doctor or pharmacist.
+      </p>
+      <MedCheckContent med={med.data} />
+      <p className="text-xs text-muted">
+        Source: openFDA drug labels (US Food and Drug Administration), {med.lookups} lookups · {new Date(med.createdAt).toLocaleString()}
+      </p>
+    </div>
+  );
+}
+
+function MedCheckContent({ med }: { med: MedCheck }) {
+  return (
+    <>
+      <p>{med.note}</p>
+      <div className="grid gap-4 md:grid-cols-2">
+        {med.medicines.map((m, i) => (
+          <Card key={i} className="space-y-3">
+            <div>
+              <h3 className="text-lg font-bold">💊 {m.name_in_record}</h3>
+              {m.generic_name && m.generic_name.toLowerCase() !== m.name_in_record.toLowerCase() && (
+                <p className="text-sm text-muted">Generic name: {m.generic_name}</p>
+              )}
+              <SourceChips ids={m.source_ids} />
+            </div>
+            {!m.fda_label_found ? (
+              <p className="text-sm text-muted">Not in the US FDA label database (often the case for medicines sold mainly outside the US). Ask the pharmacist about its side effects.</p>
+            ) : m.overlaps.length === 0 ? (
+              <p className="text-sm text-muted">The FDA label doesn&apos;t list side effects that match the symptoms in the records.</p>
+            ) : (
+              <div className="rounded-xl bg-warn-soft p-3">
+                <h4 className="mb-1 font-semibold text-warn">Listed on the FDA label, and in the symptoms</h4>
+                <ul className="space-y-2 text-sm">
+                  {m.overlaps.map((o, j) => (
+                    <li key={j}>
+                      <strong>{o.symptom}</strong>: “{o.label_quote}” <span className="text-muted">({o.section.replace(/_/g, " ")})</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {m.question_for_doctor && <p className="text-sm">💬 {m.question_for_doctor}</p>}
+            {m.label_id && (
+              <a href={`https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=${encodeURIComponent(m.label_id)}`} target="_blank" rel="noopener noreferrer" className="text-sm text-brand underline">
+                Open the full FDA label ↗
+              </a>
+            )}
+          </Card>
+        ))}
+      </div>
+    </>
   );
 }
