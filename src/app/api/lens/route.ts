@@ -2,12 +2,13 @@ import { LensReviewSchema } from "@/lib/schemas";
 import { errorResponse, structured, textBlock } from "@/lib/claude";
 import { validIds, type CasePayload } from "@/lib/case";
 import { keepSourced } from "@/lib/sources";
+import { tryFactCheck } from "@/lib/verify";
 import { z } from "zod";
 import { CaseFileSchema, rateLimit, readBody } from "@/lib/guard";
 import { lensByKey } from "@/lib/lenses";
 
 export const runtime = "nodejs";
-export const maxDuration = 180;
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   try {
@@ -38,7 +39,8 @@ Read the whole case file, but report ONLY what is relevant to your area:
       content: [textBlock(`<case_file>\n${JSON.stringify(caseFile, null, 1)}\n</case_file>`)],
     });
 
-    return Response.json({ review: keepSourced(review, validIds(caseFile)) });
+    const { result, check } = await tryFactCheck(keepSourced(review, validIds(caseFile)), caseFile);
+    return Response.json({ review: result, check });
   } catch (err) {
     return errorResponse(err);
   }

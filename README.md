@@ -45,9 +45,10 @@ All calls use `claude-opus-5-5` through the Anthropic TypeScript SDK, with **str
 | Disagreement map | `src/app/api/map` | Reasons across conflicting records from different doctors; merges the same idea written differently; finds gaps and loose ends |
 | Case conference | `src/app/api/lens` | Six independent calls, one per specialty lens, run in parallel, each with its own focus and the same safety rules |
 | Brief | `src/app/api/brief` | Writes for two audiences in two languages; notes uncertain translations |
+| Fact-checker agent | `src/lib/verify.ts` | A second, independent Claude pass audits every statement in the map, specialist views and brief against the records it cites; removes unsupported or diagnosis-like statements and corrects overstated ones. The app shows "✓ Fact-checked: N points checked" |
 | Episode log | `src/app/api/episode` | Structures messy spoken or typed descriptions; second-layer danger check |
 
-It is a multi-step pipeline with human confirmation points: **read → family confirms → cross-check → specialty reviews → compose the brief**. Shared safety rules live in `src/lib/claude.ts`; output schemas live in `src/lib/schemas.ts`. Server-side refusal fallback is enabled, so if a safety classifier declines a medical document, the request is retried on a fallback model.
+It is a multi-step pipeline with human confirmation points: **read → family confirms → cross-check → specialty reviews → compose the brief → independent fact-check**. Shared safety rules live in `src/lib/claude.ts`; output schemas live in `src/lib/schemas.ts`. Server-side refusal fallback is enabled, so if a safety classifier declines a medical document, the request is retried on a fallback model.
 
 **Why not just ask Claude in a chat?** A case file that grows over months, data the family has checked, a source link on every claim, built-in safety checks, finished outputs (a PDF brief), and a flow for families who would never write a good prompt.
 
@@ -57,7 +58,7 @@ It is a multi-step pipeline with human confirmation points: **read → family co
 |---|---|---|
 | Misreading handwriting or a scan | Patient gets a wrong summary | Every extraction is checked by the family next to the original. Unreadable text is flagged in amber, never guessed, and the family can type what it says |
 | Analysis that looks like a diagnosis | Patient trusts the app over doctors | Rules in every prompt: no diagnosis, no ranking, no "most likely". Lenses give checks and questions only. Disclaimer on every analysis screen |
-| Hallucinated details | Doctor is misled | Every finding must cite source record IDs. Findings with missing or unknown sources are **removed** (on the server and again on the device). Each one links to the original page |
+| Hallucinated details | Doctor is misled | A separate fact-checker agent audits every statement against its cited records and removes or corrects anything unsupported. Every finding must cite source record IDs. Findings with missing or unknown sources are **removed** (on the server and again on the device). Each one links to the original page |
 | Translation errors | Doctor or family misunderstands | Original wording is shown under every extracted item; uncertain terms are listed in "translation notes" on the brief |
 | Missing an emergency | Patient waits instead of getting care | An instant on-device keyword check (English, Indonesian, Spanish) runs before anything is sent, and Claude runs a second check. Either one triggers a full-screen emergency message |
 | Privacy breach | Patient | Case data lives only on the device. Our server stores nothing |

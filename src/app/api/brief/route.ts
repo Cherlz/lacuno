@@ -2,11 +2,12 @@ import { BriefSchema } from "@/lib/schemas";
 import { errorResponse, structured, textBlock } from "@/lib/claude";
 import { validIds, type CasePayload } from "@/lib/case";
 import { keepSourced } from "@/lib/sources";
+import { tryFactCheck } from "@/lib/verify";
 import { z } from "zod";
 import { CaseFileSchema, LanguageName, rateLimit, readBody } from "@/lib/guard";
 
 export const runtime = "nodejs";
-export const maxDuration = 180;
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   try {
@@ -51,7 +52,8 @@ The analyses below were produced earlier by other reviewers and may help you org
       ],
     });
 
-    return Response.json({ brief: keepSourced(brief, validIds(caseFile)) });
+    const { result, check } = await tryFactCheck(keepSourced(brief, validIds(caseFile)), caseFile);
+    return Response.json({ brief: result, check });
   } catch (err) {
     return errorResponse(err);
   }

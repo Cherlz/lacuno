@@ -184,3 +184,6 @@ export const EpisodeSchema = z.object({
   summary: z.string().describe("One sentence in the family language"),
 });
 export type EpisodeStructured = z.infer<typeof EpisodeSchema>;
+
+/** Result of the fact-checker agent on one analysis. null = the check could not run. */
+export type CheckSummary = { checked: number; removed: number; corrected: number };
