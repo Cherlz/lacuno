@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Icon } from "@/components/icons";
+import { Icon, type IconName } from "@/components/icons";
 import { buttonClass } from "@/components/ui-classes";
 import { SUPPORT_EMAIL, demoVideoId } from "@/lib/contact";
 
@@ -11,6 +11,7 @@ const STEPS = [
     title: "Start a case",
     where: "Get started → Start a case",
     body: [
+      "Pick your country. Lacuno's emergency button calls that country's emergency number.",
       "Type a name or nickname (for example “Mum”), their age, and the main problems in your own words.",
       "Pick the family's language (for summaries and voice) and the next doctor's language (for the doctor brief).",
     ],
@@ -63,11 +64,19 @@ const STEPS = [
   },
 ];
 
+const TOOLS: { icon: IconName; title: string; where: string; body: string }[] = [
+  { icon: "phone", title: "Use your phone as the camera", where: "Records, on a computer", body: "Scan the QR code with your phone and take photos; they appear on the computer. Photos go straight from phone to computer." },
+  { icon: "watch", title: "Phone and watch data", where: "Records → Add phone or watch data", body: "Add a 90-day summary of heart rate, sleep, steps, blood pressure and falls from Apple Health or Google Fit. The file is read on your device; only the summary is added." },
+  { icon: "calendar", title: "Visit reminders", where: "Overview → Next doctor visit", body: "Add the next appointment, then Add to my calendar for reminders the day before and 2 hours before." },
+  { icon: "hospital", title: "Hospitals and doctors nearby", where: "Overview → Hospitals nearby", body: "Find hospitals, clinics and doctors near you. Places already in your records are marked, so you can see where you've been." },
+  { icon: "pill", title: "Medicine check", where: "Review → Medicines", body: "Each medicine is looked up in the official US drug label database. Listed side effects that match the symptoms become questions for the doctor, never advice to stop." },
+];
+
 const FAQ = [
   ["Is this a diagnosis?", "No. Lacuno never says what the cause is or which idea is most likely. It organises what real doctors wrote and turns gaps into questions for your next doctor."],
   ["Where are the records saved?", "Only on this device, separately for each account. To read a record, the page is sent to our AI provider (Anthropic) through our server, which keeps nothing."],
   ["What if it reads something wrong?", "That's why you check every record before it's used. You can fix any line, and every point in the review and brief links back to its original page."],
-  ["What if it's an emergency?", "Call your local emergency number first. If you log sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, Lacuno shows only: “Seek emergency care now.”"],
+  ["What if it's an emergency?", "Call your local emergency number first (the Log symptom page has a button that calls the number for the country in your profile). If you log sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, Lacuno shows only: “Seek emergency care now.”"],
   ["Can I use it on another phone?", "Case files stay on the device where you made them. Sign in on the same device to see them."],
   ["How do I delete everything?", "Open the patient's profile (their name at the top, or Edit on the overview) → Delete case file."],
 ];
@@ -112,6 +121,21 @@ export default function Help() {
           </li>
         ))}
       </ol>
+
+      <section className="mt-16 border-t border-line pt-10">
+        <h2 className="font-display text-2xl font-semibold tracking-tight">More tools</h2>
+        <ul className="mt-4 space-y-4">
+          {TOOLS.map((t) => (
+            <li key={t.title} className="flex gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-soft text-brand"><Icon name={t.icon} size={18} /></span>
+              <div>
+                <p className="font-semibold">{t.title} <span className="font-normal text-muted">· {t.where}</span></p>
+                <p className="text-muted">{t.body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="mt-16 border-t border-line pt-10">
         <h2 className="font-display text-2xl font-semibold tracking-tight">Common questions</h2>
