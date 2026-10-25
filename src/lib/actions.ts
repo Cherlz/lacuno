@@ -99,6 +99,16 @@ export async function extractDoc(id: string) {
   }
 }
 
+/** Adds a health-data summary (made on the device from a phone/watch export) as a record. */
+export async function addHealthSummary(text: string, fileName: string) {
+  const id = db.newId("doc");
+  await db.putDoc({
+    id, fileName, mimeType: "text/plain", blob: null, sampleText: text,
+    createdAt: Date.now(), status: "extracting", confirmed: false, isSample: false,
+  });
+  void extractDoc(id);
+}
+
 export async function loadSample(key: string) {
   const sample = SAMPLE_CASES.find((s) => s.key === key)!;
   await db.clearAll();
