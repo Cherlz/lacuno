@@ -155,7 +155,7 @@ export default function Help() {
       {SUPPORT_EMAIL && (
         <section id="contact" className="mt-16 scroll-mt-20 border-t border-line pt-10">
           <h2 className="font-display text-2xl font-semibold tracking-tight">Still stuck? Email us</h2>
-          <p className="mt-2 text-muted">Tell us what you were trying to do. Please don&apos;t include medical records or personal health details in the email.</p>
+          <p className="mt-2 text-muted">Tell us what you were trying to do and we will help.</p>
           <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`} className={`${buttonClass("secondary")} mt-4`}>
             <Icon name="mail" />Email {SUPPORT_EMAIL}
           </a>
