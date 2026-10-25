@@ -50,10 +50,10 @@ export default function Setup() {
 
   return (
     <div className="mx-auto max-w-xl">
-      <PageTitle title={patient ? "Patient profile" : "Start a case"} subtitle="Where you live, who this is for, and which languages you need." />
+      <PageTitle title={patient ? "Patient profile" : "Start a case"} subtitle="Location, who this is for, and which languages you need." />
       <form onSubmit={save} className="space-y-8">
         <fieldset className="space-y-5">
-          <legend className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">Where you live</legend>
+          <legend className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">Location</legend>
           <Field
             label="Country"
             hint={emergency ? <>Emergency number: <strong className="text-ink">{emergency.number}</strong>{emergency.note ? ` (${emergency.note})` : ""}. Lacuno&apos;s emergency button calls this.</> : "Sets the emergency number the app calls."}
