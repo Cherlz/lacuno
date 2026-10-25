@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SUPPORT_EMAIL } from "@/lib/contact";
+import { PHOTOS } from "@/lib/photos";
 import { currentCaseId, listCases, newCase, switchCase, type CaseEntry } from "@/lib/db";
 import { nextAction, stepStatus, type StepKey } from "@/lib/progress";
 import { useCase } from "@/lib/useCase";
@@ -40,7 +41,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
           <Link href="/" className="mr-2 flex shrink-0 items-center gap-2 rounded-md font-semibold tracking-tight">
             <Logo size={26} />
-            <span className="text-[1.05rem]">Lacuno</span>
+            <span className="font-display text-[1.1rem] font-extrabold tracking-[-0.02em]">Lacuno</span>
           </Link>
 
           <nav aria-label="Case steps" className="hidden h-full items-stretch sm:flex">
@@ -124,31 +125,101 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 }
 
-/** Website-style header for the public landing page. */
+/** Website-style frame for the public pages: header, page, footer. */
 function MarketingShell({ signedIn, children }: { signedIn: boolean; children: ReactNode }) {
   const pathname = usePathname();
-  const link = "rounded-md px-2.5 py-2 text-muted transition-colors hover:text-ink";
+  const [menu, setMenu] = useState(false);
+  useEffect(() => setMenu(false), [pathname]);
+  const links = [
+    { href: "/#how", label: "How it works" },
+    { href: "/#safety", label: "Safety" },
+    { href: "/help", label: "Help" },
+  ];
+  const cta = signedIn ? { href: "/case", label: "Open my case" } : { href: "/signin", label: "Get started" };
+  const credits = Object.values(PHOTOS).flatMap((p) => (p.credit ? [p.credit] : []));
+
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 rounded-md font-semibold tracking-tight">
-            <Logo size={26} />
-            <span className="text-[1.05rem]">Lacuno</span>
+      <header className="sticky top-0 z-30 border-b border-line bg-surface">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:h-[72px] sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
+            <Logo size={30} />
+            <span className="font-display text-xl font-extrabold tracking-[-0.02em]">Lacuno</span>
           </Link>
-          <nav className="flex items-center gap-1 whitespace-nowrap text-[0.95rem] font-medium">
-            <Link href="/#how" className={`${link} hidden min-[420px]:block`}>How it works</Link>
-            <Link href="/#safety" className={`${link} hidden md:block`}>Safety</Link>
-            <Link href="/help" className={`${link} ${pathname === "/help" ? "text-ink" : ""}`}>Help</Link>
-            {signedIn ? (
-              <Link href="/case" className={`${buttonClass("primary", "sm")} ml-2`}>Open my case</Link>
-            ) : (
-              <a href="/signin" className={`${buttonClass("primary", "sm")} ml-2`}>Sign in</a>
-            )}
+          <nav aria-label="Main" className="hidden items-center gap-8 text-[1.02rem] font-semibold md:flex">
+            {links.map((l) => (
+              <Link key={l.href} href={l.href} className={`py-2 transition-colors hover:text-brand ${pathname === l.href ? "text-brand" : "text-ink"}`}>{l.label}</Link>
+            ))}
           </nav>
+          <div className="flex items-center gap-3">
+            {!signedIn && <a href="/signin" className="hidden font-semibold text-ink hover:text-brand sm:block">Sign in</a>}
+            <a href={cta.href} className="inline-flex h-10 items-center rounded-md bg-brand px-4 font-semibold text-brand-ink transition-colors hover:bg-brand-hover sm:h-11 sm:px-5">{cta.label}</a>
+            <button
+              onClick={() => setMenu(!menu)}
+              aria-expanded={menu}
+              aria-label="Menu"
+              className="flex h-10 w-10 items-center justify-center rounded-md border border-line-strong md:hidden"
+            >
+              <Icon name={menu ? "x" : "menu"} size={20} />
+            </button>
+          </div>
         </div>
+        {menu && (
+          <nav aria-label="Main" className="border-t border-line bg-surface px-4 pb-4 md:hidden">
+            {links.map((l) => (
+              <Link key={l.href} href={l.href} className="block border-b border-line py-3.5 text-lg font-semibold">{l.label}</Link>
+            ))}
+            {!signedIn && <a href="/signin" className="block py-3.5 text-lg font-semibold">Sign in</a>}
+          </nav>
+        )}
       </header>
-      <main className="mx-auto max-w-6xl px-4 sm:px-6">{children}</main>
+
+      <main>{pathname === "/" ? children : <div className="mx-auto max-w-6xl px-4 sm:px-6">{children}</div>}</main>
+
+      <footer className="border-t border-line bg-surface">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <Link href="/" className="flex items-center gap-2.5">
+              <Logo size={28} />
+              <span className="font-display text-lg font-extrabold tracking-[-0.02em]">Lacuno</span>
+            </Link>
+            <p className="mt-3 max-w-sm text-muted">From <em>lacuna</em>, Latin for &ldquo;gap&rdquo;. A tool for families to organise medical records and prepare for the next appointment.</p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted">Lacuno</p>
+            <ul className="mt-3 space-y-2 font-medium">
+              <li><Link href="/#how" className="hover:text-brand">How it works</Link></li>
+              <li><Link href="/#safety" className="hover:text-brand">Safety</Link></li>
+              <li><Link href="/help" className="hover:text-brand">How to use</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted">Contact</p>
+            <ul className="mt-3 space-y-2 font-medium">
+              <li><a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-brand">{SUPPORT_EMAIL}</a></li>
+              <li><a href="https://github.com/Cherlz/lacuno" className="hover:text-brand">GitHub</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-line">
+          <div className="mx-auto max-w-6xl space-y-2 px-4 py-6 text-sm text-muted sm:px-6">
+            <p className="flex gap-2">
+              <Icon name="globe" size={16} className="mt-0.5 shrink-0" />
+              <span>Need this page in another language? Use your browser&apos;s translate option (Chrome: right-click → Translate; Safari: aA → Translate). Summaries and briefs are written in the languages you choose.</span>
+            </p>
+            <p>Lacuno does not give medical advice or diagnoses. Always talk to a doctor about health decisions. In an emergency, call your local emergency number.</p>
+            {credits.length > 0 && (
+              <p>
+                Photos:{" "}
+                {credits.map((c, i) => (
+                  <span key={c.url}>{i > 0 && ", "}<a href={c.url} className="underline underline-offset-2 hover:text-ink">{c.name}</a></span>
+                ))}{" "}
+                on {credits[0].source}.
+              </p>
+            )}
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

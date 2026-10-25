@@ -50,7 +50,7 @@
   --color-ok: var(--ok);
   --color-ok-soft: var(--ok-soft);
   --font-sans: var(--font-sans-loaded), ui-sans-serif, system-ui, "Noto Sans", sans-serif;
-  --font-display: var(--font-display-loaded), ui-serif, Georgia, serif;
+  --font-display: var(--font-display-loaded), ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -60,7 +60,8 @@ html {
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-sans);
+  /* The loaded font variable directly: theme values in "@theme inline" aren't CSS variables. */
+  font-family: var(--font-sans-loaded), ui-sans-serif, system-ui, "Noto Sans", sans-serif;
 }
 ::selection { background: var(--brand-soft); }
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }

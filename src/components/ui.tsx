@@ -112,7 +112,7 @@ export function PageTitle({ title, subtitle, action }: { title: ReactNode; subti
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        <h1 className="font-display text-[1.9rem] font-semibold leading-tight tracking-tight sm:text-4xl">{title}</h1>
+        <h1 className="font-display text-[1.9rem] font-bold leading-tight tracking-[-0.02em] sm:text-4xl">{title}</h1>
         {subtitle && <p className="mt-1.5 max-w-2xl text-muted">{subtitle}</p>}
       </div>
       {action}
