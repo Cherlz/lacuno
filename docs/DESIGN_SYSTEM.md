@@ -32,7 +32,7 @@ Use the tokens in `src/app/globals.css`. There is one accent, brand teal `#0b6b6
 - **Subjects:** families at home, an adult child with an older parent, real paperwork, a doctor and patient in conversation. Natural light, candid, realistic rooms.
 - **Avoid:** doctors holding tablets, staged handshakes, futuristic medical imagery, AI-generated people, anything that implies Lacuno provides care.
 - **Sources:** freely licensed only (the Unsplash License, the Pexels License, or Wikimedia Commons with its stated license). Check each image's own license page. Never use images from the reference sites. Record every photo in `docs/IMAGE_CREDITS.md`.
-- **Files:** self-hosted in `public/images` (no hotlinking; Unsplash photos are downloaded there at build time by `scripts/fetch-photos.mjs`), at least 2000px wide for full-bleed images, and served through `next/image` via `src/components/Photo.tsx` (responsive sizes, WebP/AVIF). Photo data, alt text, focal points and credits live in `src/lib/photos.ts`.
+- **Files:** self-hosted in `public/images` (no hotlinking), at least 2000px wide for full-bleed images, and served through `next/image` via `src/components/Photo.tsx` (responsive sizes, WebP/AVIF). Photo data, alt text, focal points and credits live in `src/lib/photos.ts`.
 - **Text on photos:** always over a dark overlay (`#06201e` at 55–85%, as a gradient toward the text side). Check contrast at phone and desktop crops. Set `focus` so faces stay in frame.
 - **Fallback:** if a photo file is missing, its section shows the deep teal background, never a broken image.
 
