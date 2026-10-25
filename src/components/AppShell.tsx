@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SUPPORT_EMAIL } from "@/lib/contact";
+import { currentCaseId, listCases, newCase, switchCase, type CaseEntry } from "@/lib/db";
 import { nextAction, stepStatus, type StepKey } from "@/lib/progress";
 import { useCase } from "@/lib/useCase";
 import { useAccount } from "./Account";
@@ -61,27 +62,18 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          <div className="ml-auto flex min-w-0 items-center gap-1 text-sm">
-            {c.patient?.isSample && <Pill tone="warn">Sample</Pill>}
-            {c.patient && (
-              <Link href="/setup" className="hidden max-w-40 items-center gap-1.5 truncate rounded-lg px-2 py-2 text-muted hover:bg-surface-2 hover:text-ink md:flex" title="Edit patient profile">
-                <Icon name="user" size={16} />
-                <span className="truncate">{c.patient.name}</span>
-              </Link>
-            )}
+          <div className="ml-auto flex min-w-0 items-center gap-2 text-sm">
             <Link
-              href="/episodes"
-              className={`hidden h-9 items-center gap-1.5 rounded-lg border px-3 font-semibold transition-colors sm:flex ${active("/episodes") ? "border-brand bg-brand-soft text-brand" : "border-line-strong hover:bg-surface-2"}`}
+              href="/episodes?now=1"
+              className={`hidden h-9 items-center gap-1.5 rounded-lg px-3.5 font-semibold shadow-sm transition-colors sm:flex ${active("/episodes") ? "bg-brand-hover text-brand-ink" : "bg-brand text-brand-ink hover:bg-brand-hover"}`}
             >
-              <Icon name="plus" size={16} />
+              <Icon name="plus" size={16} strokeWidth={2.25} />
               Log symptom
             </Link>
-            <Link href="/help" className="flex h-9 w-9 items-center justify-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink" title="How to use Lacuno" aria-label="Help">
-              <Icon name="help" size={20} />
-            </Link>
-            {account.enabled && account.signedIn && <AccountMenu name={account.name} picture={account.picture} />}
-            {account.enabled && !account.signedIn && (
+            {account.enabled && !account.signedIn ? (
               <a href="/signin" className={buttonClass("primary", "sm")}>Sign in</a>
+            ) : (
+              <UserMenu name={account.name} picture={account.picture} signedIn={account.enabled && account.signedIn} />
             )}
           </div>
         </div>
@@ -89,12 +81,27 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main className="mx-auto max-w-5xl px-4 pb-28 pt-8 sm:pb-16">{children}</main>
 
+      <Link
+        href="/help"
+        aria-label="How to use Lacuno"
+        title="How to use Lacuno"
+        className="no-print fixed bottom-20 right-4 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-line-strong bg-surface text-muted shadow-md transition-colors hover:text-ink sm:bottom-6 sm:right-6"
+      >
+        <Icon name="help" size={22} />
+      </Link>
+
       <nav aria-label="Main" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] sm:hidden">
         <div className="grid grid-cols-5">
           {NAV.map((n) => {
             const st = status(n.step);
             const on = active(n.href);
             return (
+              n.href === "/episodes" ? (
+                <Link key={n.href} href="/episodes?now=1" aria-current={on ? "page" : undefined} className="flex min-h-16 flex-col items-center justify-center gap-1 whitespace-nowrap text-[11px] font-semibold text-brand">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-brand-ink shadow-sm"><Icon name="plus" size={20} strokeWidth={2.25} /></span>
+                  Log symptom
+                </Link>
+              ) : (
               <Link
                 key={n.href}
                 href={n.href}
@@ -108,6 +115,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </span>
                 {n.label}
               </Link>
+              )
             );
           })}
         </div>
@@ -155,30 +163,84 @@ function StepDot({ index, status }: { index: number; status: "done" | "current" 
   );
 }
 
-function AccountMenu({ name, picture }: { name: string | null; picture: string | null }) {
+/** The person button at the top right: switch case, edit the profile, help, contact, sign out. */
+function UserMenu({ name, picture, signedIn }: { name: string | null; picture: string | null; signedIn: boolean }) {
+  const c = useCase();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const [cases, setCases] = useState<CaseEntry[]>([]);
+  const box = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    setCases(listCases().filter((x) => x.id !== currentCaseId()));
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !box.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+
+  const item = "flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left hover:bg-surface-2";
+  const initial = (name ?? c.patient?.name ?? "?").slice(0, 1).toUpperCase();
+
   return (
-    <details className="relative">
-      <summary className="flex h-9 cursor-pointer items-center rounded-lg px-1 hover:bg-surface-2" aria-label="Account">
+    <div ref={box} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="flex h-9 items-center gap-2 rounded-lg border border-line-strong py-1 pl-1 pr-2 hover:bg-surface-2"
+      >
         {picture ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={picture} alt="" className="h-7 w-7 rounded-full" referrerPolicy="no-referrer" />
         ) : (
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-xs font-bold text-brand-ink">
-            {(name ?? "?").slice(0, 1).toUpperCase()}
-          </span>
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand text-xs font-bold text-brand-ink">{initial}</span>
         )}
-      </summary>
-      <div className="absolute right-0 z-40 mt-2 w-64 rounded-xl border border-line bg-surface p-3 shadow-[0_8px_24px_rgba(20,34,33,0.10)]">
-        <p className="truncate font-semibold">{name}</p>
-        <div className="mt-2 space-y-0.5 border-t border-line pt-2 text-sm">
-          <Link href="/help" className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-surface-2"><Icon name="help" size={16} />How to use Lacuno</Link>
-          <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`} className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-surface-2"><Icon name="mail" size={16} />Contact us</a>
+        {c.patient && <span className="hidden max-w-36 truncate font-medium md:block">{c.patient.name}</span>}
+        <Icon name="chevronDown" size={16} className="text-muted" />
+      </button>
+
+      {open && (
+        <div role="menu" className="absolute right-0 z-40 mt-2 w-72 rounded-xl border border-line bg-surface p-2 text-[0.95rem] shadow-[0_8px_24px_rgba(20,34,33,0.12)]">
+          {c.patient && (
+            <div className="px-2.5 pb-2 pt-1.5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted">Caring for</p>
+              <p className="mt-0.5 flex items-center gap-2 font-semibold">
+                <span className="truncate">{c.patient.name}</span>
+                {c.patient.isSample && <Pill tone="warn">Sample</Pill>}
+              </p>
+            </div>
+          )}
+          {c.patient && <Link href="/setup" className={item}><Icon name="pencil" size={16} />Edit profile</Link>}
+          {cases.map((x) => (
+            <button key={x.id} className={item} onClick={() => { switchCase(x.id); setOpen(false); router.push("/case"); }}>
+              <Icon name="user" size={16} />Switch to {x.name}
+            </button>
+          ))}
+          <button className={item} onClick={() => { newCase(); setOpen(false); router.push("/setup"); }}>
+            <Icon name="plus" size={16} />New case
+          </button>
+          <div className="my-1.5 border-t border-line" />
+          <Link href="/help" className={item}><Icon name="help" size={16} />How to use Lacuno</Link>
+          <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`} className={item}><Icon name="mail" size={16} />Contact us</a>
+          {signedIn && (
+            <>
+              <div className="my-1.5 border-t border-line" />
+              {name && <p className="truncate px-2.5 py-1 text-sm text-muted">Signed in as {name}</p>}
+              <a href="/auth/logout" className={item}><Icon name="arrowRight" size={16} />Sign out</a>
+            </>
+          )}
         </div>
-        <a href="/auth/logout" className={`${buttonClass("secondary", "sm")} mt-3 w-full`}>
-          Sign out
-        </a>
-      </div>
-    </details>
+      )}
+    </div>
   );
 }
 
