@@ -111,6 +111,11 @@ export async function addHealthSummary(text: string, fileName: string) {
 
 export async function loadSample(key: string) {
   const sample = SAMPLE_CASES.find((s) => s.key === key)!;
+  // A sample gets its own case: reuse an earlier copy of the same sample, or the
+  // current case if it's still empty; otherwise open a new one.
+  const existing = db.listCases().find((c) => c.isSample && c.name === sample.patient.name);
+  if (existing) db.switchCase(existing.id);
+  else if (await db.getPatient()) db.newCase();
   await db.clearAll();
   await db.savePatient({ ...sample.patient, isSample: true, updatedAt: Date.now() });
   const now = Date.now();

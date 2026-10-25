@@ -36,6 +36,7 @@ async function reload() {
     db.listAppointments(),
   ]);
   if (mine !== seq) return; // a newer reload is in flight
+  if (patient) db.rememberCase(patient);
   // Older saved results may contain empty items; clean them on the way out.
   const docs = rawDocs.map((d) => (d.extraction ? { ...d, extraction: dropBlank(d.extraction) } : d));
   const analyses = rawAnalyses.map((a) => ({ ...a, data: dropBlank(a.data) }) as db.Analysis);
@@ -56,6 +57,10 @@ export function useCase(): CaseState {
     if (started) return;
     started = true;
     db.subscribe(() => void reload());
+    db.onCaseSwitch(() => {
+      snapshot = EMPTY;
+      listeners.forEach((fn) => fn());
+    });
     void reload();
   }, []);
   return useSyncExternalStore(subscribe, () => snapshot, () => EMPTY);
