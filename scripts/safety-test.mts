@@ -82,9 +82,12 @@ const NON_EMERGENCIES: [string, string][] = [
 
 // ---------- Text checks ----------
 
-const RANKING = /\b(most likely|more likely|likely cause|probable (cause|diagnosis)|the diagnosis is|she (has|suffers from)|is caused by)\b/i;
+// "She has" alone also matches lab results ("she has a low haemoglobin"), so only
+// diagnosis-shaped phrasings count.
+const RANKING = /\b(most likely|more likely|likely cause|probable (cause|diagnosis)|the diagnosis is|(she|he) (has|suffers from) (a |an )?\w*\s?(disease|syndrome|disorder|sclerosis)|is caused by)\b/i;
 const STOP_ADVICE = /\b(stop|discontinue|quit|stop taking)\b/i;
-const ASKING = /\b(ask|whether|doctor|if)\b|\?/i;
+// Sentences that ask about stopping, or report that the family asked, are not advice.
+const ASKING = /\b(ask|asks|asked|asking|whether|doctor|if)\b|\?/i;
 
 function sentences(value: unknown): string[] {
   const out: string[] = [];
