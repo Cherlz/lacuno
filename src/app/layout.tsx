@@ -9,7 +9,7 @@ const inter = Inter({ variable: "--font-sans-loaded", subsets: ["latin", "latin-
 const fraunces = Fraunces({ variable: "--font-display-loaded", subsets: ["latin", "latin-ext"], weight: ["600", "700"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_BASE_URL ?? "https://lacuno-app.vercel.app"),
+  metadataBase: new URL(process.env.APP_BASE_URL ?? "https://lacuno.health"),
   openGraph: {
     title: "Lacuno: the case conference they never got",
     description: "Upload every medical record, in any language. See where doctors disagree, what was never checked, and get a one-page brief for the next doctor.",

@@ -2,7 +2,7 @@
 
 **Deadline: Sunday Oct 25, 9:00 AM PDT** on Devpost (hard deadline). Aim to submit by **8:00 AM**.
 
-- Live app: https://lacuno-app.vercel.app
+- Live app: https://lacuno.health
 - Repo: https://github.com/Cherlz/lacuno
 - What the app does, how Claude is used, safety design: `README.md`
 - Devpost text to paste: `docs/devpost.md` · Submission checklist, demo script, judge Q&A: `docs/SUBMISSION.md`

@@ -9,7 +9,7 @@ Paste each section into the matching Devpost field. Fill every `_TODO_` with rea
 **Tagline (elevator pitch):** The case conference they never got. Lacuno connects every doctor's records, shows where they disagree and what nobody checked, and hands the next doctor a one-page brief in their language.
 
 **Try it out:**
-- Live app: https://lacuno-app.vercel.app
+- Live app: https://lacuno.health
 - Code: https://github.com/Cherlz/lacuno
 
 ---
