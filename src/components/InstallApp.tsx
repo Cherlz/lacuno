@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Icon } from "./icons";
 import { Button } from "./ui";
 
 type InstallPrompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
@@ -55,17 +56,18 @@ export function InstallApp() {
   };
 
   return (
-    <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4">
-      <div className="min-w-0">
-        <p className="font-semibold">📲 Get the Lacuno app</p>
+    <section className="flex flex-wrap items-center gap-3">
+      <Icon name="phone" size={20} className="text-muted" />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">Get the Lacuno app</p>
         <p className="text-sm text-muted">Opens from your home screen, full-screen. No app store needed.</p>
       </div>
-      <Button variant="secondary" onClick={install}>Install</Button>
+      <Button variant="secondary" size="sm" onClick={install}>Install</Button>
       {showSteps && (
-        <div className="w-full rounded-xl bg-surface-2 p-3 text-sm">
+        <div className="w-full rounded-lg bg-surface-2 p-3 text-sm">
           {env.ios ? (
             <ol className="list-decimal space-y-1 pl-5">
-              <li>In Safari, tap the <strong>Share</strong> button (square with an arrow ⬆).</li>
+              <li>In Safari, tap the <strong>Share</strong> button (the square with an arrow).</li>
               <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
               <li>Tap <strong>Add</strong>. Lacuno appears on your home screen.</li>
             </ol>

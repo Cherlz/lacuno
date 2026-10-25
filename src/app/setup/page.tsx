@@ -2,12 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, Card, PageTitle, Spinner } from "@/components/ui";
+import { Button, Field, PageTitle, Spinner, field } from "@/components/ui";
 import { clearAll, savePatient } from "@/lib/db";
 import { LANGUAGES } from "@/lib/languages";
 import { useCase } from "@/lib/useCase";
 
-const field = "mt-1 block w-full rounded-xl border border-line bg-surface px-3 min-h-12 text-base focus:border-brand focus:outline-none";
 
 export default function Setup() {
   const router = useRouter();
@@ -39,43 +38,49 @@ export default function Setup() {
   return (
     <div className="mx-auto max-w-xl">
       <PageTitle title={patient ? "Patient profile" : "Start a case"} subtitle="Who is this for, and which languages do you need?" />
-      <form onSubmit={save} className="space-y-4">
-        <Card className="space-y-4">
-          <label className="block font-medium">
-            Name or nickname
-            <input required className={field} value={form.name} onChange={set("name")} placeholder="e.g. Mum" />
-          </label>
-          <label className="block font-medium">
-            Age
-            <input className={field} inputMode="numeric" value={form.age} onChange={set("age")} placeholder="e.g. 58" />
-          </label>
-          <label className="block font-medium">
-            Main problems, in your own words
-            <textarea className={`${field} min-h-24 py-2`} value={form.mainComplaints} onChange={set("mainComplaints")} placeholder="e.g. dizziness, tiredness and weak legs for 3 years" />
-          </label>
-        </Card>
-        <Card className="space-y-4">
-          <label className="block font-medium">
-            Family language
-            <span className="block text-sm font-normal text-muted">Used for summaries, the family brief and voice logging.</span>
+      <form onSubmit={save} className="space-y-8">
+        <fieldset className="space-y-5">
+          <legend className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">The patient</legend>
+          <div className="grid gap-5 sm:grid-cols-[1fr_8rem]">
+            <Field label="Name or nickname">
+              <input required className={field} value={form.name} onChange={set("name")} placeholder="e.g. Mum" autoFocus={!patient} />
+            </Field>
+            <Field label="Age">
+              <input className={field} inputMode="numeric" value={form.age} onChange={set("age")} placeholder="e.g. 58" />
+            </Field>
+          </div>
+          <Field label="Main problems, in your own words">
+            <textarea className={`${field} min-h-24 py-2.5`} value={form.mainComplaints} onChange={set("mainComplaints")} placeholder="e.g. dizziness, tiredness and weak legs for 3 years" />
+          </Field>
+        </fieldset>
+
+        <fieldset className="space-y-5 border-t border-line pt-8">
+          <legend className="sr-only">Languages</legend>
+          <p className="text-sm font-semibold uppercase tracking-wider text-muted">Languages</p>
+          <Field label="Family language" hint="Used for summaries, the family brief and voice logging.">
             <select className={field} value={form.familyLanguage} onChange={set("familyLanguage")}>
               {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.native} — {l.name}</option>)}
             </select>
-          </label>
-          <label className="block font-medium">
-            Next doctor&apos;s language
-            <span className="block text-sm font-normal text-muted">The doctor brief is written in this language.</span>
+          </Field>
+          <Field label="Next doctor's language" hint="The doctor brief is written in this language.">
             <select className={field} value={form.doctorLanguage} onChange={set("doctorLanguage")}>
               {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.native} — {l.name}</option>)}
             </select>
-          </label>
-        </Card>
-        <p className="text-sm text-muted">Everything is saved only on this device. Nothing is stored on our server.</p>
-        <Button type="submit" className="w-full text-lg">{patient ? "Save" : "Continue to records"}</Button>
+          </Field>
+        </fieldset>
+
+        <div className="space-y-3 border-t border-line pt-6">
+          <Button type="submit" size="lg" className="w-full">{patient ? "Save changes" : "Continue to records"}</Button>
+          <p className="text-center text-sm text-muted">Everything is saved only on this device. Nothing is stored on our server.</p>
+        </div>
         {patient && (
-          <Button type="button" variant="ghost" className="w-full text-danger" onClick={reset}>
-            Delete case file from this device
-          </Button>
+          <div className="border-t border-line pt-6">
+            <p className="font-semibold">Delete this case</p>
+            <p className="mt-0.5 text-sm text-muted">Removes the profile, records, review and brief from this device. This can&apos;t be undone.</p>
+            <Button type="button" variant="secondary" size="sm" className="mt-3 border-danger/30 text-danger! hover:bg-danger-soft" onClick={reset}>
+              Delete case file
+            </Button>
+          </div>
         )}
       </form>
     </div>
