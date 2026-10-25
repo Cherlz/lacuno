@@ -75,7 +75,7 @@ export async function factCheck<T>(analysis: T, caseFile: CasePayload): Promise<
 
 Verdicts:
 - "supported": everything it says is in the cited records (or, for statements with no sources, it is a neutral question or practical item).
-- "overstated": the gist is in the records but it says more than they do (e.g. turns "suspected" into "has", adds a number or detail not in the record). Give "corrected", rewritten in the same language to say only what the records support.
+- "overstated": the gist is in the records but it says more than they do (e.g. turns "suspected" into "has", adds a number or detail not in the record). Give "corrected", rewritten in the same language to say only what the records support. Keep the same shape: if the statement has parts separated by " — ", keep the same number of parts in the same order, and keep it as short as the original.
 - "unsupported": the cited records do not contain this.
 - "diagnostic": it states or implies what the patient has, which cause is more likely, or tells them to start, stop or change a treatment. Neutral questions for a doctor ("Could B12 be checked?") are fine and are "supported".
 
@@ -107,8 +107,14 @@ export function applyVerdicts(result: unknown, statements: Statement[], verdicts
       if (typeof item === "string") parent[index] = v.corrected;
       else {
         const rec = item as Record<string, unknown>;
-        const field = MAIN_FIELDS.find((f) => typeof rec[f] === "string");
-        if (field) rec[field] = v.corrected;
+        // The checker saw the fields joined with " — "; put each part back in its own field.
+        const fields = Object.keys(rec).filter((k) => k !== "source_ids" && typeof rec[k] === "string");
+        const parts = v.corrected.split(" — ");
+        if (parts.length === fields.length) fields.forEach((f, i) => (rec[f] = parts[i].trim()));
+        else {
+          const field = MAIN_FIELDS.find((f) => typeof rec[f] === "string");
+          if (field) rec[field] = parts[0].trim();
+        }
       }
       corrected++;
     } else if (v.verdict !== "overstated") {
