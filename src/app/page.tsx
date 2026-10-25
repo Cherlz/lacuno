@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useAccount } from "@/components/Account";
+import { Icon, lensIcon } from "@/components/icons";
+import { buttonClass } from "@/components/ui";
 import { SUPPORT_EMAIL } from "@/lib/contact";
 import { LENSES } from "@/lib/lenses";
 
@@ -13,64 +15,70 @@ export default function Landing() {
     : { href: "/case", label: "Open my case" };
 
   return (
-    <div className="space-y-24 pb-8">
-      {/* Hero */}
-      <section className="grid items-center gap-10 pt-6 lg:grid-cols-[1.1fr_1fr] lg:pt-12">
+    <div className="pb-10">
+      {/* Hero: what it is, who it's for, and a real look at the output. */}
+      <section className="grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:py-20">
         <div>
-          <p className="mb-3 inline-flex rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">
-            For families caring for someone without a diagnosis
-          </p>
-          <h1 className="font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-            Every doctor saw a piece. <span className="text-brand">Lacuno shows the whole story.</span>
+          <p className="text-sm font-semibold text-brand">For families caring for someone without a diagnosis</p>
+          <h1 className="mt-3 font-display text-[2.35rem] font-semibold leading-[1.1] tracking-tight sm:text-5xl">
+            Every doctor saw a piece. Lacuno shows the whole story.
           </h1>
-          <p className="mt-5 max-w-xl text-lg text-muted sm:text-xl">
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
             Upload every record, in any language. See where the doctors disagree, what nobody has checked yet, and hand
             the next doctor a one-page brief in their own language.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a href={primary.href} className="inline-flex min-h-14 items-center justify-center rounded-xl bg-brand px-8 text-lg font-semibold text-brand-ink hover:opacity-90">
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a href={primary.href} className={buttonClass("primary", "lg")}>
               {primary.label}
+              <Icon name="arrowRight" size={18} />
             </a>
-            <a href="#how" className="inline-flex min-h-14 items-center justify-center rounded-xl border border-line bg-surface px-8 text-lg font-semibold hover:bg-surface-2">
+            <a href="#how" className="font-semibold text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
               See how it works
             </a>
           </div>
-          <p className="mt-4 text-sm text-muted">Free · Records stay on your device · Never a diagnosis</p>
+          <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted">
+            {["Free", "Records stay on your device", "Never a diagnosis"].map((t) => (
+              <li key={t} className="flex items-center gap-1.5"><Icon name="check" size={16} className="text-brand" />{t}</li>
+            ))}
+          </ul>
         </div>
-        <HeroArt />
+        <BriefPreview />
       </section>
 
       {/* Problem */}
-      <section className="mx-auto max-w-4xl text-center">
-        <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">Nobody holds the whole case. Except you.</h2>
-        <div className="mt-8 grid gap-4 text-left sm:grid-cols-3">
+      <section className="grid gap-8 border-t border-line py-16 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+        <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-[2.2rem]">
+          Nobody holds the whole case. Except you.
+        </h2>
+        <dl className="divide-y divide-line">
           {[
-            ["🩺", "Each specialist sees one slice", "The ear doctor, the bone doctor, the neurologist. Each looks through their own lens and rarely sees the others' notes."],
-            ["⏱️", "Every visit starts from zero", "Short appointments, long histories. Details between visits get lost."],
-            ["📁", "The family carries the papers", "Handwritten notes, lab printouts, different clinics, sometimes different languages."],
-          ].map(([icon, title, body]) => (
-            <div key={title} className="rounded-2xl border border-line bg-surface p-5">
-              <p className="text-3xl" aria-hidden>{icon}</p>
-              <h3 className="mt-3 text-lg font-bold">{title}</h3>
-              <p className="mt-1 text-muted">{body}</p>
+            ["Each specialist sees one slice", "The ear doctor, the bone doctor, the neurologist. Each looks through their own lens and rarely sees the others' notes."],
+            ["Every visit starts from zero", "Short appointments, long histories. Details between visits get lost."],
+            ["The family carries the papers", "Handwritten notes, lab printouts, different clinics, sometimes different languages."],
+          ].map(([title, body]) => (
+            <div key={title} className="py-5 first:pt-0 last:pb-0">
+              <dt className="font-semibold">{title}</dt>
+              <dd className="mt-1 text-muted">{body}</dd>
             </div>
           ))}
-        </div>
+        </dl>
       </section>
 
       {/* How it works */}
-      <section id="how" className="scroll-mt-24">
-        <h2 className="text-center font-display text-3xl font-bold tracking-tight sm:text-4xl">How it works</h2>
-        <p className="mt-2 text-center text-lg text-muted">Three steps, about 15 minutes the first time.</p>
-        <ol className="mt-10 grid gap-6 lg:grid-cols-3">
+      <section id="how" className="scroll-mt-20 border-t border-line py-16">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-[2.2rem]">How it works</h2>
+          <p className="text-muted">Three steps, about 15 minutes the first time.</p>
+        </div>
+        <ol className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
           {[
-            ["Photograph the records", "Doctor notes, lab results, scan reports, prescriptions. Any language, even handwriting. Lacuno reads each one, and you check it against the original with one tap."],
-            ["Review the case", "See every cause a doctor raised, what fits, what doesn't, and what was never checked. Six specialists each review the whole record and list what they would check."],
-            ["Bring one page to the next doctor", "A brief the doctor can read in a minute, in their language, plus a plain version for the family in yours. Save it as a PDF or show it on your phone."],
+            ["Photograph the records", "Doctor notes, lab results, scan reports, prescriptions. Any language, even handwriting. Lacuno reads each one, and you check it against the original."],
+            ["Review the case", "See every cause a doctor raised, what fits, what doesn't, and what was never checked. Six specialty reviewers each read the whole record."],
+            ["Bring one page to the next doctor", "A brief the doctor can read in a minute, in their language, plus a plain version for the family in yours."],
           ].map(([title, body], i) => (
-            <li key={title} className="relative rounded-2xl border border-line bg-surface p-6">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand font-bold text-brand-ink">{i + 1}</span>
-              <h3 className="mt-4 text-xl font-bold">{title}</h3>
+            <li key={title} className="border-t-2 border-ink pt-4">
+              <span className="text-sm font-semibold tabular-nums text-muted">0{i + 1}</span>
+              <h3 className="mt-1 text-lg font-semibold">{title}</h3>
               <p className="mt-2 text-muted">{body}</p>
             </li>
           ))}
@@ -78,32 +86,30 @@ export default function Landing() {
       </section>
 
       {/* Case conference */}
-      <section className="rounded-3xl bg-brand px-6 py-12 text-brand-ink sm:px-12">
-        <div className="grid items-center gap-10 lg:grid-cols-2">
-          <div>
-            <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">The case conference they never got</h2>
-            <p className="mt-4 text-lg opacity-90">
-              In big hospitals, hard cases get a team review. Most families never get one. Lacuno asks six specialty
-              perspectives to read the whole record. Each lists only what matters to its area: what to check, and what
-              to ask. None of them names a cause.
-            </p>
-          </div>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {LENSES.map((l) => (
-              <li key={l.key} className="flex flex-col items-center gap-2 rounded-2xl bg-white/10 p-4 text-center">
-                <span className="text-3xl" aria-hidden>{l.icon}</span>
-                <span className="font-semibold">{l.name}</span>
-              </li>
-            ))}
-          </ul>
+      <section className="grid gap-10 border-t border-line py-16 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-[2.2rem]">The case conference they never got</h2>
+          <p className="mt-4 text-lg leading-relaxed text-muted">
+            In big hospitals, hard cases get a team review. Most families never get one. Lacuno asks six specialty
+            perspectives to read the whole record. Each lists only what matters to its area: what to check, and what
+            to ask. None of them names a cause.
+          </p>
         </div>
+        <ul className="grid grid-cols-1 gap-px self-start overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2">
+          {LENSES.map((l) => (
+            <li key={l.key} className="flex items-center gap-3 bg-surface px-4 py-4">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-soft text-brand"><Icon name={lensIcon(l.key)} size={20} /></span>
+              <span className="font-medium">{l.name}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* Safety */}
-      <section id="safety" className="scroll-mt-24">
-        <h2 className="text-center font-display text-3xl font-bold tracking-tight sm:text-4xl">Built to be safe</h2>
-        <p className="mt-2 text-center text-lg text-muted">We designed for what could go wrong, not just what goes right.</p>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+      <section id="safety" className="scroll-mt-20 border-t border-line py-16">
+        <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-[2.2rem]">Built to be safe</h2>
+        <p className="mt-2 text-muted">We designed for what could go wrong, not just what goes right.</p>
+        <div className="mt-10 grid gap-x-12 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
           {[
             ["Never a diagnosis", "Lacuno never says what the cause is or which idea is most likely. It organises what your doctors wrote and turns gaps into questions."],
             ["Every claim has a source", "Each point links to the exact page it came from. Anything without a source is removed before you see it."],
@@ -112,46 +118,44 @@ export default function Landing() {
             ["Private by design", "Records are saved on your device, separately for each account. Our server keeps nothing."],
             ["Made for families", "Large buttons, plain words, 17 languages, voice logging, and read-aloud for relatives who struggle with reading."],
           ].map(([title, body]) => (
-            <div key={title} className="flex gap-4 rounded-2xl border border-line bg-surface p-5">
-              <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ok-soft text-ok" aria-hidden>✓</span>
-              <div>
-                <h3 className="text-lg font-bold">{title}</h3>
-                <p className="mt-1 text-muted">{body}</p>
-              </div>
+            <div key={title}>
+              <h3 className="flex items-center gap-2 font-semibold"><Icon name="check" size={18} className="text-brand" />{title}</h3>
+              <p className="mt-1.5 text-muted">{body}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Story + CTA */}
-      <section className="mx-auto max-w-3xl text-center">
-        <blockquote className="font-display text-2xl leading-snug sm:text-3xl">
-          “My mom has had dizziness, fatigue and weakness for years. Different doctors, different ideas, no answer. We
-          built Lacuno so the next doctor sees the whole story.”
-        </blockquote>
-        <p className="mt-3 text-muted">The Lacuno team</p>
-        <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-          <a href={primary.href} className="inline-flex min-h-14 items-center justify-center rounded-xl bg-brand px-8 text-lg font-semibold text-brand-ink hover:opacity-90">
+      <section className="border-t border-line py-16">
+        <figure className="max-w-3xl">
+          <blockquote className="font-display text-2xl leading-snug tracking-tight sm:text-[1.9rem]">
+            “My mom has had dizziness, fatigue and weakness for years. Different doctors, different ideas, no answer. We
+            built Lacuno so the next doctor sees the whole story.”
+          </blockquote>
+          <figcaption className="mt-4 text-muted">The Lacuno team</figcaption>
+        </figure>
+        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <a href={primary.href} className={buttonClass("primary", "lg")}>
             {primary.label}
+            <Icon name="arrowRight" size={18} />
           </a>
-          <Link href="/help" className="inline-flex min-h-14 items-center justify-center rounded-xl border border-line bg-surface px-8 text-lg font-semibold hover:bg-surface-2">
-            Read the guide
-          </Link>
+          <Link href="/help" className="font-semibold underline decoration-line-strong underline-offset-4 hover:decoration-ink">Read the guide</Link>
         </div>
       </section>
 
       <footer className="border-t border-line pt-8 text-sm text-muted">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <p>
-            <strong className="text-ink">Lacuno</strong>, from <em>lacuna</em>: the gap nobody checked.
+            <strong className="font-semibold text-ink">Lacuno</strong>, from <em>lacuna</em>: the gap nobody checked.
           </p>
-          <nav className="flex flex-wrap gap-4">
+          <nav className="flex flex-wrap gap-5">
             <Link href="/help" className="hover:text-ink">How to use</Link>
             {SUPPORT_EMAIL && <Link href="/help#contact" className="hover:text-ink">Contact</Link>}
             <a href="https://github.com/Cherlz/lacuno" className="hover:text-ink">GitHub</a>
           </nav>
         </div>
-        <p className="mt-4">
+        <p className="mt-4 max-w-3xl">
           Lacuno does not give medical advice or diagnoses. Always talk to a doctor about health decisions. In an
           emergency, call your local emergency number.
         </p>
@@ -160,37 +164,45 @@ export default function Landing() {
   );
 }
 
-/** Scattered doctors' notes, connected into one brief. */
-function HeroArt() {
-  const notes = [
-    { x: 85, y: 70, label: "Ear doctor" },
-    { x: 330, y: 50, label: "Lab results" },
-    { x: 80, y: 255, label: "Internist" },
-    { x: 350, y: 270, label: "Neurologist" },
-    { x: 200, y: 370, label: "Bone doctor" },
+/** A miniature of the real doctor brief (fictional sample), so visitors see the output, not an illustration. */
+function BriefPreview() {
+  const rows = [
+    ["Peripheral vertigo (BPPV)", "ENT, Mar 2023", "Hearing test advised, no result on file"],
+    ["Mild anaemia", "Internist, Jan 2024", "High MCV not followed up"],
+    ["Peripheral neuropathy", "Neurologist, Nov 2024", "Vitamin B12 never checked"],
   ];
-  const c = { x: 200, y: 185 };
   return (
-    <div className="relative mx-auto w-full max-w-md" aria-hidden>
-      <svg viewBox="0 0 420 420" className="w-full">
-        {notes.map((n) => (
-          <line key={n.label} x1={n.x} y1={n.y} x2={c.x} y2={c.y} stroke="var(--brand)" strokeWidth="2" strokeDasharray="6 6" opacity="0.5" />
-        ))}
-        {notes.map((n) => (
-          <g key={n.label + "dot"}>
-            <circle cx={n.x} cy={n.y} r="12" fill="var(--surface)" stroke="var(--brand)" strokeWidth="3" />
-            <text x={n.x} y={n.y + 32} textAnchor="middle" fontSize="15" fill="var(--muted)" fontWeight="600">{n.label}</text>
-          </g>
-        ))}
-        <g>
-          <rect x={c.x - 78} y={c.y - 58} width="156" height="116" rx="18" fill="var(--brand)" />
-          <rect x={c.x - 58} y={c.y - 36} width="80" height="9" rx="4" fill="var(--brand-ink)" opacity="0.95" />
-          <rect x={c.x - 58} y={c.y - 18} width="116" height="7" rx="3.5" fill="var(--brand-ink)" opacity="0.6" />
-          <rect x={c.x - 58} y={c.y - 4} width="100" height="7" rx="3.5" fill="var(--brand-ink)" opacity="0.6" />
-          <rect x={c.x - 58} y={c.y + 10} width="108" height="7" rx="3.5" fill="var(--brand-ink)" opacity="0.6" />
-          <text x={c.x} y={c.y + 42} textAnchor="middle" fontSize="15" fill="var(--brand-ink)" fontWeight="700">One brief</text>
-        </g>
-      </svg>
-    </div>
+    <figure aria-label="Example doctor brief (fictional)" className="relative">
+      <div className="rounded-xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(20,34,33,0.04),0_12px_32px_-12px_rgba(20,34,33,0.12)] sm:p-7">
+        <div className="flex items-end justify-between gap-3 border-b-2 border-brand pb-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">Patient-held summary for the doctor</p>
+            <p className="mt-1 font-display text-xl font-semibold">Ibu Sari <span className="font-sans text-base font-normal text-muted">· 58</span></p>
+          </div>
+          <span className="text-xs text-muted">Sample</span>
+        </div>
+        <p className="mt-4 border-l-2 border-brand pl-3 text-[0.95rem] font-medium leading-relaxed">
+          Three years of dizziness, fatigue and leg weakness. Seen by four specialists; five possibilities raised, none confirmed.
+        </p>
+        <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-brand">Possibilities previously raised</p>
+        <table className="mt-2 w-full text-left text-sm">
+          <tbody>
+            {rows.map(([p, by, status]) => (
+              <tr key={p} className="border-b border-line align-top last:border-0">
+                <td className="py-2 pr-3 font-semibold">{p}</td>
+                <td className="hidden py-2 pr-3 text-muted sm:table-cell">{by}</td>
+                <td className="py-2 text-warn">{status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-brand">Questions for today</p>
+        <ol className="mt-2 space-y-1.5 text-sm">
+          <li className="flex gap-2"><span className="font-semibold tabular-nums text-brand">1</span>Can vitamin B12 be checked, given the high MCV and numb feet?</li>
+          <li className="flex gap-2"><span className="font-semibold tabular-nums text-brand">2</span>Could blood pressure be measured lying and standing today?</li>
+        </ol>
+      </div>
+      <figcaption className="mt-3 text-center text-sm text-muted">What a brief looks like, from the fictional sample case. In the app, every line links to its source page.</figcaption>
+    </figure>
   );
 }

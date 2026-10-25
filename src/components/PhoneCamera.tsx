@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import { addFiles } from "@/lib/actions";
 import { startReceiver, type LinkStatus } from "@/lib/phoneLink";
+import { Icon } from "./icons";
 import { Button, Spinner } from "./ui";
 
 /** Laptop: "Use my phone's camera" shows a QR code; photos taken on the phone arrive here as records. */
@@ -11,7 +12,7 @@ export function PhoneCameraButton() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant="secondary" className="min-h-11" onClick={() => setOpen(true)}>📱 Use my phone</Button>
+      <Button variant="secondary" size="sm" onClick={() => setOpen(true)}><Icon name="phone" size={16} />Use my phone</Button>
       {open && <PhoneCameraDialog onClose={() => setOpen(false)} />}
     </>
   );
@@ -55,16 +56,16 @@ function PhoneCameraDialog({ onClose }: { onClose: () => void }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-      <div role="dialog" aria-modal className="w-full max-w-md space-y-4 rounded-3xl bg-surface p-6 text-center" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-xl font-bold">Use your phone&apos;s camera</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4" onClick={onClose}>
+      <div role="dialog" aria-modal aria-labelledby="phone-title" className="w-full max-w-md space-y-4 rounded-xl border border-line bg-surface p-6 text-center shadow-[0_16px_48px_rgba(20,34,33,0.18)]" onClick={(e) => e.stopPropagation()}>
+        <h2 id="phone-title" className="text-lg font-semibold">Use your phone&apos;s camera</h2>
         {status === "error" ? (
           <p className="text-danger">
             Couldn&apos;t start the phone link{detail ? ` (${detail})` : ""}. Instead, open Lacuno on your phone and add the photos there.
           </p>
         ) : status === "connected" ? (
           <div className="space-y-2">
-            <p className="text-lg font-semibold text-ok">✓ Phone connected</p>
+            <p className="flex items-center justify-center gap-2 text-lg font-semibold text-ok"><Icon name="check" />Phone connected</p>
             <p>Take photos on your phone. They appear here as records{received ? `: ${received} received so far` : ""}.</p>
           </div>
         ) : status === "closed" ? (
@@ -74,7 +75,7 @@ function PhoneCameraDialog({ onClose }: { onClose: () => void }) {
             <p className="text-muted">Scan this with your phone&apos;s camera. Photos go straight from your phone to this computer, encrypted.</p>
             {qr ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={qr} alt="QR code to connect your phone" className="mx-auto rounded-xl border border-line" width={260} height={260} />
+              <img src={qr} alt="QR code to connect your phone" className="mx-auto rounded-lg border border-line" width={260} height={260} />
             ) : (
               <div className="flex h-[260px] items-center justify-center"><Spinner label="Preparing…" /></div>
             )}
@@ -82,10 +83,10 @@ function PhoneCameraDialog({ onClose }: { onClose: () => void }) {
             {url && (
               <button
                 data-phone-link={url}
-                className="text-sm text-brand underline"
+                className="text-sm font-medium text-brand underline underline-offset-2"
                 onClick={() => void navigator.clipboard.writeText(url).then(() => setCopied(true))}
               >
-                {copied ? "✓ Link copied: send it to your phone" : "Can't scan? Copy the link instead"}
+                {copied ? "Link copied. Send it to your phone." : "Can't scan? Copy the link instead"}
               </button>
             )}
           </>

@@ -6,10 +6,11 @@ import { useState } from "react";
 import { useAccount } from "@/components/Account";
 import { Appointments } from "@/components/Appointments";
 import { InstallApp } from "@/components/InstallApp";
-import { Button, ButtonLink, Card, Spinner } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { ButtonLink, PageTitle, SectionHeader, Spinner, buttonClass } from "@/components/ui";
 import { loadSample } from "@/lib/actions";
 import { languageByCode } from "@/lib/languages";
-import { nextAction } from "@/lib/progress";
+import { nextAction, stepStatus, type StepKey } from "@/lib/progress";
 import { SAMPLE_CASES } from "@/lib/samples";
 import { useCase } from "@/lib/useCase";
 
@@ -30,81 +31,117 @@ function Welcome() {
     router.push("/records");
   };
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <section className="pt-2">
-        <h1 className="font-display text-3xl font-bold tracking-tight">Let&apos;s start your case</h1>
-        <p className="mt-2 text-lg text-muted">Add the person you&apos;re caring for, then their records. Or try a sample first.</p>
-      </section>
+    <div className="mx-auto max-w-xl">
+      <PageTitle title="Let's start your case" subtitle="Add the person you're caring for, then their records. Or try a sample first." />
 
       {needsSignIn ? (
-        <Card className="space-y-3">
-          <a href="/auth/login?screen_hint=signup" className="flex min-h-14 w-full items-center justify-center rounded-xl bg-brand text-lg font-semibold text-brand-ink hover:opacity-90">
-            Create a free account
-          </a>
-          <a href="/auth/login" className="flex min-h-12 w-full items-center justify-center rounded-xl border border-line bg-surface font-semibold hover:bg-surface-2">
-            I already have an account — sign in
-          </a>
-          <p className="text-center text-sm text-muted">Your account keeps your case files separate. The records themselves stay on your device.</p>
-        </Card>
+        <div className="space-y-3">
+          <a href="/auth/login?screen_hint=signup" className={`${buttonClass("primary", "lg")} w-full`}>Create a free account</a>
+          <a href="/auth/login" className={`${buttonClass("secondary", "lg")} w-full`}>I already have an account</a>
+          <p className="text-sm text-muted">Your account keeps your case files separate. The records themselves stay on this device.</p>
+        </div>
       ) : (
-        <Card className="space-y-3">
-          <ButtonLink href="/setup" className="min-h-14 w-full text-lg">
-            Start a case
-          </ButtonLink>
-          <p className="text-center text-muted">Takes about a minute. You need photos or PDFs of past records.</p>
-        </Card>
+        <div className="space-y-3">
+          <ButtonLink href="/setup" size="lg" className="w-full">Start a case</ButtonLink>
+          <p className="text-sm text-muted">Takes about a minute. You&apos;ll need photos or PDFs of past records.</p>
+        </div>
       )}
 
-      <Card>
-        <h2 className="font-semibold">Or explore a sample case</h2>
-        <p className="mb-3 text-sm text-muted">Fictional records, clearly labelled. Loading one replaces anything on this device.</p>
-        <div className="grid gap-2 sm:grid-cols-2">
+      <section className="mt-12 border-t border-line pt-8">
+        <SectionHeader title="Or explore a sample case" description="Fictional records, clearly labelled. Loading one replaces anything on this device." />
+        <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
           {SAMPLE_CASES.map((s) => (
-            <Button key={s.key} variant="secondary" className="h-auto flex-col items-start py-3 text-left" disabled={!!loading}
-              onClick={() => (needsSignIn ? (window.location.href = "/auth/login") : start(s.key))}>
-              <span>{loading === s.key ? <Spinner label="Loading…" /> : s.label}</span>
-              <span className="text-xs font-normal text-muted">{s.description}</span>
-            </Button>
+            <li key={s.key}>
+              <button
+                disabled={!!loading}
+                onClick={() => (needsSignIn ? (window.location.href = "/auth/login") : start(s.key))}
+                className="flex w-full items-center gap-4 px-4 py-3.5 text-left transition-colors hover:bg-surface-2 disabled:opacity-60"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold">{s.label}</span>
+                  <span className="block text-sm text-muted">{s.description}</span>
+                </span>
+                {loading === s.key ? <Spinner /> : <Icon name="chevronRight" className="text-muted" />}
+              </button>
+            </li>
           ))}
-        </div>
-      </Card>
-
+        </ul>
+      </section>
     </div>
   );
 }
 
 function Dashboard() {
-  const { patient, docs, episodes } = useCase();
+  const c = useCase();
+  const { patient, docs, episodes } = c;
   const p = patient!;
+  const next = nextAction(c);
+  const confirmed = docs.filter((d) => d.confirmed).length;
+  const readable = docs.filter((d) => d.status === "ready").length;
+  const reading = docs.filter((d) => d.status === "extracting").length;
+  const hasReview = c.analyses.some((a) => a.id === "map");
+  const hasBrief = c.analyses.some((a) => a.id === "brief");
+  const steps: { key: StepKey; label: string; detail: string; href: string }[] = [
+    { key: "records", label: "Records", detail: !docs.length ? "None added yet" : `${confirmed} of ${readable} checked${reading ? ` · ${reading} reading` : ""}`, href: "/records" },
+    { key: "review", label: "Review", detail: hasReview ? "Done" : "Not started", href: "/review" },
+    { key: "brief", label: "Doctor brief", detail: hasBrief ? "Written" : "Not written yet", href: "/brief" },
+  ];
+
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{p.name}</h1>
-        <p className="text-muted">
-          {p.age && `${p.age} · `}
-          {p.mainComplaints}
-        </p>
-      </div>
+    <div className="mx-auto max-w-2xl">
+      <PageTitle
+        title={p.name}
+        subtitle={[p.age && `${p.age} years`, p.mainComplaints].filter(Boolean).join(" · ")}
+        action={<ButtonLink href="/setup" variant="ghost" size="sm"><Icon name="pencil" size={16} />Edit</ButtonLink>}
+      />
 
       <NextCard />
 
-      <Appointments />
+      <section className="mt-10">
+        <SectionHeader title="Progress" />
+        <ol className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+          {steps.map((st, i) => {
+            const status = stepStatus(st.key, next);
+            return (
+              <li key={st.key}>
+                <Link href={st.href} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-surface-2">
+                  <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                    status === "done" ? "bg-ok text-white" : status === "current" ? "bg-brand text-brand-ink" : "border border-line-strong text-muted"
+                  }`}>
+                    {status === "done" ? <Icon name="check" size={13} strokeWidth={3} /> : i + 1}
+                  </span>
+                  <span className="flex-1 font-medium">{st.label}</span>
+                  <span className="text-sm text-muted">{st.detail}</span>
+                  <Icon name="chevronRight" size={16} className="text-muted" />
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
 
-      <ButtonLink href="/episodes?now=1" variant="secondary" className="min-h-14 w-full text-lg">
-        ➕ Log a symptom now
-      </ButtonLink>
+      <section className="mt-10">
+        <SectionHeader title="Next doctor visit" />
+        <Appointments />
+      </section>
 
-      <p className="text-center text-sm text-muted">
-        {docs.length} record{docs.length === 1 ? "" : "s"} · {episodes.length} symptom{episodes.length === 1 ? "" : "s"} logged · family reads {languageByCode(p.familyLanguage).native}, doctor reads{" "}
-        {languageByCode(p.doctorLanguage).native} ·{" "}
-        <Link href="/setup" className="underline">change</Link>
-      </p>
+      <section className="mt-10">
+        <SectionHeader
+          title="Symptom log"
+          description={episodes.length ? `${episodes.length} episode${episodes.length === 1 ? "" : "s"} logged. They're included in the next brief.` : "Note dizzy spells or other episodes while they're fresh."}
+          action={<ButtonLink href="/episodes?now=1" variant="secondary" size="sm"><Icon name="plus" size={16} />Log symptom</ButtonLink>}
+        />
+      </section>
 
-      <InstallApp />
-
-      <p className="text-center text-sm">
-        <Link href="/impact" className="text-muted underline">Testing with a family or doctor? Record feedback</Link>
-      </p>
+      <div className="mt-10 space-y-4 border-t border-line pt-6">
+        <InstallApp />
+        <p className="text-sm text-muted">
+          Family reads {languageByCode(p.familyLanguage).native} · doctor reads {languageByCode(p.doctorLanguage).native} ·{" "}
+          <Link href="/setup" className="underline underline-offset-2 hover:text-ink">Change</Link>
+          <span className="mx-2" aria-hidden>·</span>
+          <Link href="/impact" className="underline underline-offset-2 hover:text-ink">Tester feedback</Link>
+        </p>
+      </div>
     </div>
   );
 }
@@ -112,18 +149,18 @@ function Dashboard() {
 function NextCard() {
   const c = useCase();
   const next = nextAction(c);
+  const done = next.step === "done";
   return (
-    <section className={`rounded-2xl p-5 ${next.step === "done" ? "bg-ok-soft" : "bg-brand-soft"}`}>
-      <p className={`text-sm font-bold uppercase tracking-wide ${next.step === "done" ? "text-ok" : "text-brand"}`}>
-        {next.step === "done" ? "All done" : "Do this next"}
-      </p>
-      <h2 className="mt-1 text-2xl font-bold">{next.title}</h2>
-      <p className="mt-1 text-lg">{next.detail}</p>
+    <section className={`rounded-xl border p-5 sm:p-6 ${done ? "border-ok/25 bg-ok-soft" : "border-brand/20 bg-brand-soft"}`}>
+      <p className={`text-sm font-semibold ${done ? "text-ok" : "text-brand"}`}>{done ? "All done" : "Next step"}</p>
+      <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">{next.title}</h2>
+      <p className="mt-1 max-w-lg text-muted">{next.detail}</p>
       {next.waiting ? (
-        <div className="mt-3"><Spinner label="Working…" /></div>
+        <div className="mt-4"><Spinner label="Working…" /></div>
       ) : (
-        <ButtonLink href={next.href} className="mt-4 min-h-14 w-full text-lg sm:w-auto sm:px-8">
-          {next.step === "done" ? "Open the brief" : "Go"}
+        <ButtonLink href={next.href} size="lg" className="mt-5 w-full sm:w-auto">
+          {done ? "Open the brief" : next.step === "records" ? "Go to records" : next.step === "review" ? "Go to review" : next.step === "brief" ? "Go to the brief" : "Continue"}
+          <Icon name="arrowRight" size={18} />
         </ButtonLink>
       )}
     </section>

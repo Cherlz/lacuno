@@ -1,41 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f6f5f1;
+  color-scheme: light;
+  /* Neutrals: cool, paper-like. One accent (teal); amber/red/green only carry meaning. */
+  --bg: #f6f7f7;
   --surface: #ffffff;
-  --surface-2: #efeee8;
-  --ink: #1d2729;
-  --muted: #5d6a6c;
-  --line: #dedcd3;
-  --brand: #0e6b68;
+  --surface-2: #f0f3f3;
+  --ink: #142221;
+  --muted: #566665;
+  --line: #e2e7e7;
+  --line-strong: #c9d2d1;
+  --brand: #0b6b66;
+  --brand-hover: #095955;
   --brand-ink: #ffffff;
-  --brand-soft: #dcefed;
-  --warn: #9a5b00;
-  --warn-soft: #fbefd9;
-  --danger: #b3261e;
-  --danger-soft: #fde7e5;
-  --ok: #2e6b2f;
-  --ok-soft: #e3f1e1;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #111617;
-    --surface: #1a2122;
-    --surface-2: #232c2d;
-    --ink: #e8eeee;
-    --muted: #9fb0b1;
-    --line: #2f3a3b;
-    --brand: #4fc2bc;
-    --brand-ink: #062322;
-    --brand-soft: #143534;
-    --warn: #f0b85a;
-    --warn-soft: #3a2c12;
-    --danger: #ff8a80;
-    --danger-soft: #3d1715;
-    --ok: #8fd18f;
-    --ok-soft: #173118;
-  }
+  --brand-soft: #e7f2f1;
+  --warn: #8a5300;
+  --warn-soft: #fdf3e1;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --ok: #24693a;
+  --ok-soft: #e6f3ea;
 }
 
 @theme inline {
@@ -45,6 +29,8 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brand-hover: var(--brand-hover);
   --color-brand: var(--brand);
   --color-brand-ink: var(--brand-ink);
   --color-brand-soft: var(--brand-soft);
@@ -66,16 +52,26 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
 }
+::selection { background: var(--brand-soft); }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
 
-/* The brief prints as a clean one-page document ("Save as PDF"). */
-@media print {
-  @page { margin: 14mm; }
-  body { background: #fff !important; color: #000 !important; }
-  .no-print { display: none !important; }
-  .print-only { display: block !important; }
-  .print-sheet { box-shadow: none !important; border: none !important; padding: 0 !important; background: #fff !important; color: #000 !important; }
-  .print-sheet * { color: #000 !important; }
-  .print-sheet .source-chip { border: none !important; padding: 0 !important; background: none !important; font-size: 9px; color: #555 !important; }
-}
+/* The brief prints as a one-page clinical document ("Save as PDF"): no app chrome,
+   small type, accent colours kept, sources as footnote numbers instead of tags. */
 .print-only { display: none; }
+@media print {
+  @page { size: auto; margin: 12mm 14mm 12mm; }
+  html { font-size: 100%; }
+  body { background: #fff !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  main { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+  .no-print { display: none !important; }
+  .print-only { display: revert !important; }
+  .print-sheet { box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; max-width: none !important; background: #fff !important; }
+  .source-ref { font-size: 6.5pt; color: var(--muted); margin-left: 1px; }
+  a { color: inherit; text-decoration: none; }
+  .break-inside-avoid, tr, li { break-inside: avoid; }
+}

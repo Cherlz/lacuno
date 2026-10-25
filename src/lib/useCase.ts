@@ -3,6 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import * as db from "./db";
 import { buildCasePayload, caseBasis } from "./case";
+import { dropBlank } from "./sources";
 
 export type CaseState = {
   loaded: boolean;
@@ -26,7 +27,7 @@ let started = false;
 let seq = 0;
 async function reload() {
   const mine = ++seq;
-  const [patient, docs, episodes, analyses, feedback, appointments] = await Promise.all([
+  const [patient, rawDocs, episodes, rawAnalyses, feedback, appointments] = await Promise.all([
     db.getPatient(),
     db.listDocs(),
     db.listEpisodes(),
@@ -35,6 +36,9 @@ async function reload() {
     db.listAppointments(),
   ]);
   if (mine !== seq) return; // a newer reload is in flight
+  // Older saved results may contain empty items; clean them on the way out.
+  const docs = rawDocs.map((d) => (d.extraction ? { ...d, extraction: dropBlank(d.extraction) } : d));
+  const analyses = rawAnalyses.map((a) => ({ ...a, data: dropBlank(a.data) }) as db.Analysis);
   const basis = patient ? caseBasis(buildCasePayload(patient, docs, episodes)) : "";
   snapshot = { loaded: true, patient, docs, episodes, analyses, feedback, appointments, basis };
   listeners.forEach((fn) => fn());
