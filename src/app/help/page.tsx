@@ -78,7 +78,8 @@ const FAQ = [
   ["What if it reads something wrong?", "That's why you check every record before it's used. You can fix any line, and every point in the review and brief links back to its original page."],
   ["What if it's an emergency?", "Call your local emergency number first (the Log symptom page has a button that calls the number for the country in your profile). If you log sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, Lacuno shows only: “Seek emergency care now.”"],
   ["Can I use it on another phone?", "Case files stay on the device where you made them. Sign in on the same device to see them."],
-  ["How do I delete everything?", "Open the patient's profile (their name at the top, or Edit on the overview) → Delete case file."],
+  ["Can I keep cases for more than one person?", "Yes. On the overview, tap New case. Each person gets their own records, review and brief; tap a name at the top of the overview to switch."],
+  ["How do I delete everything?", "Open the patient's profile (Edit on the overview) → Delete case file. This deletes only that person's case."],
 ];
 
 export default function Help() {

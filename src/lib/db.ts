@@ -1,6 +1,6 @@
 "use client";
 
-import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import { deleteDB, openDB, type DBSchema, type IDBPDatabase } from "idb";
 import type { Brief, CheckSummary, DisagreementMap, EpisodeStructured, Extraction, LensReview, MedCheck } from "./schemas";
 
 // Everything lives in the browser (IndexedDB). The server never stores case data.
@@ -80,22 +80,43 @@ interface LacunoDB extends DBSchema {
   appointments: { key: string; value: Appointment };
 }
 
-// Each signed-in account gets its own database on this device, so family
-// members sharing a phone don't see each other's case files.
-let dbName = "lacuno";
+// Each signed-in account gets its own databases on this device, so family
+// members sharing a phone don't see each other's case files. Within an account,
+// each case (one person being cared for) has its own database; the first case
+// keeps the account's original database, so older case files still open.
+let account = "lacuno";
+let caseId: string | null = null; // read from localStorage on first use
+const current = () => (caseId ??= store.get(`${account}:current`) ?? "main");
 let dbPromise: Promise<IDBPDatabase<LacunoDB>> | null = null;
+let basePromise: Promise<IDBPDatabase<LacunoDB>> | null = null;
 
-export function setAccount(accountId: string | null) {
-  const name = accountId ? `lacuno:${accountId}` : "lacuno";
-  if (name === dbName) return;
-  dbName = name;
+const caseDbName = (id: string) => (id === "main" ? account : `${account}#${id}`);
+
+// Screens drop what they show the moment the case or account changes.
+const switchListeners = new Set<() => void>();
+export function onCaseSwitch(fn: () => void) {
+  switchListeners.add(fn);
+}
+
+function reset() {
   void dbPromise?.then((d) => d.close());
   dbPromise = null;
+  switchListeners.forEach((fn) => fn());
   changed();
 }
 
-function db() {
-  dbPromise ??= openDB<LacunoDB>(dbName, 3, {
+export function setAccount(accountId: string | null) {
+  const name = accountId ? `lacuno:${accountId}` : "lacuno";
+  if (name === account) return;
+  account = name;
+  void basePromise?.then((d) => d.close());
+  basePromise = null;
+  caseId = null;
+  reset();
+}
+
+function open(name: string) {
+  return openDB<LacunoDB>(name, 3, {
     upgrade(d, oldVersion) {
       if (oldVersion < 1) {
         d.createObjectStore("kv");
@@ -107,7 +128,92 @@ function db() {
       if (oldVersion < 3) d.createObjectStore("appointments", { keyPath: "id" });
     },
   });
+}
+
+/** The current case's database. */
+function db() {
+  dbPromise ??= open(caseDbName(current()));
   return dbPromise;
+}
+
+/** The account's first database, which also holds tester feedback for all cases. */
+function baseDb() {
+  if (current() === "main") return db();
+  basePromise ??= open(account);
+  return basePromise;
+}
+
+// ---------- Case list ----------
+
+export type CaseEntry = { id: string; name: string; isSample: boolean; updatedAt: number };
+
+// Small per-device index of cases (names only), kept in localStorage.
+const store = {
+  get(key: string) {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  set(key: string, value: string | null) {
+    try {
+      if (value === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, value);
+    } catch {}
+  },
+};
+
+export function listCases(): CaseEntry[] {
+  try {
+    const list = JSON.parse(store.get(`${account}:cases`) ?? "[]") as CaseEntry[];
+    return list.sort((a, b) => b.updatedAt - a.updatedAt);
+  } catch {
+    return [];
+  }
+}
+
+function writeCases(list: CaseEntry[]) {
+  store.set(`${account}:cases`, JSON.stringify(list));
+}
+
+export function currentCaseId() {
+  return current();
+}
+
+/** Records the current case's name in the index (called whenever it loads or is saved). */
+export function rememberCase(p: Patient) {
+  const list = listCases();
+  const id = current();
+  const i = list.findIndex((c) => c.id === id);
+  const entry = { id, name: p.name, isSample: p.isSample, updatedAt: i >= 0 ? list[i].updatedAt : p.updatedAt };
+  if (i >= 0 && list[i].name === entry.name && list[i].isSample === entry.isSample) return;
+  if (i >= 0) list[i] = entry;
+  else list.push(entry);
+  writeCases(list);
+}
+
+export function switchCase(id: string) {
+  if (id === current()) return;
+  caseId = id;
+  store.set(`${account}:current`, id);
+  reset();
+}
+
+/** Opens a new, empty case and makes it the current one. */
+export function newCase() {
+  switchCase(newId("case").replace("case_", ""));
+}
+
+/** Deletes the current case and moves to the most recent remaining one. */
+export async function deleteCurrentCase() {
+  const d = await db();
+  await Promise.all([d.clear("kv"), d.clear("docs"), d.clear("episodes"), d.clear("analyses"), d.clear("appointments")]);
+  const gone = current();
+  const rest = listCases().filter((c) => c.id !== gone);
+  writeCases(rest);
+  switchCase(rest[0]?.id ?? "main");
+  if (gone !== "main") await deleteDB(caseDbName(gone)).catch(() => {});
 }
 
 // Lightweight change notifications so every screen re-reads after a write.
@@ -129,6 +235,9 @@ export async function getPatient() {
 }
 export async function savePatient(p: Patient) {
   await (await db()).put("kv", p, "patient");
+  const id = current();
+  const list = listCases().filter((c) => c.id !== id);
+  writeCases([...list, { id, name: p.name, isSample: p.isSample, updatedAt: p.updatedAt }]);
   changed();
 }
 
@@ -171,14 +280,14 @@ export async function putAnalysis(a: Analysis) {
 }
 
 export async function listFeedback() {
-  return (await (await db()).getAll("feedback")).sort((a, b) => a.createdAt - b.createdAt);
+  return (await (await baseDb()).getAll("feedback")).sort((a, b) => a.createdAt - b.createdAt);
 }
 export async function putFeedback(f: Feedback) {
-  await (await db()).put("feedback", f);
+  await (await baseDb()).put("feedback", f);
   changed();
 }
 export async function deleteFeedback(id: string) {
-  await (await db()).delete("feedback", id);
+  await (await baseDb()).delete("feedback", id);
   changed();
 }
 
@@ -196,7 +305,7 @@ export async function deleteAppointment(id: string) {
 
 /** Clears the case file. Tester feedback is kept unless includeFeedback is set. */
 export async function clearAll(includeFeedback = false) {
-  if (includeFeedback) await (await db()).clear("feedback");
+  if (includeFeedback) await (await baseDb()).clear("feedback");
   const d = await db();
   await Promise.all([d.clear("kv"), d.clear("docs"), d.clear("episodes"), d.clear("analyses"), d.clear("appointments")]);
   changed();
