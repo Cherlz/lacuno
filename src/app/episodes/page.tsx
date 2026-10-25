@@ -6,6 +6,7 @@ import { Icon } from "@/components/icons";
 import { Button, ButtonLink, EmptyState, PageTitle, Pill, Spinner, field } from "@/components/ui";
 import { logEpisode, structureEpisode } from "@/lib/actions";
 import { deleteEpisode } from "@/lib/db";
+import { countryByCode, type Country } from "@/lib/emergency";
 import { languageByCode } from "@/lib/languages";
 import { useCase } from "@/lib/useCase";
 
@@ -44,7 +45,9 @@ function Episodes() {
       </EmptyState>
     );
   }
-  if (emergency) return <Emergency onBack={() => setEmergency(false)} />;
+  const country = countryByCode(patient.country);
+  const number = country?.number ?? "911";
+  if (emergency) return <Emergency country={country} onBack={() => setEmergency(false)} />;
 
   const submit = async () => {
     if (!text.trim()) return;
@@ -82,8 +85,8 @@ function Episodes() {
         <p className="flex-1 text-[0.95rem] text-danger">
           <strong className="font-semibold">Happening now?</strong> Sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing: call emergency services first.
         </p>
-        <a href="tel:911" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-danger px-4 font-semibold text-white hover:opacity-90">
-          <Icon name="phone" size={18} />Call 911
+        <a href={`tel:${number}`} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-danger px-4 font-semibold text-white hover:opacity-90">
+          <Icon name="phone" size={18} />Call {number}
         </a>
       </div>
 
@@ -139,19 +142,27 @@ function Episodes() {
   );
 }
 
-function Emergency({ onBack }: { onBack: () => void }) {
+function Emergency({ country, onBack }: { country?: Country; onBack: () => void }) {
+  const number = country?.number ?? "911";
   return (
     <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 bg-danger p-6 text-center text-white" role="alert" aria-live="assertive">
       <Icon name="alert" size={64} strokeWidth={2} />
       <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">Seek emergency care now</h1>
       <p className="max-w-md text-xl">Call emergency services or go to the nearest emergency department.</p>
-      <a href="tel:911" className="flex min-h-20 w-full max-w-sm items-center justify-center gap-3 rounded-xl bg-white px-8 text-3xl font-bold text-danger">
-        <Icon name="phone" size={30} strokeWidth={2} />Call 911
+      <a href={`tel:${number}`} className="flex min-h-20 w-full max-w-sm items-center justify-center gap-3 rounded-xl bg-white px-8 text-3xl font-bold text-danger">
+        <Icon name="phone" size={30} strokeWidth={2} />Call {number}
       </a>
-      <p className="text-white/90">
-        Outside the US?{" "}
-        <a href="tel:112" className="font-bold underline">Call 112</a> (most countries, including Indonesia and Europe)
-      </p>
+      {country ? (
+        <p className="max-w-md text-white/90">
+          {country.code === "OTHER" ? `${number} ${country.note}.` : <>Emergency number for {country.name}{country.note ? ` (${country.note})` : ""}.</>}
+          {country.code !== "OTHER" && <> Somewhere else? <a href="tel:112" className="font-bold underline">Call 112</a> works from mobile phones in most countries.</>}
+        </p>
+      ) : (
+        <p className="text-white/90">
+          Outside the US?{" "}
+          <a href="tel:112" className="font-bold underline">Call 112</a> (most countries, including Indonesia and Europe)
+        </p>
+      )}
       <button onClick={onBack} className="mt-6 text-sm text-white/80 underline">Go back to the app</button>
     </div>
   );

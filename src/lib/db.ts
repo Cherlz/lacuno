@@ -11,6 +11,7 @@ export type Patient = {
   mainComplaints: string;
   familyLanguage: string; // BCP-47
   doctorLanguage: string; // BCP-47
+  country?: string; // ISO code, for the emergency number (see emergency.ts)
   isSample: boolean;
   updatedAt: number;
 };
