@@ -192,7 +192,7 @@ export function FamilyBrief({ b, patientName }: { b: Brief; patientName: string 
  * Uses ElevenLabs when the server has a key (natural multilingual voice),
  * otherwise the browser's built-in voice for that language.
  */
-export function ReadAloud({ brief, lang }: { brief: Brief; lang: string }) {
+export function ReadAloud({ brief, lang, audience = "family" }: { brief: Brief; lang: string; audience?: "doctor" | "family" }) {
   const [state, setState] = useState<"idle" | "loading" | "playing">("idle");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const urlRef = useRef<string | null>(null);
@@ -210,9 +210,20 @@ export function ReadAloud({ brief, lang }: { brief: Brief; lang: string }) {
   useEffect(() => {
     if (urlRef.current) URL.revokeObjectURL(urlRef.current);
     urlRef.current = null;
-  }, [brief, lang]);
+  }, [brief, lang, audience]);
 
   const text = () => {
+    if (audience === "doctor") {
+      const d = brief.doctor;
+      return [
+        d.headline,
+        ...d.possibilities_raised.map((p) => `${p.name}. ${p.raised_by}. ${p.status}`),
+        ...d.key_results.map((x) => x.item),
+        ...d.current_medicines.map((x) => x.item),
+        ...d.not_yet_checked.map((x) => x.item),
+        ...d.questions_for_today,
+      ].join(".\n");
+    }
     const f = brief.family;
     return [f.summary, ...f.what_doctors_said.map((x) => x.item), ...f.questions_to_ask, ...f.what_to_bring].join(".\n");
   };
