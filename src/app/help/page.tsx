@@ -35,7 +35,7 @@ const FAQ = [
 export default function Help() {
   const video = demoVideoId();
   return (
-    <div className="mx-auto max-w-2xl py-12 sm:py-16">
+    <div className="mx-auto max-w-2xl py-8 sm:py-16">
       <h1 className="font-display text-[2.2rem] font-semibold leading-tight tracking-tight sm:text-4xl">How to use Lacuno</h1>
       <p className="mt-3 text-lg leading-relaxed text-muted">
         Six steps. The overview always shows what to do next.
@@ -53,7 +53,7 @@ export default function Help() {
         </div>
       )}
 
-      <ol className="mt-10 space-y-7">
+      <ol className="mt-8 space-y-6 sm:mt-10 sm:space-y-7">
         {STEPS.map((s, i) => (
           <li key={s.title} className="grid grid-cols-[2.25rem_1fr] gap-x-4">
             <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-surface font-semibold tabular-nums">{i + 1}</span>
@@ -66,7 +66,7 @@ export default function Help() {
         ))}
       </ol>
 
-      <section className="mt-16 border-t border-line pt-10">
+      <section className="mt-10 border-t border-line pt-8 sm:mt-16 sm:pt-10">
         <h2 className="font-display text-2xl font-semibold tracking-tight">More tools</h2>
         <ul className="mt-4 space-y-4">
           {TOOLS.map((t) => (
@@ -81,7 +81,7 @@ export default function Help() {
         </ul>
       </section>
 
-      <section className="mt-16 border-t border-line pt-10">
+      <section className="mt-10 border-t border-line pt-8 sm:mt-16 sm:pt-10">
         <h2 className="font-display text-2xl font-semibold tracking-tight">Common questions</h2>
         <div className="mt-4 divide-y divide-line border-y border-line">
           {FAQ.map(([q, a]) => (
@@ -97,7 +97,7 @@ export default function Help() {
       </section>
 
       {SUPPORT_EMAIL && (
-        <section id="contact" className="mt-16 scroll-mt-20 border-t border-line pt-10">
+        <section id="contact" className="mt-10 scroll-mt-20 border-t border-line pt-8 sm:mt-16 sm:pt-10">
           <h2 className="font-display text-2xl font-semibold tracking-tight">Still stuck? Email us</h2>
           <p className="mt-2 text-muted">Tell us what you were trying to do and we will help.</p>
           <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`} className={`${buttonClass("secondary")} mt-4`}>
@@ -106,7 +106,7 @@ export default function Help() {
         </section>
       )}
 
-      <div className="mt-16 flex flex-wrap gap-3 border-t border-line pt-8">
+      <div className="mt-10 flex flex-wrap gap-3 border-t border-line pt-8 sm:mt-16">
         <Link href="/case" className={buttonClass("primary", "lg")}>Go to my case<Icon name="arrowRight" size={18} /></Link>
         <Link href="/records" className={buttonClass("secondary", "lg")}>Add records</Link>
       </div>
