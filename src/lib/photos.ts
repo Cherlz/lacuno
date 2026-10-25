@@ -10,7 +10,7 @@ export type Photo = {
   credit: { name: string; url: string; source: string } | null;
 };
 
-export const PHOTOS: Record<"hero" | "papers", Photo> = {
+export const PHOTOS: Record<"hero" | "papers" | "visit", Photo> = {
   hero: {
     src: "/images/hero.jpg",
     alt: "A doctor talking with an older patient on a couch",
@@ -28,6 +28,16 @@ export const PHOTOS: Record<"hero" | "papers", Photo> = {
     credit: {
       name: "Vitaly Gariev",
       url: "https://unsplash.com/photos/RNUNbvIXUbg",
+      source: "Unsplash",
+    },
+  },
+  visit: {
+    src: "/images/visit.jpg",
+    alt: "A doctor talking with a patient during a clinic appointment",
+    focus: "30% 25%",
+    credit: {
+      name: "Vitaly Gariev",
+      url: "https://unsplash.com/photos/doctor-talking-to-patient-in-an-office-IDM3n0LfNCY",
       source: "Unsplash",
     },
   },
