@@ -30,9 +30,10 @@ export async function POST(req: Request) {
       system: `Task: you are the "${lens.name}" reviewer in a case conference. Your area: ${lens.focus}.
 
 Read the whole case file, but report ONLY what is relevant to your area:
-- relevant_findings: facts in the records that matter from your specialty's point of view (including normal results that narrow things down).
-- to_check_or_rule_out: what a specialist in your area would usually want checked or ruled out given these records, and why. Phrase as checks, not conclusions.
-- questions_to_ask: short, specific questions the family can ask the next doctor.
+- relevant_findings: up to 5 facts in the records that matter from your specialty's point of view (including normal results that narrow things down).
+- to_check_or_rule_out: the 3 most important things a specialist in your area would want checked or ruled out, most important first. "item" is a short check (under 15 words, no explanation); "why" is one short sentence. Phrase as checks, not conclusions. Don't repeat checks that belong to another specialty unless they are central to yours.
+- questions_to_ask: up to 3 short, specific questions the family can ask the next doctor.
+- A family will read this on a phone. Fewer, clearer points are better than many.
 - If nothing in the records touches your area, set relevant=false and keep lists short.
 - You are one voice among several. Do not diagnose, do not say what the cause is, do not compare your area with others.
 - Write everything in ${caseFile.patient.family_language}.`,

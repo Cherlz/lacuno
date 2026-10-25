@@ -51,7 +51,7 @@ function BriefScreen() {
   return (
     <div>
       <div className="no-print">
-        <PageTitle title="Doctor brief" subtitle="One page the next doctor can read in about a minute, plus a plain version for the family." />
+        <PageTitle title="Doctor brief" subtitle="A one-page summary to bring to the next appointment, and a simple version for your family." />
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.95rem]">
           <span>Doctor reads <strong className="font-semibold">{languageByCode(doctorLang).native}</strong></span>
