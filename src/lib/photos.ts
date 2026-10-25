@@ -10,23 +10,25 @@ export type Photo = {
   credit: { name: string; url: string; source: string } | null;
 };
 
-export const PHOTOS: Record<"hero" | "papers" | "visit", Photo> = {
+export const PHOTOS: Record<"hero" | "papers", Photo> = {
   hero: {
     src: "/images/hero.jpg",
-    alt: "An adult daughter sitting with her older mother at home",
-    focus: "65% 35%",
-    credit: null,
+    alt: "A doctor talking with an older patient on a couch",
+    focus: "50% 40%",
+    credit: {
+      name: "Vitaly Gariev",
+      url: "https://unsplash.com/photos/doctor-talks-with-an-elderly-patient-on-a-couch-BUNNEclz-yQ",
+      source: "Unsplash",
+    },
   },
   papers: {
     src: "/images/papers.jpg",
-    alt: "A family's medical papers and notes spread on a table",
+    alt: "A couple looking worried over bills and papers at their kitchen table",
     focus: "50% 50%",
-    credit: null,
-  },
-  visit: {
-    src: "/images/visit.jpg",
-    alt: "A doctor talking with an older patient",
-    focus: "50% 40%",
-    credit: null,
+    credit: {
+      name: "Vitaly Gariev",
+      url: "https://unsplash.com/photos/couple-looking-stressed-over-bills-at-kitchen-table-uwinmIQD8nU",
+      source: "Unsplash",
+    },
   },
 };

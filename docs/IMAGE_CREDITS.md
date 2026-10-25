@@ -4,11 +4,14 @@ Every photo on the site, where it came from and its license. Files live in `publ
 
 | File | Where it's used | Photographer | Source | License | Attribution required? |
 |---|---|---|---|---|---|
-| `hero.jpg` | Homepage hero | _to add_ | _to add_ | | |
-| `papers.jpg` | "Nobody holds the whole case" | _to add_ | _to add_ | | |
-| `visit.jpg` | "Walk into the next appointment prepared" | _to add_ | _to add_ | | |
+| `hero.jpg` | Homepage hero | Vitaly Gariev | [Doctor talks with an elderly patient on a couch](https://unsplash.com/photos/doctor-talks-with-an-elderly-patient-on-a-couch-BUNNEclz-yQ) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
+| `papers.jpg` | "Nobody holds the whole case" | Vitaly Gariev | [Couple looking stressed over bills at kitchen table](https://unsplash.com/photos/couple-looking-stressed-over-bills-at-kitchen-table-uwinmIQD8nU) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
 
-Until a file is added, its section shows a plain deep-teal background.
+The files aren't committed. `scripts/fetch-photos.mjs` downloads them from Unsplash's official download link into `public/images` before each build (`npm run build` and `npm run dev`), so they're served from our own domain. If a download fails, the section shows a plain deep-teal background and the build carries on.
+
+The "Walk into the next appointment prepared" band has no photo for now.
+
+To add or swap a photo: add its Unsplash ID to `scripts/fetch-photos.mjs`, its alt text, focal point and credit to `src/lib/photos.ts`, and a row here.
 
 ## Rules
 

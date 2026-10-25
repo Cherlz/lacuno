@@ -4,7 +4,7 @@ Next.js app for families organising a relative's medical records. See README.md.
 
 ## Front-end work
 
-Follow `docs/DESIGN_SYSTEM.md` for any visual change: typography, photography, layout, navigation and the pre-ship checks. Any new photo must be freely licensed, self-hosted in `public/images`, added to `src/lib/photos.ts`, and recorded in `docs/IMAGE_CREDITS.md`.
+Follow `docs/DESIGN_SYSTEM.md` for any visual change: typography, photography, layout, navigation and the pre-ship checks. Any new photo must be freely licensed, self-hosted in `public/images` (via `scripts/fetch-photos.mjs` for Unsplash photos), added to `src/lib/photos.ts`, and recorded in `docs/IMAGE_CREDITS.md`.
 
 ## Ground rules
 
