@@ -11,7 +11,7 @@ export default function Landing() {
   const account = useAccount();
   const needsSignIn = account.enabled && !account.signedIn;
   const primary = needsSignIn
-    ? { href: "/auth/login?screen_hint=signup&returnTo=/case", label: "Get started free" }
+    ? { href: "/signin", label: "Get started free" }
     : { href: "/case", label: "Open my case" };
 
   return (

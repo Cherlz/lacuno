@@ -61,7 +61,7 @@ function Welcome() {
             <li key={s.key}>
               <button
                 disabled={!!loading}
-                onClick={() => (needsSignIn ? (window.location.href = "/auth/login") : start(s.key))}
+                onClick={() => (needsSignIn ? (window.location.href = "/signin") : start(s.key))}
                 className="flex w-full items-center gap-4 px-4 py-3.5 text-left transition-colors hover:bg-surface-2 disabled:opacity-60"
               >
                 <span className="min-w-0 flex-1">

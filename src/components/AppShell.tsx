@@ -31,7 +31,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(setUpInstall, []);
 
   if (pathname === "/phone-camera") return <main className="px-4 py-6">{children}</main>;
-  if (pathname === "/" || pathname === "/help") return <MarketingShell signedIn={!account.enabled || account.signedIn}>{children}</MarketingShell>;
+  if (pathname === "/" || pathname === "/help" || pathname === "/signin") return <MarketingShell signedIn={!account.enabled || account.signedIn}>{children}</MarketingShell>;
 
   return (
     <SourceProvider>
@@ -81,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Link>
             {account.enabled && account.signedIn && <AccountMenu name={account.name} picture={account.picture} />}
             {account.enabled && !account.signedIn && (
-              <a href="/auth/login" className={buttonClass("primary", "sm")}>Sign in</a>
+              <a href="/signin" className={buttonClass("primary", "sm")}>Sign in</a>
             )}
           </div>
         </div>
@@ -135,7 +135,7 @@ function MarketingShell({ signedIn, children }: { signedIn: boolean; children: R
             {signedIn ? (
               <Link href="/case" className={`${buttonClass("primary", "sm")} ml-2`}>Open my case</Link>
             ) : (
-              <a href="/auth/login?returnTo=/case" className={`${buttonClass("primary", "sm")} ml-2`}>Sign in</a>
+              <a href="/signin" className={`${buttonClass("primary", "sm")} ml-2`}>Sign in</a>
             )}
           </nav>
         </div>
