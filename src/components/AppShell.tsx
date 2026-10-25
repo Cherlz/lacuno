@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
+import { SUPPORT_EMAIL } from "@/lib/contact";
 import { nextAction, stepStatus, type StepKey } from "@/lib/progress";
 import { useCase } from "@/lib/useCase";
 import { useAccount } from "./Account";
@@ -169,6 +170,10 @@ function AccountMenu({ name, picture }: { name: string | null; picture: string |
       </summary>
       <div className="absolute right-0 z-40 mt-2 w-64 rounded-xl border border-line bg-surface p-3 shadow-[0_8px_24px_rgba(20,34,33,0.10)]">
         <p className="truncate font-semibold">{name}</p>
+        <div className="mt-2 space-y-0.5 border-t border-line pt-2 text-sm">
+          <Link href="/help" className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-surface-2"><Icon name="help" size={16} />How to use Lacuno</Link>
+          <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`} className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-surface-2"><Icon name="mail" size={16} />Contact us</a>
+        </div>
         <a href="/auth/logout" className={`${buttonClass("secondary", "sm")} mt-3 w-full`}>
           Sign out
         </a>

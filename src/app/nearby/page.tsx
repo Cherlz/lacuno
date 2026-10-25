@@ -7,6 +7,22 @@ import { countryByCode } from "@/lib/emergency";
 import { directionsUrl, findNearby, geocode, visitsTo, type Place, type PlaceKind, type Visit } from "@/lib/nearby";
 import { useCase } from "@/lib/useCase";
 
+/** Explains why the browser didn't give a location, and how to fix it. */
+function locationHelp(code: number) {
+  const mac = /Macintosh/.test(navigator.userAgent) && !("ontouchend" in document);
+  const iphone = /iPhone|iPad|iPod/.test(navigator.userAgent) || ("ontouchend" in document && /Macintosh/.test(navigator.userAgent));
+  if (code === 1) {
+    // Denied: either the site was blocked earlier, or the device blocks the browser.
+    if (iphone) return "Location is blocked. On iPhone: Settings → Privacy & Security → Location Services → Safari Websites → While Using the App. Then tap Use my location again, or type a town below.";
+    return "Location is blocked for this site. Click the icon at the left of the address bar → Site settings → Location → Allow, then reload. Or type a town below.";
+  }
+  if (code === 2) {
+    if (mac) return "Your Mac isn't sharing location with this browser. Open System Settings → Privacy & Security → Location Services, turn it on for your browser, then try again. Or type a town below.";
+    return "Your device couldn't find your location. Turn on location services, then try again, or type a town below.";
+  }
+  return "Finding your location took too long. Try again, or type a town below.";
+}
+
 const KIND_LABEL: Record<PlaceKind, string> = { hospital: "Hospital", clinic: "Clinic", doctor: "Doctor" };
 type Filter = "all" | "hospital" | "other" | "visited";
 
@@ -59,11 +75,13 @@ export default function Nearby() {
     run(
       () =>
         new Promise((resolve, reject) => {
-          if (!navigator.geolocation) return reject(new Error("This browser can't share your location. Type a town instead."));
+          if (!window.isSecureContext || !navigator.geolocation) {
+            return reject(new Error("This browser can't share your location here. Type a town or address instead."));
+          }
           navigator.geolocation.getCurrentPosition(
             (p) => resolve({ lat: p.coords.latitude, lon: p.coords.longitude, label: "your location" }),
-            () => reject(new Error("Location is turned off for this site. Type a town or address instead.")),
-            { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 },
+            (err) => reject(new Error(locationHelp(err.code))),
+            { enableHighAccuracy: false, timeout: 20000, maximumAge: 600000 },
           );
         }),
     );
@@ -95,7 +113,6 @@ export default function Nearby() {
           <input className={field} value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Or type a town or address" aria-label="Town or address" />
           <Button type="submit" variant="secondary" disabled={busy || !typed.trim()}>Search</Button>
         </form>
-        <p className="text-sm text-muted">Your location goes only to OpenStreetMap to find places; Lacuno doesn&apos;t keep it. Listings come from OpenStreetMap volunteers and can be incomplete or out of date.</p>
       </div>
 
       {error && <ErrorBox message={error} />}
