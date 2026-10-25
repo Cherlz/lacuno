@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Button, ButtonLink, Card, ErrorBox, PageTitle, Spinner } from "@/components/ui";
+import { Icon } from "@/components/icons";
 import { addHealthSummary } from "@/lib/actions";
 import { readHealthFile, summarise } from "@/lib/healthImport";
 import { useCase } from "@/lib/useCase";
@@ -73,7 +74,7 @@ export default function HealthData() {
             </ol>
           </details>
           {progress === null ? (
-            <Button className="w-full text-lg" onClick={() => fileRef.current?.click()}>⌚ Choose the export file</Button>
+            <Button className="w-full text-lg" onClick={() => fileRef.current?.click()}><Icon name="watch" />Choose the export file</Button>
           ) : (
             <Spinner label={`Reading on this device… ${Math.round(progress * 100)}%`} />
           )}

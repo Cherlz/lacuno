@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Field, PageTitle, Spinner, field } from "@/components/ui";
 import { clearAll, savePatient } from "@/lib/db";
+import { COUNTRIES, countryByCode, guessCountry } from "@/lib/emergency";
 import { LANGUAGES } from "@/lib/languages";
 import { useCase } from "@/lib/useCase";
 
@@ -11,17 +12,29 @@ import { useCase } from "@/lib/useCase";
 export default function Setup() {
   const router = useRouter();
   const { loaded, patient } = useCase();
-  const [form, setForm] = useState({ name: "", age: "", mainComplaints: "", familyLanguage: "id-ID", doctorLanguage: "en-US" });
+  const [form, setForm] = useState({ country: "", name: "", age: "", mainComplaints: "", familyLanguage: "id-ID", doctorLanguage: "en-US" });
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     if (!loaded || hydrated) return;
-    if (patient) setForm({ name: patient.name, age: patient.age, mainComplaints: patient.mainComplaints, familyLanguage: patient.familyLanguage, doctorLanguage: patient.doctorLanguage });
+    if (patient) setForm({ country: patient.country ?? guessCountry(), name: patient.name, age: patient.age, mainComplaints: patient.mainComplaints, familyLanguage: patient.familyLanguage, doctorLanguage: patient.doctorLanguage });
+    else {
+      // New case: start from the browser's country and its usual language.
+      const country = guessCountry();
+      const lang = countryByCode(country)?.language;
+      setForm((f) => ({ ...f, country, ...(lang ? { familyLanguage: lang, doctorLanguage: lang } : {}) }));
+    }
     setHydrated(true);
   }, [loaded, hydrated, patient]);
 
   if (!loaded) return <Spinner label="Loading…" />;
   const set = (k: keyof typeof form) => (e: { target: { value: string } }) => setForm({ ...form, [k]: e.target.value });
+  const setCountry = (e: { target: { value: string } }) => {
+    const lang = countryByCode(e.target.value)?.language;
+    // Suggest the country's usual language for a new case; an existing case keeps its choices.
+    setForm({ ...form, country: e.target.value, ...(lang && !patient ? { familyLanguage: lang, doctorLanguage: lang } : {}) });
+  };
+  const emergency = countryByCode(form.country);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +50,21 @@ export default function Setup() {
 
   return (
     <div className="mx-auto max-w-xl">
-      <PageTitle title={patient ? "Patient profile" : "Start a case"} subtitle="Who is this for, and which languages do you need?" />
+      <PageTitle title={patient ? "Patient profile" : "Start a case"} subtitle="Location, who this is for, and which languages you need." />
       <form onSubmit={save} className="space-y-8">
         <fieldset className="space-y-5">
+          <legend className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">Location</legend>
+          <Field
+            label="Country"
+            hint={emergency ? <>Emergency number: <strong className="text-ink">{emergency.number}</strong>{emergency.note ? ` (${emergency.note})` : ""}. Lacuno&apos;s emergency button calls this.</> : "Sets the emergency number the app calls."}
+          >
+            <select required className={field} value={form.country} onChange={setCountry}>
+              {COUNTRIES.map((c) => <option key={c.code} value={c.code}>{c.name}</option>)}
+            </select>
+          </Field>
+        </fieldset>
+
+        <fieldset className="space-y-5 border-t border-line pt-8">
           <legend className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">The patient</legend>
           <div className="grid gap-5 sm:grid-cols-[1fr_8rem]">
             <Field label="Name or nickname">
