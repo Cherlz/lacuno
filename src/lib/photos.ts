@@ -22,9 +22,9 @@ export const PHOTOS: Record<"hero" | "papers", Photo> = {
     },
   },
   papers: {
-    src: "/images/reading.jpg",
-    alt: "A woman reading through papers with a coffee at her kitchen table",
-    focus: "50% 35%",
+    src: "/images/paper.jpg",
+    alt: "A woman smiling as she reads a letter at her kitchen table",
+    focus: "48% 50%",
     credit: {
       name: "Vitaly Gariev",
       url: "https://unsplash.com/photos/RNUNbvIXUbg",
