@@ -17,15 +17,14 @@ export default function Landing() {
   return (
     <div className="pb-10">
       {/* Hero: what it is, who it's for, and a real look at the output. */}
-      <section className="grid items-center gap-12 py-12 sm:py-16 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:py-20">
+      <section className="grid items-center gap-12 pb-10 pt-8 sm:py-16 lg:grid-cols-[1fr_1.05fr] lg:gap-16 lg:py-20">
         <div>
           <p className="text-sm font-semibold text-brand">For families caring for someone without a diagnosis</p>
-          <h1 className="mt-3 font-display text-[2.35rem] font-semibold leading-[1.1] tracking-tight sm:text-5xl">
+          <h1 className="mt-3 font-display text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-5xl">
             Every doctor saw a piece. Lacuno shows the whole story.
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            Upload every record, in any language. See where the doctors disagree, what nobody has checked yet, and hand
-            the next doctor a one-page brief in their own language.
+          <p className="mt-4 max-w-xl text-lg leading-relaxed text-muted">
+            Add every record, in any language. See where the doctors disagree and bring the next doctor a one-page brief.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
             <a href={primary.href} className={buttonClass("primary", "lg")}>
@@ -42,11 +41,11 @@ export default function Landing() {
             ))}
           </ul>
         </div>
-        <BriefPreview />
+        <div className="hidden lg:block"><BriefPreview /></div>
       </section>
 
       {/* Problem */}
-      <section className="grid gap-8 border-t border-line py-16 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
+      <section className="grid gap-5 border-t border-line py-10 sm:gap-8 sm:py-16 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
         <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-[2.2rem]">
           Nobody holds the whole case. Except you.
         </h2>
@@ -65,18 +64,18 @@ export default function Landing() {
       </section>
 
       {/* How it works */}
-      <section id="how" className="scroll-mt-20 border-t border-line py-16">
+      <section id="how" className="scroll-mt-20 border-t border-line py-10 sm:py-16">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-[2.2rem]">How it works</h2>
           <p className="text-muted">About 15 minutes the first time.</p>
         </div>
-        <ol className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+        <ol className="-mx-4 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mt-10 md:mx-0 md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:px-0 md:pb-0">
           {[
             ["Photograph the records", "Any language, even handwriting. You check what Lacuno read.", <StepRecord key="r" />],
             ["See the whole case", "Where doctors differ, and what was never checked.", <StepDiffer key="d" />],
             ["Bring one page to the doctor", "In the doctor's language, plus a simple version for you.", <StepBrief key="b" />],
           ].map(([title, body, picture], i) => (
-            <li key={String(title)}>
+            <li key={String(title)} className="w-[80%] shrink-0 snap-start md:w-auto">
               {picture}
               <span className="mt-5 block text-sm font-semibold tabular-nums text-muted">0{i + 1}</span>
               <h3 className="mt-1 text-lg font-semibold">{title}</h3>
@@ -87,16 +86,16 @@ export default function Landing() {
       </section>
 
       {/* Case conference */}
-      <section className="grid gap-10 border-t border-line py-16 lg:grid-cols-2 lg:gap-16">
+      <section className="grid gap-6 border-t border-line py-10 sm:gap-10 sm:py-16 lg:grid-cols-2 lg:gap-16">
         <div>
           <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-[2.2rem]">The case conference they never got</h2>
           <p className="mt-4 text-lg leading-relaxed text-muted">
             Six specialist views read the whole record and list what to check and what to ask. None of them names a cause.
           </p>
         </div>
-        <ul className="grid grid-cols-1 gap-px self-start overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2">
+        <ul className="grid grid-cols-2 gap-px self-start overflow-hidden rounded-xl border border-line bg-line">
           {LENSES.map((l) => (
-            <li key={l.key} className="flex items-center gap-3 bg-surface px-4 py-4">
+            <li key={l.key} className="flex items-center gap-2.5 bg-surface px-3 py-3 text-sm sm:gap-3 sm:px-4 sm:py-4 sm:text-base">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-soft text-brand"><Icon name={lensIcon(l.key)} size={20} /></span>
               <span className="font-medium">{l.name}</span>
             </li>
@@ -105,9 +104,9 @@ export default function Landing() {
       </section>
 
       {/* Safety */}
-      <section id="safety" className="scroll-mt-20 border-t border-line py-16">
+      <section id="safety" className="scroll-mt-20 border-t border-line py-10 sm:py-16">
         <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-[2.2rem]">Built to be safe</h2>
-        <ul className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2">
+        <ul className="mt-6 grid gap-x-10 gap-y-5 sm:mt-8 sm:grid-cols-2">
           {([
             ["shield", "Never a diagnosis", "It organises what your doctors wrote."],
             ["doc", "Every point has a source", "Tap any point to see the original page."],
@@ -126,15 +125,15 @@ export default function Landing() {
       </section>
 
       {/* Story + CTA */}
-      <section className="border-t border-line py-16">
+      <section className="border-t border-line py-10 sm:py-16">
         <figure className="max-w-3xl">
-          <blockquote className="font-display text-2xl leading-snug tracking-tight sm:text-[1.9rem]">
+          <blockquote className="font-display text-xl leading-snug tracking-tight sm:text-[1.9rem]">
             “My mom has had dizziness, fatigue and weakness for years. Different doctors, different ideas, no answer. We
             built Lacuno so the next doctor sees the whole story.”
           </blockquote>
           <figcaption className="mt-4 text-muted">The Lacuno team</figcaption>
         </figure>
-        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
           <a href={primary.href} className={buttonClass("primary", "lg")}>
             {primary.label}
             <Icon name="arrowRight" size={18} />
