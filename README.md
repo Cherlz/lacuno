@@ -4,7 +4,7 @@
 
 Lacuno helps families caring for someone who has seen many doctors without getting a diagnosis. Upload every record, in any language, and see where the doctors disagree, what nobody followed up, and a one-page brief the next doctor can read in a minute.
 
-🌐 **[lacuno.health](https://lacuno.health)** · Built at Cal Hacks 13.0
+🌐 **[lacuno.health](https://lacuno.health)** 
 
 ![Lacuno homepage](docs/screenshots/home.jpg)
 
