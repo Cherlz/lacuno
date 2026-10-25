@@ -34,7 +34,7 @@ This started with our own family. My mother has had dizziness, fatigue and weakn
 5. **Accounts.** Sign up or sign in with Auth0 (Google or email). Each account gets its own case files on the device, so family members sharing a phone don't see each other's records, and only signed-in people can use the Claude-powered features.
 6. **Guided flow.** A "Do this next" card and a Records → Review → Brief step bar on every screen, one record checked at a time, and a How-to-use page (`/help`).
 7. **Phone as camera.** On a laptop, tap **Use my phone**, scan the QR code, and photograph pages with the phone; they arrive on the laptop as records. Photos travel device to device over an encrypted WebRTC connection (PeerJS only introduces the two devices) and are never stored on a server.
-8. **Visit reminders.** Add the next doctor visit and tap **Add to my calendar**: the phone's own calendar reminds the family the day before and 2 hours before, with a link to the brief. Nothing is sent to a server.
+8. **Visit reminders.** Add the next doctor visit and tap **Add to my calendar**: the phone's own calendar reminds the family the day before and 2 hours before, with a link to the brief. Nothing is sent to a server. Families can also turn on phone notifications: the server then keeps only the push address and each visit's date and time (no names or medical details), deleted a day after the visit.
 9. **Episode log.** One button. Say or type what happened, in any language; Claude structures it. Emergency warning signs show **"Seek emergency care now"** and nothing else.
 
 ## How Claude is used
