@@ -44,6 +44,12 @@ function Welcome() {
           <a href="/auth/login" className="flex min-h-12 w-full items-center justify-center rounded-xl border border-line bg-surface font-semibold hover:bg-surface-2">
             I already have an account — sign in
           </a>
+          {/* Shown once Auth0's passwordless SMS connection is switched on (see docs/TEAM.md). */}
+          {process.env.NEXT_PUBLIC_PHONE_LOGIN === "1" && (
+            <a href="/auth/login?connection=sms" className="flex min-h-12 w-full items-center justify-center rounded-xl border border-line bg-surface font-semibold hover:bg-surface-2">
+              📱 Use my phone number instead
+            </a>
+          )}
           <p className="text-center text-sm text-muted">Your account keeps your case files separate. The records themselves stay on your device.</p>
         </Card>
       ) : (
