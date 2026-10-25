@@ -3,7 +3,7 @@ import type { Appointment } from "./db";
 // Calendar reminders without a server: the family adds the visit to their
 // phone's own calendar, which then sends the reminders.
 
-const APP_URL = "https://lacuno-app.vercel.app";
+const APP_URL = "https://lacuno.health";
 
 function compact(localDateTime: string) {
   // "2026-10-27T10:00" -> "20261027T100000" (floating local time)
