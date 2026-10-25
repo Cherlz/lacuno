@@ -1,5 +1,6 @@
-// Support address shown on the Help page and in the footer. Hidden until set.
-export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "";
+// Support address shown on the Help page and in the footer. Override with
+// NEXT_PUBLIC_SUPPORT_EMAIL (e.g. once a contact@ address on the domain exists).
+export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "lacunohealth@gmail.com";
 
 // Demo video for the Help page: any YouTube link. Hidden until set.
 export function demoVideoId(): string | null {

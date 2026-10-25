@@ -2,6 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import webpush from "web-push";
 import { z } from "zod";
+import { SUPPORT_EMAIL } from "./contact";
 
 // Visit reminders as phone notifications. The server keeps only what it needs
 // to send them: the browser's push address, each visit's time and a date label.
@@ -87,7 +88,7 @@ const HOUR = 3_600_000;
 
 /** Sends due reminders: "tomorrow" within 36 hours of a visit, "soon" within 3 hours. */
 export async function sendDue() {
-  webpush.setVapidDetails(`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "noreply@lacuno.app"}`, VAPID_PUBLIC!, VAPID_PRIVATE!);
+  webpush.setVapidDetails(`mailto:${SUPPORT_EMAIL}`, VAPID_PUBLIC!, VAPID_PRIVATE!);
   const [{ result: keys }] = await redis(["SMEMBERS", SET]);
   let sent = 0;
   for (const key of (keys as string[]) ?? []) {
