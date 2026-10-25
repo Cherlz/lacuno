@@ -125,10 +125,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Full-width photo statement. */}
+      {/* Full-width statement band. */}
       <section className="relative isolate overflow-hidden bg-[#123f3c]">
-        <Photo photo={PHOTOS.visit} sizes="100vw" />
-        <div aria-hidden className="absolute inset-0 bg-[#06201e]/60 sm:bg-gradient-to-l sm:from-[#06201e]/85 sm:via-[#06201e]/55 sm:to-[#06201e]/15" />
         <div className="relative mx-auto flex max-w-6xl justify-end px-4 py-24 sm:px-6 sm:py-32">
           <div className="max-w-md text-white">
             <h2 className="font-display text-[2rem] font-bold leading-[1.12] tracking-[-0.015em] sm:text-[2.6rem]">

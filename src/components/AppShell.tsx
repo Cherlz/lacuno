@@ -212,9 +212,12 @@ function MarketingShell({ signedIn, children }: { signedIn: boolean; children: R
               <p>
                 Photos:{" "}
                 {credits.map((c, i) => (
-                  <span key={c.url}>{i > 0 && ", "}<a href={c.url} className="underline underline-offset-2 hover:text-ink">{c.name}</a></span>
-                ))}{" "}
-                on {credits[0].source}.
+                  <span key={c.url}>
+                    {i > 0 && ", "}
+                    <a href={c.url} className="underline underline-offset-2 hover:text-ink">{c.name}</a> on {c.source}
+                  </span>
+                ))}
+                .
               </p>
             )}
           </div>
