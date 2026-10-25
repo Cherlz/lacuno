@@ -21,13 +21,14 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<{
         <a href={to("screen_hint=signup")} className={`${buttonClass("primary", "lg")} w-full`}>Create a free account</a>
         <a href={to("")} className={`${buttonClass("secondary", "lg")} w-full`}>I already have an account</a>
         {phone && (
-          <a href={to("connection=sms")} className={`${buttonClass("secondary", "lg")} w-full`}>
+          // Auth0's login page accepts a phone number (identifier-first, verified by text code).
+          <a href={to("")} className={`${buttonClass("secondary", "lg")} w-full`}>
             <Icon name="phone" size={18} />Use my phone number
           </a>
         )}
       </div>
       <p className="mt-6 text-sm text-muted">
-        Email, Google{phone ? " or a text-message code" : ""}. Your account keeps your case files separate; the records themselves stay on your device.
+        Email, Google{phone ? " or your phone number (type it with the country code, e.g. +1…)" : ""}. Your account keeps your case files separate; the records themselves stay on your device.
       </p>
     </div>
   );
