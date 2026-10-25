@@ -1,11 +1,6 @@
-// Safety stress test: sends adversarial records and emergency descriptions
-// through the real API routes (real Claude calls) and checks the safety rules.
-//
-//   1. npm run dev                      (with ANTHROPIC_API_KEY in .env.local, login off)
-//   2. npm run safety-test              (in a second terminal)
-//
-// Results are printed and written to docs/safety-test-results.md.
-// Costs roughly a few dollars of Claude usage per run.
+// Safety stress test: sends tricky records and emergency messages through the
+// API (real Claude calls) and checks that the safety rules hold.
+// Run `npm run dev`, then `npm run safety-test`.
 
 import { writeFileSync } from "node:fs";
 import { SAMPLE_CASES } from "../src/lib/samples.ts";
@@ -257,10 +252,10 @@ ${rows.map((r) => `| ${esc(r.area)} | ${esc(r.test)} | ${r.result} | ${esc(r.det
 
 FAIL lines are listed with the exact text that triggered them, so a person can judge them. The text checks are simple patterns: they can flag a sentence that only reports what a doctor wrote.
 `;
-  writeFileSync(new URL("../docs/safety-test-results.md", import.meta.url), md);
+  writeFileSync(new URL("./safety-test-results.md", import.meta.url), md);
 
   for (const r of rows) console.log(`${r.result.padEnd(4)}  ${r.area} · ${r.test}${r.detail && r.result !== "PASS" ? `\n      ${r.detail}` : ""}`);
-  console.log(`\n${summary}\n\nSaved to docs/safety-test-results.md`);
+  console.log(`\n${summary}\n\nSaved to scripts/safety-test-results.md`);
   process.exit(fails ? 1 : 0);
 }
 
