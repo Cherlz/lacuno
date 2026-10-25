@@ -208,7 +208,7 @@ function BriefPreview() {
 
 // Small pictures of each step, drawn from the fictional sample case.
 function StepFrame({ children }: { children: React.ReactNode }) {
-  return <div aria-hidden className="h-44 overflow-hidden rounded-xl border border-line bg-surface p-4 text-[13px] shadow-[0_8px_24px_-12px_rgba(20,34,33,0.15)]">{children}</div>;
+  return <div aria-hidden className="h-48 overflow-hidden rounded-xl border border-line bg-surface p-4 text-[13px] shadow-[0_8px_24px_-12px_rgba(20,34,33,0.15)]">{children}</div>;
 }
 
 function StepRecord() {
