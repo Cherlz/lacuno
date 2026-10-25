@@ -14,7 +14,7 @@ export const PHOTOS: Record<"hero" | "papers", Photo> = {
   hero: {
     src: "/images/hero.jpg",
     alt: "A doctor talking with an older patient on a couch",
-    focus: "35% 20%",
+    focus: "45% 25%",
     credit: {
       name: "Vitaly Gariev",
       url: "https://unsplash.com/photos/doctor-talks-with-an-elderly-patient-on-a-couch-BUNNEclz-yQ",
