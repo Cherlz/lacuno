@@ -73,6 +73,9 @@ export default function Records() {
         <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }} />
         <input ref={filesRef} type="file" accept="image/*,application/pdf" multiple className="hidden" onChange={(e) => { onFiles(e.target.files); e.target.value = ""; }} />
       </div>
+      <p className="text-center text-sm">
+        <a href="/health-data" className="text-brand underline">⌚ Add phone or watch data (Apple Health, Google Fit)</a>
+      </p>
 
       {toConfirm.length > 0 && (
         <div className="rounded-xl bg-brand-soft px-4 py-3">
