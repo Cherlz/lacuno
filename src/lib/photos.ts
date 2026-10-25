@@ -32,9 +32,9 @@ export const PHOTOS: Record<"hero" | "papers" | "visit", Photo> = {
     },
   },
   visit: {
-    src: "/images/visit.jpg",
-    alt: "A doctor talking with a patient during a clinic appointment",
-    focus: "30% 25%",
+    src: "/images/consultation.jpg",
+    alt: "A doctor talking with a patient across his desk during an appointment",
+    focus: "60% 15%",
     credit: {
       name: "Vitaly Gariev",
       url: "https://unsplash.com/photos/doctor-talking-to-patient-in-an-office-IDM3n0LfNCY",

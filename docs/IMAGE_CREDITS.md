@@ -6,7 +6,7 @@ Every photo on the site, where it came from and its license. Files live in `publ
 |---|---|---|---|---|---|
 | `hero.jpg` | Homepage hero | Vitaly Gariev | [Doctor talks with an elderly patient on a couch](https://unsplash.com/photos/doctor-talks-with-an-elderly-patient-on-a-couch-BUNNEclz-yQ) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
 | `paper.jpg` | "Nobody holds the whole case" | Vitaly Gariev | [Woman reading documents with coffee at the table](https://unsplash.com/photos/RNUNbvIXUbg) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
-| `visit.jpg` | "Walk into the next appointment prepared" | Vitaly Gariev | [Doctor talking to patient in an office](https://unsplash.com/photos/doctor-talking-to-patient-in-an-office-IDM3n0LfNCY) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
+| `consultation.jpg` | "Walk into the next appointment prepared" | Vitaly Gariev | [Doctor talking to patient in an office](https://unsplash.com/photos/doctor-talking-to-patient-in-an-office-IDM3n0LfNCY) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
 
 The files are committed in `public/images` and served from our own domain (no hotlinking). If a file is missing, its section shows a plain background.
 

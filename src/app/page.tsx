@@ -133,8 +133,8 @@ export default function Landing() {
         <div className="relative aspect-[16/10] md:absolute md:inset-0 md:aspect-auto">
           <Photo photo={PHOTOS.visit} sizes="100vw" />
         </div>
-        <div aria-hidden className="absolute inset-0 hidden bg-gradient-to-l from-[#06201e]/90 via-[#06201e]/60 to-[#06201e]/0 md:block" />
-        <div className="relative mx-auto flex max-w-6xl justify-end px-4 pb-12 pt-8 sm:px-6 md:py-32">
+        <div aria-hidden className="absolute inset-0 hidden bg-gradient-to-r from-[#06201e]/90 via-[#06201e]/60 to-[#06201e]/0 md:block" />
+        <div className="relative mx-auto flex max-w-6xl px-4 pb-12 pt-8 sm:px-6 md:py-32">
           <div className="max-w-md text-white">
             <h2 className="font-display text-[2rem] font-bold leading-[1.12] tracking-[-0.015em] sm:text-[2.6rem]">
               Walk into the next appointment prepared.
