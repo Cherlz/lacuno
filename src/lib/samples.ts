@@ -5,7 +5,7 @@ export type SampleCase = {
   key: string;
   label: string;
   description: string;
-  patient: { name: string; age: string; mainComplaints: string; familyLanguage: string; doctorLanguage: string };
+  patient: { name: string; age: string; mainComplaints: string; familyLanguage: string; doctorLanguage: string; country: string };
   documents: { fileName: string; text: string }[];
   episodes: string[];
 };
@@ -23,6 +23,7 @@ export const SAMPLE_CASES: SampleCase[] = [
       mainComplaints: "Pusing, lemas, mudah lelah selama sekitar 3 tahun",
       familyLanguage: "id-ID",
       doctorLanguage: "en-US",
+      country: "ID",
     },
     documents: [
       {
@@ -97,6 +98,7 @@ Lanjut obat sebelumnya`,
       mainComplaints: "Cansancio, dolor en las articulaciones, hormigueo en las manos desde hace 2 años",
       familyLanguage: "es-ES",
       doctorLanguage: "en-US",
+      country: "US",
     },
     documents: [
       {

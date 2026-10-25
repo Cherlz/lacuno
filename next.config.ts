@@ -15,7 +15,8 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self'",
   // PeerJS only introduces the laptop and phone; photos then go device to device.
-  `connect-src 'self' https://0.peerjs.com wss://0.peerjs.com${peerHost}`,
+  // OpenStreetMap: the "nearby hospitals" search runs from the browser.
+  `connect-src 'self' https://0.peerjs.com wss://0.peerjs.com https://overpass-api.de https://nominatim.openstreetmap.org${peerHost}`,
   "media-src 'self' blob:",
   "frame-src 'self' blob: https://www.youtube-nocookie.com",
   "worker-src 'self'",
@@ -32,7 +33,7 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(self), microphone=(self), geolocation=(), payment=(), usb=()" },
+  { key: "Permissions-Policy", value: "camera=(self), microphone=(self), geolocation=(self), payment=(), usb=()" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 

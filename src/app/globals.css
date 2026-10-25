@@ -75,3 +75,16 @@ summary::-webkit-details-marker { display: none; }
   a { color: inherit; text-decoration: none; }
   .break-inside-avoid, tr, li { break-inside: avoid; }
 }
+
+/* A spinner inside a button (e.g. "Writing the brief…") takes the button's text
+   colour, and a busy button stays readable instead of fading like a disabled one. */
+button [role="status"] {
+  color: inherit;
+}
+button [role="status"] > span:first-child {
+  border-color: color-mix(in srgb, currentColor 35%, transparent);
+  border-top-color: currentColor;
+}
+button:disabled:has([role="status"]) {
+  opacity: 0.9;
+}

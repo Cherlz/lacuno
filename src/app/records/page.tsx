@@ -100,7 +100,7 @@ export default function Records() {
         <div className="mb-4 rounded-xl border-2 border-dashed border-brand bg-brand-soft px-4 py-6 text-center font-semibold text-brand">Drop to add these records</div>
       )}
       <p className="my-4 text-center text-sm">
-        <a href="/health-data" className="font-semibold text-brand underline underline-offset-2">Add phone or watch data (Apple Health, Google Fit)</a>
+        <a href="/health-data" className="inline-flex items-center gap-1.5 font-semibold text-brand underline underline-offset-2"><Icon name="watch" size={16} />Add phone or watch data (Apple Health, Google Fit)</a>
       </p>
 
       {totalToCheck > 0 && toConfirm.length > 0 && (
