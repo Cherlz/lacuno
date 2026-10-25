@@ -65,7 +65,6 @@ Put your name next to what you take, in the team chat.
 |---|---|---|---|
 | 1 | **UI/UX polish**: Records, Review results, Brief, overall look | | Make it calmer and clearer: less text per screen, stronger hierarchy, consistent spacing. Check on a phone. |
 | 15 | Phone notifications (setup only) | | Code is done. 1) Vercel → Storage → Create → Upstash Redis (free) → connect to the project. 2) In a terminal: `npx web-push generate-vapid-keys`. 3) Vercel → Environment Variables: `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (public key), `VAPID_PRIVATE_KEY` (private key), `CRON_SECRET` (any long random text). 4) Redeploy. A "🔔 Also notify me on this phone" link appears on the visit card. Vercel's free plan runs the reminder job once a day (16:00 UTC), so reminders come the day before; for the "2 hours before" one, add a free cron-job.org job calling `/api/push/cron` every 15 min with header `Authorization: Bearer <CRON_SECRET>`. iPhone: only after Add to Home Screen. |
-| 8 | Health data import (stretch) | | Import an Apple Health / Google Fit export (sleep, heart rate) as questions for the doctor. Phone-as-camera is done. |
 | 4 | Demo video on the Help page | | No code needed: after uploading to YouTube, add `NEXT_PUBLIC_DEMO_VIDEO_URL` (the YouTube link) in Vercel → Environment Variables and redeploy. It appears at the top of the Help page. |
 
 ### C. Setup tasks (no coding)
@@ -79,4 +78,4 @@ Put your name next to what you take, in the team chat.
 | — | Claude API credits | | Ask at the Anthropic booth / Cal Hacks Discord; redeem at console.anthropic.com → Billing |
 
 ### Already done (don't redo)
-Claude reading of records (photos/PDFs, any language) · disagreement map · six specialist reviews · bilingual brief + PDF · symptom log with emergency screen and Call 911 · Auth0 accounts · fact-checker agent · openFDA medicine-check agent · security hardening (headers, validation, rate limits) · homepage + guided flow + Help page · installable app · rename to Lacuno · visit reminders (Add to calendar) · safety stress test (`npm run safety-test`) · phone as camera (QR, peer-to-peer) · UI polish round 2.
+Claude reading of records (photos/PDFs, any language) · disagreement map · six specialist reviews · bilingual brief + PDF · symptom log with emergency screen and Call 911 · Auth0 accounts · fact-checker agent · openFDA medicine-check agent · security hardening (headers, validation, rate limits) · homepage + guided flow + Help page · installable app · rename to Lacuno · visit reminders (Add to calendar) · safety stress test (`npm run safety-test`) · phone/watch health data import (`/health-data`) · phone notifications + phone sign-in (code; setup in section C) · phone as camera (QR, peer-to-peer) · UI polish round 2.
