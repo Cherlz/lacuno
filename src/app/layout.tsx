@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, IBM_Plex_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Source_Sans_3 } from "next/font/google";
 import { AccountGate } from "@/components/Account";
 import { AppShell } from "@/components/AppShell";
 import { authEnabled } from "@/lib/auth0";
 import "./globals.css";
 
-const plex = IBM_Plex_Sans({ variable: "--font-sans-loaded", subsets: ["latin", "latin-ext", "vietnamese", "cyrillic"], weight: ["400", "500", "600", "700"] });
-const fraunces = Fraunces({ variable: "--font-display-loaded", subsets: ["latin", "latin-ext"], weight: ["600", "700"] });
+// Headings: Plus Jakarta Sans (bold, contemporary). Body: Source Sans 3 (crisp, very readable).
+// Both cover Vietnamese; Source Sans also covers Cyrillic, since briefs are written in many languages.
+const body = Source_Sans_3({ variable: "--font-sans-loaded", subsets: ["latin", "latin-ext", "vietnamese", "cyrillic"], weight: ["400", "500", "600", "700"] });
+const display = Plus_Jakarta_Sans({ variable: "--font-display-loaded", subsets: ["latin", "latin-ext", "vietnamese"], weight: ["600", "700", "800"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_BASE_URL ?? "https://lacuno.health"),
@@ -34,7 +36,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${plex.variable} ${fraunces.variable} antialiased`}>
+      <body className={`${body.variable} ${display.variable} antialiased`}>
         <AccountGate enabled={authEnabled}>
           <AppShell>{children}</AppShell>
         </AccountGate>
