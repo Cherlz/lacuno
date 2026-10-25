@@ -125,7 +125,10 @@ function Dashboard() {
       </section>
 
       <section className="mt-10">
-        <SectionHeader title="Next doctor visit" />
+        <SectionHeader
+          title="Next doctor visit"
+          action={<ButtonLink href="/nearby" variant="ghost" size="sm"><Icon name="pin" size={16} />Hospitals nearby</ButtonLink>}
+        />
         <Appointments />
       </section>
 

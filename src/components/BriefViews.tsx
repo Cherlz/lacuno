@@ -171,9 +171,9 @@ export function FamilyBrief({ b, patientName }: { b: Brief; patientName: string 
   const numbers = useFootnotes([f.what_doctors_said]);
   return (
     <SourceNumbers.Provider value={numbers}>
-      <div className="space-y-6 text-lg leading-relaxed print:space-y-3 print:text-[11pt] print:leading-normal">
+      <div className="space-y-6 text-[15px] leading-normal print:space-y-2.5 print:text-[9.5pt] print:leading-[1.35]">
         <BriefHeader eyebrow="Summary for the family" name={patientName} />
-        <p>{f.summary}</p>
+        <p className="text-base font-medium leading-relaxed print:text-[10.5pt] print:leading-snug">{f.summary}</p>
         <Questions title="Questions to ask" items={f.questions_to_ask} />
         <Section title="What the doctors said" show={f.what_doctors_said.length > 0}>
           <Bullets items={f.what_doctors_said} />

@@ -118,10 +118,10 @@ function PushToggle({ appointments }: { appointments: Appointment[] }) {
 
   if (state === "unavailable") return null;
   if (state === "needs-install") {
-    return <p className="text-sm text-muted">🔔 For notifications on iPhone: tap Share → Add to Home Screen, then open Lacuno from there.</p>;
+    return <p className="flex gap-2 text-sm text-muted"><Icon name="bell" size={16} className="mt-0.5" />For notifications on iPhone: tap Share → Add to Home Screen, then open Lacuno from there.</p>;
   }
   if (state === "blocked") {
-    return <p className="text-sm text-muted">🔔 Notifications are blocked for this site. You can allow them in the phone&apos;s settings.</p>;
+    return <p className="flex gap-2 text-sm text-muted"><Icon name="bellOff" size={16} className="mt-0.5" />Notifications are blocked for this site. You can allow them in the phone&apos;s settings.</p>;
   }
 
   const toggle = async () => {
@@ -139,8 +139,8 @@ function PushToggle({ appointments }: { appointments: Appointment[] }) {
 
   return (
     <div>
-      <button onClick={toggle} disabled={busy} className="text-sm font-semibold text-brand underline disabled:opacity-50">
-        {state === "on" ? "🔕 Turn off notifications on this phone" : "🔔 Also notify me on this phone"}
+      <button onClick={toggle} disabled={busy} className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand underline underline-offset-2 disabled:opacity-50">
+        {state === "on" ? <><Icon name="bellOff" size={16} />Turn off notifications on this phone</> : <><Icon name="bell" size={16} />Also notify me on this phone</>}
       </button>
       {state === "on" && <p className="text-xs text-muted">The reminder only says the date and time of the visit. No names or medical details.</p>}
       {error && <p className="text-sm text-danger">{error}</p>}

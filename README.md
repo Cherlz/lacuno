@@ -36,7 +36,9 @@ This started with our own family. My mother has had dizziness, fatigue and weakn
 7. **Phone as camera.** On a laptop, tap **Use my phone**, scan the QR code, and photograph pages with the phone; they arrive on the laptop as records. Photos travel device to device over an encrypted WebRTC connection (PeerJS only introduces the two devices) and are never stored on a server.
 8. **Visit reminders.** Add the next doctor visit and tap **Add to my calendar**: the phone's own calendar reminds the family the day before and 2 hours before, with a link to the brief. Nothing is sent to a server. Families can also turn on phone notifications: the server then keeps only the push address and each visit's date and time (no names or medical details), deleted a day after the visit.
 9. **Phone and watch data.** Import an Apple Health export (export.zip) or a Google Fit Takeout file. It is read **on the device** (zip and XML parsed in the browser, even multi-gigabyte exports, streamed); only a short 90-day summary (resting heart rate, sleep, steps, blood pressure, blood oxygen, walking steadiness, falls, watch alerts) becomes a record that the family checks like any other. The raw file never leaves the device.
-10. **Episode log.** One button. Say or type what happened, in any language; Claude structures it. Emergency warning signs show **"Seek emergency care now"** and nothing else.
+10. **Hospitals and doctors nearby.** Search by location or town (OpenStreetMap, from the browser; Lacuno keeps no location). Places that match a facility in the family's confirmed records are marked "In your records", with the record they match, so families can see where they've already been. Lacuno lists places; it never rates or recommends them.
+11. **Emergency number by country.** The family picks their country when starting a case; the emergency button dials that country's number (e.g. 911, 112, 999, 119).
+12. **Episode log.** One button. Say or type what happened, in any language; Claude structures it. Emergency warning signs show **"Seek emergency care now"** and nothing else.
 
 ## How Claude is used
 
@@ -68,7 +70,7 @@ It is a multi-step pipeline with human confirmation points: **read → family co
 | Privacy breach | Patient | Case data lives only on the device. Our server stores nothing |
 | Families relying on the app instead of care | Patient | Every output points back to the doctor. The goal is better appointments, not replacing them |
 
-Known limits today: the on-device danger check covers three languages (Claude covers the rest); the app's own menus are English only (all generated content follows the chosen languages); the emergency call button dials 112.
+Known limits today: the on-device danger check covers three languages (Claude covers the rest); the app's own menus are English only (all generated content follows the chosen languages); emergency numbers are listed for 31 countries, with 112 as the fallback elsewhere.
 
 ## Privacy and responsible design
 
