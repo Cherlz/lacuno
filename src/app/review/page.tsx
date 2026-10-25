@@ -39,7 +39,7 @@ function ReviewScreen() {
 
   return (
     <div>
-      <PageTitle title="Review the case" subtitle="Where the doctors differ, what was never checked, and what each specialist would look at." />
+      <PageTitle title="Review the case" subtitle="Where the doctors differ, what hasn't been checked yet, and what to ask next." />
       <div className="-mt-3 mb-8"><Disclaimer /></div>
       {!started ? (
         <StartReview />
@@ -96,8 +96,8 @@ function StartReview() {
     <Card className="p-6 sm:p-8">
       <h2 className="text-xl font-semibold tracking-tight">{started ? `Reviewing… ${done} of ${jobs.length} done` : "Ready to review"}</h2>
       <p className="mt-2 max-w-2xl text-muted">
-        Lacuno reads all {plural(docs.filter((d) => d.confirmed).length, "checked record")} together, finds where the doctors disagree, and asks six
-        specialty reviewers what they would check. It also checks every medicine against official FDA labels. About 1–2 minutes.
+        Lacuno reads your {plural(docs.filter((d) => d.confirmed).length, "checked record")} together, shows where the doctors disagree, and lists
+        what six specialists would check. It also looks up each medicine&apos;s official label. Takes 1–2 minutes.
       </p>
       {!started && <Button size="lg" onClick={runAll} className="mt-6 w-full sm:w-auto">Review my case</Button>}
       {started && (
@@ -346,7 +346,7 @@ function ConferenceView({ focus, setFocus }: { focus: string | null; setFocus: (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <p className="max-w-2xl text-muted">
-          Six specialty reviewers each read the whole record and report only what matters to their area. None of them names a cause.
+          Each specialist lists what they&apos;d check and what to ask. None of them names a cause.
         </p>
         <Button variant="secondary" size="sm" onClick={runAll} disabled={anyBusy}>
           {anyBusy ? <Spinner label="Reviewing…" /> : Object.keys(reviews).length ? (anyStale ? "Refresh all" : "Run all again") : "Run all reviews"}
