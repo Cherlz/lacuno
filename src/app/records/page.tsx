@@ -21,6 +21,7 @@ export default function Records() {
   const [dragging, setDragging] = useState(false);
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [scrollTo, setScrollTo] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
 
   if (!loaded) return <Spinner label="Loading…" />;
   if (!patient) {
@@ -129,8 +130,23 @@ export default function Records() {
         </Notice>
       )}
 
+      {docs.length > 2 && (
+        <label className="mb-3 flex items-center gap-2 rounded-lg border border-line-strong bg-surface px-3 focus-within:border-brand">
+          <Icon name="search" size={18} className="text-muted" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search records: doctor, medicine, test…"
+            aria-label="Search records"
+            className="min-h-11 w-full bg-transparent text-base outline-none placeholder:text-muted/70"
+          />
+        </label>
+      )}
+      {query.trim() && !docs.some((d) => matches(d, query)) && <p className="mb-3 text-muted">No records match “{query}”.</p>}
+
       <div className="space-y-3">
-        {docs.map((d) => (
+        {docs.filter((d) => matches(d, query)).map((d) => (
           <DocCard
             key={d.id}
             doc={d}
@@ -144,6 +160,14 @@ export default function Records() {
       </div>
     </div>
   );
+}
+
+/** Whether a record mentions the search words anywhere: name, doctor, summary, medicines, tests. */
+function matches(doc: CaseDoc, query: string) {
+  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  const hay = [doc.fileName, doc.sampleText ?? "", JSON.stringify(doc.extraction ?? {})].join(" ").toLowerCase();
+  return words.every((w) => hay.includes(w));
 }
 
 function DocCard({ doc, open, onToggle, onConfirmed, scrollHere, onScrolled }: {
@@ -259,7 +283,7 @@ function DocCard({ doc, open, onToggle, onConfirmed, scrollHere, onScrolled }: {
 function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void }) {
   const [x, setX] = useState<Extraction>(doc.extraction!);
   const [readings, setReadings] = useState<Record<number, string>>({});
-  const [showOriginal, setShowOriginal] = useState(false);
+  const [showOriginal, setShowOriginal] = useState(true);
   const [editing, setEditing] = useState(false);
 
   const setField = <K extends keyof Extraction>(k: K, v: Extraction[K]) => setX({ ...x, [k]: v });
@@ -319,16 +343,17 @@ function ExtractionEditor({ doc, onDone }: { doc: CaseDoc; onDone: () => void })
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-      <div className="lg:order-2">
+      <div>
         <Button variant="secondary" size="sm" className="mb-2 w-full lg:hidden" onClick={() => setShowOriginal(!showOriginal)}>
           <Icon name="doc" size={16} />{showOriginal ? "Hide the original" : "Show the original"}
         </Button>
-        <div className={`${showOriginal ? "block" : "hidden"} lg:sticky lg:top-36 lg:block`}>
-          <DocPreview doc={doc} className="max-h-[70vh]" />
+        <p className="mb-2 hidden text-xs font-semibold uppercase tracking-wider text-muted lg:block">Original</p>
+        <div className={`${showOriginal ? "block" : "hidden"} lg:sticky lg:top-24 lg:block`}>
+          <DocPreview doc={doc} className="max-h-[45vh] lg:max-h-[75vh]" />
         </div>
       </div>
 
-      <div className="space-y-4 lg:order-1">
+      <div className="space-y-4">
         {x.unclear.length > 0 && (
           <section className="rounded-lg border border-warn/25 bg-warn-soft p-3.5">
             <h4 className="flex items-center gap-2 font-semibold text-warn"><Icon name="alert" />We couldn&apos;t read {x.unclear.length === 1 ? "one part" : `${x.unclear.length} parts`}, so we didn&apos;t guess</h4>

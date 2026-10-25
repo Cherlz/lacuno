@@ -90,7 +90,8 @@ export default function Landing() {
         <div>
           <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-[2.2rem]">The case conference they never got</h2>
           <p className="mt-4 text-lg leading-relaxed text-muted">
-            Six specialist views read the whole record and list what to check and what to ask. None of them names a cause.
+            Big hospitals review hard cases as a team. Lacuno gives you that review: six specialists each read the whole
+            record and tell you what they would check and what to ask. None of them gives a diagnosis.
           </p>
         </div>
         <ul className="grid grid-cols-2 gap-px self-start overflow-hidden rounded-xl border border-line bg-line">
@@ -133,7 +134,7 @@ export default function Landing() {
           </blockquote>
           <figcaption className="mt-4 text-muted">The Lacuno team</figcaption>
         </figure>
-        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="mt-10 flex flex-col items-center gap-4 text-center">
           <a href={primary.href} className={buttonClass("primary", "lg")}>
             {primary.label}
             <Icon name="arrowRight" size={18} />
@@ -153,7 +154,14 @@ export default function Landing() {
             <a href="https://github.com/Cherlz/lacuno" className="hover:text-ink">GitHub</a>
           </nav>
         </div>
-        <p className="mt-4 max-w-3xl">
+        <p className="mt-4 flex max-w-3xl gap-2">
+          <Icon name="globe" size={16} className="mt-0.5" />
+          <span>
+            Need this page in another language? Use your browser&apos;s translate button (in Chrome, right-click → Translate;
+            in Safari, tap <span aria-hidden>aA</span> → Translate). Summaries and briefs are written in the languages you choose.
+          </span>
+        </p>
+        <p className="mt-3 max-w-3xl">
           Lacuno does not give medical advice or diagnoses. Always talk to a doctor about health decisions. In an
           emergency, call your local emergency number.
         </p>

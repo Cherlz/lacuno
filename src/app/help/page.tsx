@@ -27,6 +27,7 @@ const FAQ = [
   ["Where are my records saved?", "On this device only. Records are sent to our AI provider to be read, and our server keeps nothing."],
   ["What if it reads something wrong?", "Fix it when you check the record. Every point links back to the original page."],
   ["What if it's an emergency?", "Call your emergency number first. Lacuno's emergency button calls the number for your country."],
+  ["Can I see this website in my language?", "Use your browser's translate button. Summaries and briefs are already written in the languages you pick."],
   ["Can I use it on another phone?", "Case files stay on the device where you made them."],
   ["Can I keep cases for more than one person?", "Yes. Tap New case on the overview, and tap a name to switch."],
   ["How do I delete a case?", "Overview → Edit → Delete case file."],
