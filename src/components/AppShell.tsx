@@ -136,7 +136,15 @@ function MarketingShell({ signedIn, children }: { signedIn: boolean; children: R
     { href: "/help", label: "Help" },
   ];
   const cta = signedIn ? { href: "/case", label: "Open my case" } : { href: "/signin", label: "Get started" };
-  const credits = Object.values(PHOTOS).flatMap((p) => (p.credit ? [p.credit] : []));
+  // Photo credits grouped by photographer: "Photos by A on Unsplash (1, 2)".
+  const credits = Object.values(PHOTOS).reduce<{ by: string; urls: string[] }[]>((all, { credit }) => {
+    if (!credit) return all;
+    const by = `${credit.name} on ${credit.source}`;
+    const group = all.find((g) => g.by === by);
+    if (group) group.urls.push(credit.url);
+    else all.push({ by, urls: [credit.url] });
+    return all;
+  }, []);
 
   return (
     <>
@@ -177,8 +185,8 @@ function MarketingShell({ signedIn, children }: { signedIn: boolean; children: R
       <main>{pathname === "/" ? children : <div className="mx-auto max-w-6xl px-4 sm:px-6">{children}</div>}</main>
 
       <footer className="border-t border-line bg-surface">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
-          <div>
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-4 py-10 sm:gap-10 sm:px-6 sm:py-12 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2.5">
               <Logo size={28} />
               <span className="font-display text-lg font-extrabold tracking-[-0.02em]">Lacuno</span>
@@ -196,7 +204,7 @@ function MarketingShell({ signedIn, children }: { signedIn: boolean; children: R
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-muted">Contact</p>
             <ul className="mt-3 space-y-2 font-medium">
-              <li><a href={`mailto:${SUPPORT_EMAIL}`} className="hover:text-brand">{SUPPORT_EMAIL}</a></li>
+              <li><a href={`mailto:${SUPPORT_EMAIL}`} className="text-[0.95rem] [overflow-wrap:anywhere] hover:text-brand sm:text-base">{SUPPORT_EMAIL}</a></li>
               <li><a href="https://github.com/Cherlz/lacuno" className="hover:text-brand">GitHub</a></li>
             </ul>
           </div>
@@ -210,11 +218,15 @@ function MarketingShell({ signedIn, children }: { signedIn: boolean; children: R
             <p>Lacuno does not give medical advice or diagnoses. Always talk to a doctor about health decisions. In an emergency, call your local emergency number.</p>
             {credits.length > 0 && (
               <p>
-                Photos:{" "}
-                {credits.map((c, i) => (
-                  <span key={c.url}>
-                    {i > 0 && ", "}
-                    <a href={c.url} className="underline underline-offset-2 hover:text-ink">{c.name}</a> on {c.source}
+                Photos by{" "}
+                {credits.map((g, i) => (
+                  <span key={g.by}>
+                    {i > 0 && "; "}
+                    {g.by} (
+                    {g.urls.map((u, j) => (
+                      <span key={u}>{j > 0 && ", "}<a href={u} className="underline underline-offset-2 hover:text-ink">{j + 1}</a></span>
+                    ))}
+                    )
                   </span>
                 ))}
                 .
