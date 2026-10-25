@@ -64,8 +64,7 @@ Put your name next to what you take, in the team chat.
 | # | Task | Owner | Notes |
 |---|---|---|---|
 | 1 | **UI/UX polish**: Records, Review results, Brief, overall look | | Make it calmer and clearer: less text per screen, stronger hierarchy, consistent spacing. Check on a phone. |
-| — | Real push notifications (optional) | | Calendar reminders are done. Push would need Upstash Redis (Vercel → Storage), VAPID keys, `web-push`, and a daily Vercel Cron. iPhone only after installing the app. |
-| 8 | Health data import (stretch) | | Import an Apple Health / Google Fit export (sleep, heart rate) as questions for the doctor. Phone-as-camera is done. |
+| 15 | Phone notifications (setup only) | | Code is done. 1) Vercel → Storage → Create → Upstash Redis (free) → connect to the project. 2) In a terminal: `npx web-push generate-vapid-keys`. 3) Vercel → Environment Variables: `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (public key), `VAPID_PRIVATE_KEY` (private key), `CRON_SECRET` (any long random text). 4) Redeploy. A "🔔 Also notify me on this phone" link appears on the visit card. Vercel's free plan runs the reminder job once a day (16:00 UTC), so reminders come the day before; for the "2 hours before" one, add a free cron-job.org job calling `/api/push/cron` every 15 min with header `Authorization: Bearer <CRON_SECRET>`. iPhone: only after Add to Home Screen. |
 | 4 | Demo video on the Help page | | No code needed: after uploading to YouTube, add `NEXT_PUBLIC_DEMO_VIDEO_URL` (the YouTube link) in Vercel → Environment Variables and redeploy. It appears at the top of the Help page. |
 
 ### C. Setup tasks (no coding)
@@ -74,9 +73,9 @@ Put your name next to what you take, in the team chat.
 | 2 | Help contact email | | Create a team inbox (e.g. a new Gmail), then add `NEXT_PUBLIC_SUPPORT_EMAIL` in Vercel → Environment Variables and redeploy. The Contact section appears by itself. |
 | 6 | Final domain | | Agree on it first. For the MLH .Tech prize: get.tech/mlh (ask the MLH coach for the code). Then Vercel → Domains, and update Auth0 callback/logout URLs + `APP_BASE_URL`. |
 | — | ElevenLabs read-aloud | | Get a key at elevenlabs.io (ask MLH about credits), add `ELEVENLABS_API_KEY` in Vercel, redeploy. Only then opt into the ElevenLabs prize. |
-| 12 | Phone-number sign-in | | Twilio trial + Auth0 → Authentication → Passwordless → SMS. Trial only texts verified numbers. |
+| 12 | Phone-number sign-in | | Code is done. Twilio trial (Account SID, Auth Token, phone number) → Auth0 → Authentication → Passwordless → SMS: switch on, paste the Twilio details, Applications tab → enable the app. Then Vercel → `NEXT_PUBLIC_PHONE_LOGIN` = `1` → redeploy. A "Use my phone number instead" button appears on the sign-in card. Twilio trial only texts verified numbers. |
 | 7 | Install the app on a phone | | Home → "Get the Lacuno app" → Install. Check it opens full-screen. |
 | — | Claude API credits | | Ask at the Anthropic booth / Cal Hacks Discord; redeem at console.anthropic.com → Billing |
 
 ### Already done (don't redo)
-Claude reading of records (photos/PDFs, any language) · disagreement map · six specialist reviews · bilingual brief + PDF · symptom log with emergency screen and Call 911 · Auth0 accounts · fact-checker agent · openFDA medicine-check agent · security hardening (headers, validation, rate limits) · homepage + guided flow + Help page · installable app · rename to Lacuno · visit reminders (Add to calendar) · phone as camera (QR, peer-to-peer) · UI polish round 2.
+Claude reading of records (photos/PDFs, any language) · disagreement map · six specialist reviews · bilingual brief + PDF · symptom log with emergency screen and Call 911 · Auth0 accounts · fact-checker agent · openFDA medicine-check agent · security hardening (headers, validation, rate limits) · homepage + guided flow + Help page · installable app · rename to Lacuno · visit reminders (Add to calendar) · safety stress test (`npm run safety-test`) · phone/watch health data import (`/health-data`) · phone notifications + phone sign-in (code; setup in section C) · phone as camera (QR, peer-to-peer) · UI polish round 2.

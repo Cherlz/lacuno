@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { downloadIcs, googleCalendarUrl } from "@/lib/calendar";
 import { deleteAppointment, newId, putAppointment, type Appointment } from "@/lib/db";
+import { disablePush, enablePush, pushState, syncPush, type PushState } from "@/lib/pushClient";
 import { useCase } from "@/lib/useCase";
 import { Icon } from "./icons";
 import { Button, Card, Field, buttonClass, field } from "./ui";
@@ -24,6 +25,11 @@ export function Appointments() {
   const [form, setForm] = useState({ what: "", date: "", time: "09:00", place: "" });
   const upcoming = appointments.filter((a) => new Date(a.start).getTime() > Date.now() - 2 * 3_600_000);
   const next = upcoming[0];
+
+  // Keep phone reminders in step with the visit list.
+  useEffect(() => {
+    void syncPush(appointments);
+  }, [appointments]);
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +104,46 @@ export function Appointments() {
         Your calendar reminds you the day before and 2 hours before. Nothing is sent to our server.
         {upcoming.length > 1 && ` ${upcoming.length - 1} more visit${upcoming.length > 2 ? "s" : ""} later.`}
       </p>
+      <PushToggle appointments={appointments} />
     </Card>
+  );
+}
+
+/** Optional phone notifications, for families who don't use the calendar. */
+function PushToggle({ appointments }: { appointments: Appointment[] }) {
+  const [state, setState] = useState<PushState>("unavailable");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => setState(pushState()), []);
+
+  if (state === "unavailable") return null;
+  if (state === "needs-install") {
+    return <p className="text-sm text-muted">🔔 For notifications on iPhone: tap Share → Add to Home Screen, then open Lacuno from there.</p>;
+  }
+  if (state === "blocked") {
+    return <p className="text-sm text-muted">🔔 Notifications are blocked for this site. You can allow them in the phone&apos;s settings.</p>;
+  }
+
+  const toggle = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      if (state === "on") await disablePush();
+      else await enablePush(appointments);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong.");
+    }
+    setState(pushState());
+    setBusy(false);
+  };
+
+  return (
+    <div>
+      <button onClick={toggle} disabled={busy} className="text-sm font-semibold text-brand underline disabled:opacity-50">
+        {state === "on" ? "🔕 Turn off notifications on this phone" : "🔔 Also notify me on this phone"}
+      </button>
+      {state === "on" && <p className="text-xs text-muted">The reminder only says the date and time of the visit. No names or medical details.</p>}
+      {error && <p className="text-sm text-danger">{error}</p>}
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { auth0 } from "@/lib/auth0";
 
 // Pages anyone can see before signing in.
-const PUBLIC_PAGES = new Set(["/", "/help", "/robots.txt", "/sitemap.xml", "/sw.js", "/phone-camera"]);
+const PUBLIC_PAGES = new Set(["/", "/help", "/robots.txt", "/sitemap.xml", "/sw.js", "/phone-camera", "/api/push/cron"]);
 
 export async function middleware(request: NextRequest) {
   if (!auth0) return NextResponse.next();

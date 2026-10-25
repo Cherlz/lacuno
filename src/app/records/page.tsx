@@ -99,6 +99,9 @@ export default function Records() {
       {docs.length > 0 && dragging && (
         <div className="mb-4 rounded-xl border-2 border-dashed border-brand bg-brand-soft px-4 py-6 text-center font-semibold text-brand">Drop to add these records</div>
       )}
+      <p className="my-4 text-center text-sm">
+        <a href="/health-data" className="font-semibold text-brand underline underline-offset-2">Add phone or watch data (Apple Health, Google Fit)</a>
+      </p>
 
       {totalToCheck > 0 && toConfirm.length > 0 && (
         <div className="mb-6 rounded-xl border border-line bg-surface p-4 sm:p-5">
