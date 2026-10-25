@@ -2,7 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { Button, ButtonLink, Card, PageTitle, Pill, Spinner } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { Button, ButtonLink, EmptyState, PageTitle, Pill, Spinner, field } from "@/components/ui";
 import { logEpisode, structureEpisode } from "@/lib/actions";
 import { deleteEpisode } from "@/lib/db";
 import { languageByCode } from "@/lib/languages";
@@ -38,10 +39,9 @@ function Episodes() {
   if (!loaded) return <Spinner label="Loading…" />;
   if (!patient) {
     return (
-      <Card className="text-center">
-        <p className="mb-3">Start a case first.</p>
-        <ButtonLink href="/setup">Start a case</ButtonLink>
-      </Card>
+      <EmptyState icon="user" title="Start a case first" action={<ButtonLink href="/setup">Start a case</ButtonLink>}>
+        Logged symptoms belong to a case.
+      </EmptyState>
     );
   }
   if (emergency) return <Emergency onBack={() => setEmergency(false)} />;
@@ -57,65 +57,83 @@ function Episodes() {
   };
 
   return (
-    <div className="space-y-5">
-      <PageTitle title="Log an episode" subtitle="Write or say what happened, in any language, while it's fresh." />
-      <Card className="space-y-3">
+    <div className="mx-auto max-w-2xl">
+      <PageTitle title="Log a symptom" subtitle="Write or say what happened, in any language, while it's fresh." />
+      <div className="space-y-3">
+        <label htmlFor="episode" className="sr-only">What happened?</label>
         <textarea
+          id="episode"
           ref={boxRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="min-h-36 w-full rounded-xl border border-line bg-surface p-3 text-lg focus:border-brand focus:outline-none"
+          className={`${field} min-h-36 py-3 text-lg leading-relaxed`}
           placeholder="e.g. Dizzy for about 2 minutes after standing up from the chair. Legs felt weak afterwards."
           lang={patient.familyLanguage}
         />
-        <div className="grid gap-2 sm:grid-cols-[auto_1fr]">
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <VoiceButton lang={patient.familyLanguage} onText={(t) => setText((prev) => (prev ? `${prev} ${t}` : t))} />
-          <Button onClick={submit} disabled={!text.trim() || saving} className="min-h-14 text-lg">
-            {saving ? <Spinner label="Saving…" /> : "Save episode"}
+          <Button size="lg" onClick={submit} disabled={!text.trim() || saving}>
+            {saving ? <Spinner label="Saving…" /> : "Save"}
           </Button>
         </div>
-        <p className="text-sm text-muted">
-          If this is happening now and includes sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, call emergency services first.
-        </p>
-        <a href="tel:911" className="flex min-h-12 items-center justify-center rounded-xl bg-danger font-bold text-white">📞 Emergency? Call 911</a>
-      </Card>
+      </div>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-bold">History</h2>
-        {!episodes.length && <p className="text-muted">No episodes logged yet.</p>}
-        {episodes.map((e) => (
-          <Card key={e.id} className="space-y-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm text-muted">{new Date(e.createdAt).toLocaleString()}</span>
-              <div className="flex gap-1.5">
-                {e.isSample && <Pill tone="warn">Sample</Pill>}
-                {e.danger && <Pill tone="danger">Danger sign</Pill>}
-                {e.structured?.severity != null && <Pill>Severity {e.structured.severity}/10</Pill>}
-              </div>
-            </div>
-            {e.structured ? (
-              <>
-                <p className="font-semibold">{e.structured.type}</p>
-                <p>{e.structured.summary}</p>
-                <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-sm text-muted">
-                  {e.structured.duration && <><dt>Duration</dt><dd className="text-ink">{e.structured.duration}</dd></>}
-                  {e.structured.trigger_or_timing && <><dt>Trigger / timing</dt><dd className="text-ink">{e.structured.trigger_or_timing}</dd></>}
-                  {e.structured.other_symptoms.length > 0 && <><dt>Also</dt><dd className="text-ink">{e.structured.other_symptoms.join(", ")}</dd></>}
-                </dl>
-                <details className="text-sm text-muted"><summary className="cursor-pointer">Original words</summary><p className="mt-1">{e.transcript}</p></details>
-              </>
-            ) : (
-              <>
-                <p>{e.transcript}</p>
-                <div className="flex items-center gap-3 text-sm">
-                  <Spinner label="Organising…" />
-                  <button className="text-brand underline" onClick={() => void structureEpisode(e)}>Retry</button>
+      <div className="mt-6 flex flex-col gap-3 rounded-lg border border-danger/25 bg-danger-soft p-4 sm:flex-row sm:items-center">
+        <p className="flex-1 text-[0.95rem] text-danger">
+          <strong className="font-semibold">Happening now?</strong> Sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing: call emergency services first.
+        </p>
+        <a href="tel:911" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-danger px-4 font-semibold text-white hover:opacity-90">
+          <Icon name="phone" size={18} />Call 911
+        </a>
+      </div>
+
+      <section className="mt-12">
+        <h2 className="text-lg font-semibold tracking-tight">History</h2>
+        {!episodes.length ? (
+          <p className="mt-2 text-muted">Nothing logged yet. Episodes you save appear here and are included in the next brief.</p>
+        ) : (
+          <ul className="mt-3 divide-y divide-line border-y border-line">
+            {episodes.map((e) => (
+              <li key={e.id} className="space-y-2 py-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-muted">{new Date(e.createdAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</span>
+                  {e.isSample && <Pill tone="warn">Sample</Pill>}
+                  {e.danger && <Pill tone="danger">Danger sign</Pill>}
+                  {e.structured?.severity != null && <Pill>Severity {e.structured.severity}/10</Pill>}
+                  <button
+                    className="ml-auto flex h-8 w-8 items-center justify-center rounded-md text-muted hover:bg-danger-soft hover:text-danger"
+                    aria-label="Delete this episode" title="Delete"
+                    onClick={() => confirm("Delete this episode?") && void deleteEpisode(e.id)}
+                  >
+                    <Icon name="trash" size={16} />
+                  </button>
                 </div>
-              </>
-            )}
-            <button className="text-sm text-muted underline" onClick={() => confirm("Delete this episode?") && void deleteEpisode(e.id)}>Delete</button>
-          </Card>
-        ))}
+                {e.structured ? (
+                  <>
+                    <p><span className="font-semibold">{e.structured.type}.</span> {e.structured.summary}</p>
+                    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 text-sm">
+                      {e.structured.duration && <><dt className="text-muted">Duration</dt><dd>{e.structured.duration}</dd></>}
+                      {e.structured.trigger_or_timing && <><dt className="text-muted">Trigger</dt><dd>{e.structured.trigger_or_timing}</dd></>}
+                      {e.structured.other_symptoms.length > 0 && <><dt className="text-muted">Also</dt><dd>{e.structured.other_symptoms.join(", ")}</dd></>}
+                    </dl>
+                    <details className="group text-sm text-muted">
+                      <summary className="inline-flex cursor-pointer items-center gap-1 hover:text-ink">Original words<Icon name="chevronDown" size={14} className="transition-transform group-open:rotate-180" /></summary>
+                      <p className="mt-1">{e.transcript}</p>
+                    </details>
+                  </>
+                ) : (
+                  <>
+                    <p>{e.transcript}</p>
+                    <div className="flex items-center gap-3 text-sm">
+                      <Spinner label="Organising…" />
+                      <button className="font-medium text-brand underline underline-offset-2" onClick={() => void structureEpisode(e)}>Retry</button>
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );
@@ -124,11 +142,11 @@ function Episodes() {
 function Emergency({ onBack }: { onBack: () => void }) {
   return (
     <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 bg-danger p-6 text-center text-white" role="alert" aria-live="assertive">
-      <p className="text-6xl" aria-hidden>⚠</p>
-      <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl">Seek emergency care now</h1>
+      <Icon name="alert" size={64} strokeWidth={2} />
+      <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">Seek emergency care now</h1>
       <p className="max-w-md text-xl">Call emergency services or go to the nearest emergency department.</p>
-      <a href="tel:911" className="flex min-h-20 w-full max-w-sm items-center justify-center rounded-2xl bg-white px-8 text-3xl font-extrabold text-danger shadow-lg">
-        📞 Call 911
+      <a href="tel:911" className="flex min-h-20 w-full max-w-sm items-center justify-center gap-3 rounded-xl bg-white px-8 text-3xl font-bold text-danger">
+        <Icon name="phone" size={30} strokeWidth={2} />Call 911
       </a>
       <p className="text-white/90">
         Outside the US?{" "}
@@ -185,8 +203,8 @@ function VoiceButton({ lang, onText }: { lang: string; onText: (t: string) => vo
   };
 
   return (
-    <Button variant={listening ? "danger" : "secondary"} onClick={toggle} className="min-h-14 text-lg">
-      {listening ? "■ Stop" : `🎤 Speak (${languageByCode(lang).native})`}
+    <Button variant={listening ? "danger" : "secondary"} size="lg" onClick={toggle} aria-pressed={listening}>
+      {listening ? <><Icon name="stop" />Stop listening</> : <><Icon name="mic" />Speak ({languageByCode(lang).native})</>}
     </Button>
   );
 }
