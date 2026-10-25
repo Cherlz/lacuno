@@ -5,7 +5,7 @@ Every photo on the site, where it came from and its license. Files live in `publ
 | File | Where it's used | Photographer | Source | License | Attribution required? |
 |---|---|---|---|---|---|
 | `hero.jpg` | Homepage hero | Vitaly Gariev | [Doctor talks with an elderly patient on a couch](https://unsplash.com/photos/doctor-talks-with-an-elderly-patient-on-a-couch-BUNNEclz-yQ) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
-| `papers.jpg` | "Nobody holds the whole case" | Vitaly Gariev | [Couple looking stressed over bills at kitchen table](https://unsplash.com/photos/couple-looking-stressed-over-bills-at-kitchen-table-uwinmIQD8nU) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
+| `reading.jpg` | "Nobody holds the whole case" | Vitaly Gariev | [Woman reading documents with coffee at the table](https://unsplash.com/photos/RNUNbvIXUbg) | [Unsplash License](https://unsplash.com/license) | No (credited anyway) |
 
 The files are committed in `public/images` and served from our own domain (no hotlinking). If a file is missing, its section shows a plain background.
 

@@ -14,7 +14,7 @@ export const PHOTOS: Record<"hero" | "papers", Photo> = {
   hero: {
     src: "/images/hero.jpg",
     alt: "A doctor talking with an older patient on a couch",
-    focus: "50% 40%",
+    focus: "35% 20%",
     credit: {
       name: "Vitaly Gariev",
       url: "https://unsplash.com/photos/doctor-talks-with-an-elderly-patient-on-a-couch-BUNNEclz-yQ",
@@ -22,12 +22,12 @@ export const PHOTOS: Record<"hero" | "papers", Photo> = {
     },
   },
   papers: {
-    src: "/images/papers.jpg",
-    alt: "A couple looking worried over bills and papers at their kitchen table",
-    focus: "50% 50%",
+    src: "/images/reading.jpg",
+    alt: "A woman reading through papers with a coffee at her kitchen table",
+    focus: "50% 35%",
     credit: {
       name: "Vitaly Gariev",
-      url: "https://unsplash.com/photos/couple-looking-stressed-over-bills-at-kitchen-table-uwinmIQD8nU",
+      url: "https://unsplash.com/photos/RNUNbvIXUbg",
       source: "Unsplash",
     },
   },
