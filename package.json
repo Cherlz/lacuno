@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node -e \"require('fs').copyFileSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs','public/pdf.worker.min.mjs')\"",
     "dev": "next dev",
+    "prebuild": "node -e \"require('fs').copyFileSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs','public/pdf.worker.min.mjs')\"",
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
     "lint": "eslint",
@@ -14,6 +16,7 @@
     "@auth0/nextjs-auth0": "^4.33.0",
     "idb": "^8.0.4",
     "next": "15.5.28",
+    "pdfjs-dist": "^4.10.38",
     "peerjs": "^1.5.5",
     "qrcode": "^1.5.4",
     "react": "~19.1.2",

@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { DoctorBrief } from "@/components/BriefViews";
 import { DocPreview, docLabel } from "@/components/Sources";
-import { Button, ButtonLink, Card, PageTitle, Pill, Spinner } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { Button, ButtonLink, Card, PageTitle, Pill, Spinner, field as fieldBase } from "@/components/ui";
 import { deleteFeedback, newId, putFeedback, type Analysis, type Feedback } from "@/lib/db";
 import { accuracySummary } from "@/lib/metrics";
 import { useCase } from "@/lib/useCase";
 
-const field = "mt-1 block w-full rounded-xl border border-line bg-surface px-3 min-h-12 text-base focus:border-brand focus:outline-none";
+const field = `${fieldBase} mt-1.5 font-normal`;
 
 export default function Impact() {
   const { loaded, docs, feedback } = useCase();
@@ -31,7 +32,7 @@ export default function Impact() {
         subtitle="Measure whether Lacuno actually helps. Ratings and quotes only; no medical details are saved here."
       />
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Extraction kept unchanged after family check" value={acc.rate == null ? "—" : `${Math.round(acc.rate * 100)}%`}
           sub={`${acc.kept}/${acc.aiItems} items · ${acc.documents} docs · ${acc.unclear} flagged unclear`} />
         <Stat label="Family confidence (1–10)" value={`${avg(before)} → ${avg(after)}`} sub={`${before.length} before · ${after.length} after`} />
@@ -54,22 +55,22 @@ const secs = (v: string) => (v === "—" ? v : `${v}s`);
 
 function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <Card>
+    <div className="bg-surface px-5 py-4">
       <p className="text-sm text-muted">{label}</p>
-      <p className="mt-1 text-3xl font-bold tabular-nums text-brand">{value}</p>
+      <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
       <p className="mt-1 text-xs text-muted">{sub}</p>
-    </Card>
+    </div>
   );
 }
 
 function Scale({ max, value, onChange, label }: { max: number; value: number | null; onChange: (n: number) => void; label: string }) {
   return (
     <fieldset>
-      <legend className="font-medium">{label}</legend>
+      <legend className="text-sm font-semibold">{label}</legend>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
           <button key={n} type="button" onClick={() => onChange(n)} aria-pressed={value === n}
-            className={`h-11 w-11 rounded-xl border font-semibold ${value === n ? "border-brand bg-brand text-brand-ink" : "border-line bg-surface"}`}>
+            className={`h-11 w-11 rounded-lg border font-semibold tabular-nums transition-colors ${value === n ? "border-brand bg-brand text-brand-ink" : "border-line-strong bg-surface hover:bg-surface-2"}`}>
             {n}
           </button>
         ))}
@@ -81,11 +82,11 @@ function Scale({ max, value, onChange, label }: { max: number; value: number | n
 function Choice<T extends string>({ options, value, onChange, label }: { options: [T, string][]; value: T | null; onChange: (v: T) => void; label: string }) {
   return (
     <fieldset>
-      <legend className="font-medium">{label}</legend>
+      <legend className="text-sm font-semibold">{label}</legend>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {options.map(([v, l]) => (
           <button key={v} type="button" onClick={() => onChange(v)} aria-pressed={value === v}
-            className={`min-h-11 rounded-xl border px-4 font-semibold ${value === v ? "border-brand bg-brand text-brand-ink" : "border-line bg-surface"}`}>
+            className={`min-h-11 rounded-lg border px-4 font-semibold transition-colors ${value === v ? "border-brand bg-brand-soft text-brand" : "border-line-strong bg-surface hover:bg-surface-2"}`}>
             {l}
           </button>
         ))}
@@ -100,11 +101,11 @@ function QuoteFields({ tester, setTester, quote, setQuote, mayQuote, setMayQuote
 }) {
   return (
     <>
-      <label className="block font-medium">
+      <label className="block text-sm font-semibold">
         {quoteLabel} <span className="font-normal text-muted">(optional)</span>
         <textarea className={`${field} min-h-20 py-2`} value={quote} onChange={(e) => setQuote(e.target.value)} />
       </label>
-      <label className="block font-medium">
+      <label className="block text-sm font-semibold">
         Tester label <span className="font-normal text-muted">(e.g. &quot;Daughter, Jakarta&quot; — no full names)</span>
         <input className={field} value={tester} onChange={(e) => setTester(e.target.value)} />
       </label>
@@ -139,7 +140,7 @@ function FamilyCheckIn() {
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold">Family check-in</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Family check-in</h2>
         <p className="text-sm text-muted">Ask once before they use Lacuno, and again after they have their brief.</p>
       </div>
       <Choice label="When is this?" options={[["before", "Before using it"], ["after", "After using it"]]} value={phase} onChange={setPhase} />
@@ -149,7 +150,7 @@ function FamilyCheckIn() {
       )}
       <QuoteFields tester={tester} setTester={setTester} quote={quote} setQuote={setQuote} mayQuote={mayQuote} setMayQuote={setMayQuote}
         quoteLabel={phase === "before" ? "What is hardest about managing the records today?" : "In their words: what changed?"} />
-      <Button className="w-full" disabled={!confidence} onClick={save}>{saved ? "✓ Saved" : "Save check-in"}</Button>
+      <Button className="w-full" disabled={!confidence} onClick={save}>{saved ? <><Icon name="check" />Saved</> : "Save check-in"}</Button>
     </Card>
   );
 }
@@ -198,7 +199,7 @@ function DoctorTest() {
         </div>
         <div className="mx-auto max-w-3xl p-4">
           {mode === "brief" && brief ? (
-            <article className="rounded-2xl border border-line bg-surface p-5"><DoctorBrief b={brief.data} patientName={patient!.name} age={patient!.age} /></article>
+            <article className="rounded-xl border border-line bg-surface p-5 sm:p-8"><DoctorBrief b={brief.data} patientName={patient!.name} age={patient!.age} /></article>
           ) : (
             <div className="space-y-4">
               {confirmed.map((d) => (
@@ -214,7 +215,7 @@ function DoctorTest() {
   return (
     <Card className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold">Doctor test</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Doctor test</h2>
         <p className="text-sm text-muted">
           Time how long a clinician needs to understand the case. Run it with the original records only, then with the brief (ideally with different clinicians, or a different case, so the second read isn&apos;t easier just because it&apos;s second).
         </p>
@@ -224,7 +225,7 @@ function DoctorTest() {
           <Choice label="What will they read?" options={[["records", "Original records only"], ["brief", "Lacuno brief"]]} value={mode} onChange={setMode} />
           {!canRun && (
             <p className="text-sm text-warn">
-              {mode === "brief" ? <>Write the brief first. <ButtonLink href="/brief" variant="ghost" className="min-h-9 px-2">Go to brief</ButtonLink></> : "Confirm some records first."}
+              {mode === "brief" ? <>Write the brief first. <ButtonLink href="/brief" variant="ghost" size="sm">Go to brief</ButtonLink></> : "Confirm some records first."}
             </p>
           )}
           <Button className="w-full" disabled={!canRun} onClick={() => { setStartedAt(Date.now()); setNow(Date.now()); }}>Start the clock</Button>
@@ -275,10 +276,10 @@ function Results({ feedback }: { feedback: Feedback[] }) {
   return (
     <Card className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-bold">All responses ({feedback.length})</h2>
+        <h2 className="text-lg font-semibold tracking-tight">All responses ({feedback.length})</h2>
         <div className="flex gap-2">
-          <Button variant="secondary" className="min-h-10" onClick={copy} disabled={!feedback.length && !docs.length}>{copied ? "✓ Copied" : "Copy as JSON"}</Button>
-          <Button variant="secondary" className="min-h-10" onClick={download}>Download</Button>
+          <Button variant="secondary" size="sm" onClick={copy} disabled={!feedback.length && !docs.length}>{copied ? "Copied" : "Copy as JSON"}</Button>
+          <Button variant="secondary" size="sm" onClick={download}><Icon name="download" size={16} />Download</Button>
         </div>
       </div>
       {patient?.isSample && <p className="text-sm text-warn">The current case is a fictional sample. Extraction accuracy measured on it is not evidence from real records.</p>}
@@ -297,7 +298,7 @@ function Results({ feedback }: { feedback: Feedback[] }) {
               </div>
               {f.quote && <p className="mt-1">“{f.quote}”{f.tester && <span className="text-muted"> — {f.tester}</span>}</p>}
             </div>
-            <button className="text-muted underline" onClick={() => confirm("Delete this response?") && void deleteFeedback(f.id)}>Delete</button>
+            <button className="flex h-8 w-8 items-center justify-center rounded-md text-muted hover:bg-danger-soft hover:text-danger" aria-label="Delete this response" title="Delete" onClick={() => confirm("Delete this response?") && void deleteFeedback(f.id)}><Icon name="trash" size={16} /></button>
           </li>
         ))}
       </ul>

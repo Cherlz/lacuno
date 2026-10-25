@@ -1,12 +1,13 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Icon } from "@/components/icons";
+import { buttonClass } from "@/components/ui-classes";
 import { SUPPORT_EMAIL, demoVideoId } from "@/lib/contact";
 
 export const metadata: Metadata = { title: "How to use Lacuno" };
 
 const STEPS = [
   {
-    icon: "👤",
     title: "Start a case",
     where: "Get started → Start a case",
     body: [
@@ -15,7 +16,6 @@ const STEPS = [
     ],
   },
   {
-    icon: "📷",
     title: "Add the records",
     where: "Records → Take a photo / Choose files",
     body: [
@@ -25,42 +25,39 @@ const STEPS = [
     ],
   },
   {
-    icon: "✅",
     title: "Check each record",
-    where: "Records (one at a time)",
+    where: "Records → Check",
     body: [
-      "Lacuno shows what it read next to the original. Compare names, dates, medicines and doses.",
-      "Tap any text to fix it. Tap ✕ to remove a line that's wrong.",
-      "Orange box = a part we couldn't read. We never guess. If you can read it, type it in; if not, leave it.",
-      "Tap the green Confirm button. The next record opens by itself. Only confirmed records are used later.",
+      "Open a record to see what Lacuno read next to the original. Compare names, dates, medicines and doses.",
+      "If something is wrong, tap Fix something. Edit any line, remove one with ✕, or add what's missing.",
+      "An amber box means a part we couldn't read. We never guess. If you can read it, type it in; if not, leave it.",
+      "Tap Looks right to confirm. The next record opens just below. Only confirmed records are used later.",
     ],
   },
   {
-    icon: "🧭",
     title: "Review the case",
-    where: "Review → Disagreement map / Case conference",
+    where: "Review → Review my case",
     body: [
-      "Disagreement map: every cause a doctor raised, what fits, what doesn't, and what was never checked.",
-      "Case conference: six specialty reviewers each read the whole record and list what they'd check and what to ask.",
-      "Tap any grey 📄 tag to see the exact page a point came from.",
+      "The summary at the top gives the short version. The tabs below hold the details.",
+      "Doctors differ: every cause a doctor raised, what fits, what doesn't, and what was never checked.",
+      "Specialists: six specialty reviewers each read the whole record. Tap one to read only theirs.",
+      "Tap any small source tag to see the exact page a point came from.",
     ],
   },
   {
-    icon: "📋",
     title: "Get the doctor brief",
     where: "Brief → Write the brief",
     body: [
       "One page for the doctor, in their language, readable in about a minute.",
-      "Switch to “For the family” for a simple version in your language. Tap 🔊 Listen to hear it.",
-      "Tap Save as PDF / print, then bring it (or show it on your phone) at the next appointment.",
+      "Switch to “For the family” for a simple version in your language. Tap Listen to hear it.",
+      "Tap Save as PDF, then bring it (or show it on your phone) at the next appointment.",
     ],
   },
   {
-    icon: "➕",
     title: "Log symptoms between visits",
-    where: "Log (bottom menu)",
+    where: "Log symptom",
     body: [
-      "Right after a dizzy spell or other episode, tap Log and say or type what happened.",
+      "Right after a dizzy spell or other episode, tap Log symptom and say or type what happened.",
       "Logged episodes are included the next time you make the brief.",
     ],
   },
@@ -72,22 +69,20 @@ const FAQ = [
   ["What if it reads something wrong?", "That's why you check every record before it's used. You can fix any line, and every point in the review and brief links back to its original page."],
   ["What if it's an emergency?", "Call your local emergency number first. If you log sudden weakness on one side, slurred speech, a drooping face, chest pain, fainting or severe trouble breathing, Lacuno shows only: “Seek emergency care now.”"],
   ["Can I use it on another phone?", "Case files stay on the device where you made them. Sign in on the same device to see them."],
-  ["How do I delete everything?", "Tap the patient's name at the top → Delete case file from this device."],
+  ["How do I delete everything?", "Open the patient's profile (their name at the top, or Edit on the overview) → Delete case file."],
 ];
 
 export default function Help() {
   const video = demoVideoId();
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">How to use Lacuno</h1>
-        <p className="mt-2 text-lg text-muted">
-          Six steps, about 15 minutes the first time. The app always shows a <strong className="text-ink">“Do this next”</strong> button, so you can&apos;t get lost.
-        </p>
-      </div>
+    <div className="mx-auto max-w-2xl py-12 sm:py-16">
+      <h1 className="font-display text-[2.2rem] font-semibold leading-tight tracking-tight sm:text-4xl">How to use Lacuno</h1>
+      <p className="mt-3 text-lg leading-relaxed text-muted">
+        Six steps, about 15 minutes the first time. The overview always shows the <strong className="font-semibold text-ink">next step</strong>, so you can&apos;t get lost.
+      </p>
 
       {video && (
-        <div className="overflow-hidden rounded-2xl border border-line bg-black">
+        <div className="mt-8 overflow-hidden rounded-xl border border-line bg-ink">
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${video}?rel=0`}
             title="Lacuno in 2 minutes"
@@ -98,52 +93,54 @@ export default function Help() {
         </div>
       )}
 
-      <ol className="space-y-4">
+      <ol className="mt-12 space-y-10">
         {STEPS.map((s, i) => (
-          <li key={s.title} className="rounded-2xl border border-line bg-surface p-5">
-            <div className="flex items-start gap-4">
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-soft text-2xl" aria-hidden>{s.icon}</span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold uppercase tracking-wide text-brand">Step {i + 1}</p>
-                <h2 className="text-xl font-bold">{s.title}</h2>
-                <p className="mt-0.5 text-sm text-muted">Where: {s.where}</p>
-                <ul className="mt-3 list-disc space-y-1.5 pl-5">
-                  {s.body.map((b) => <li key={b}>{b}</li>)}
-                </ul>
-              </div>
+          <li key={s.title} className="grid grid-cols-[2.25rem_1fr] gap-x-4">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-surface font-semibold tabular-nums">{i + 1}</span>
+            <div className="min-w-0 pt-1">
+              <h2 className="text-lg font-semibold tracking-tight">{s.title}</h2>
+              <p className="mt-0.5 text-sm text-muted">{s.where}</p>
+              <ul className="mt-3 space-y-2">
+                {s.body.map((b) => (
+                  <li key={b} className="flex gap-3">
+                    <span aria-hidden className="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-muted" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </li>
         ))}
       </ol>
 
-      <section>
-        <h2 className="mb-3 text-2xl font-bold">Common questions</h2>
-        <div className="space-y-2">
+      <section className="mt-16 border-t border-line pt-10">
+        <h2 className="font-display text-2xl font-semibold tracking-tight">Common questions</h2>
+        <div className="mt-4 divide-y divide-line border-y border-line">
           {FAQ.map(([q, a]) => (
-            <details key={q} className="rounded-xl border border-line bg-surface p-4">
-              <summary className="cursor-pointer text-lg font-semibold">{q}</summary>
-              <p className="mt-2">{a}</p>
+            <details key={q} className="group">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 py-4 font-semibold hover:text-brand">
+                {q}
+                <Icon name="chevronDown" size={18} className="shrink-0 text-muted transition-transform group-open:rotate-180" />
+              </summary>
+              <p className="-mt-1 pb-4 text-muted">{a}</p>
             </details>
           ))}
         </div>
       </section>
 
       {SUPPORT_EMAIL && (
-        <section id="contact" className="scroll-mt-24 rounded-2xl bg-brand-soft p-5">
-          <h2 className="text-2xl font-bold">Still stuck? Email us</h2>
-          <p className="mt-1">Tell us what you were trying to do. Please don&apos;t include medical records or personal health details in the email.</p>
-          <a
-            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`}
-            className="mt-3 inline-flex min-h-12 items-center rounded-xl bg-brand px-5 font-semibold text-brand-ink"
-          >
-            ✉️ Email {SUPPORT_EMAIL}
+        <section id="contact" className="mt-16 scroll-mt-20 border-t border-line pt-10">
+          <h2 className="font-display text-2xl font-semibold tracking-tight">Still stuck? Email us</h2>
+          <p className="mt-2 text-muted">Tell us what you were trying to do. Please don&apos;t include medical records or personal health details in the email.</p>
+          <a href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Help with Lacuno")}`} className={`${buttonClass("secondary")} mt-4`}>
+            <Icon name="mail" />Email {SUPPORT_EMAIL}
           </a>
         </section>
       )}
 
-      <div className="flex flex-wrap gap-3">
-        <Link href="/case" className="inline-flex min-h-12 items-center rounded-xl bg-brand px-5 font-semibold text-brand-ink">Go to my case</Link>
-        <Link href="/records" className="inline-flex min-h-12 items-center rounded-xl border border-line bg-surface px-5 font-semibold">Add records</Link>
+      <div className="mt-16 flex flex-wrap gap-3 border-t border-line pt-8">
+        <Link href="/case" className={buttonClass("primary", "lg")}>Go to my case<Icon name="arrowRight" size={18} /></Link>
+        <Link href="/records" className={buttonClass("secondary", "lg")}>Add records</Link>
       </div>
     </div>
   );

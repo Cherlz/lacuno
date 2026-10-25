@@ -2,7 +2,7 @@
 
 import * as db from "./db";
 import { buildCasePayload, caseBasis, validIds } from "./case";
-import { keepSourced } from "./sources";
+import { dropBlank, keepSourced } from "./sources";
 import { localDangerCheck } from "./danger";
 import { languageByCode } from "./languages";
 import { SAMPLE_CASES } from "./samples";
@@ -84,12 +84,13 @@ export async function extractDoc(id: string) {
   if (!doc) return;
   await db.putDoc({ ...doc, status: "extracting", error: undefined });
   try {
-    const { extraction } = await postJSON<{ extraction: Extraction }>("/api/extract", {
+    const { extraction: raw } = await postJSON<{ extraction: Extraction }>("/api/extract", {
       mimeType: doc.mimeType,
       data: doc.blob ? await toBase64(doc.blob) : undefined,
       text: doc.sampleText,
       familyLanguage: await familyLanguageName(),
     });
+    const extraction = dropBlank(raw);
     const latest = (await db.getDoc(id)) ?? doc;
     await db.putDoc({ ...latest, status: "ready", extraction, aiExtraction: extraction, review: undefined, confirmed: false });
   } catch (e) {
