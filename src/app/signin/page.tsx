@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { buttonClass } from "@/components/ui-classes";
 
@@ -14,7 +15,10 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<{
   const phone = process.env.NEXT_PUBLIC_PHONE_LOGIN === "1";
 
   return (
-    <div className="mx-auto max-w-sm py-14 sm:py-20">
+    <div className="mx-auto max-w-sm py-10 sm:py-16">
+      <Link href="/" className="mb-8 inline-flex items-center gap-1.5 text-sm font-semibold text-muted hover:text-ink">
+        <Icon name="chevronRight" size={16} className="rotate-180" />Back to home
+      </Link>
       <h1 className="font-display text-3xl font-semibold tracking-tight">Welcome to Lacuno</h1>
       <p className="mt-2 text-muted">Sign in or create a free account to keep your case files.</p>
       <div className="mt-8 space-y-3">
