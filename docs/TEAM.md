@@ -74,7 +74,7 @@ Put your name next to what you take, in the team chat.
 | 2 | Help contact email | | Create a team inbox (e.g. a new Gmail), then add `NEXT_PUBLIC_SUPPORT_EMAIL` in Vercel → Environment Variables and redeploy. The Contact section appears by itself. |
 | 6 | Final domain | | Agree on it first. For the MLH .Tech prize: get.tech/mlh (ask the MLH coach for the code). Then Vercel → Domains, and update Auth0 callback/logout URLs + `APP_BASE_URL`. |
 | — | ElevenLabs read-aloud | | Get a key at elevenlabs.io (ask MLH about credits), add `ELEVENLABS_API_KEY` in Vercel, redeploy. Only then opt into the ElevenLabs prize. |
-| 12 | Phone-number sign-in | | Twilio trial + Auth0 → Authentication → Passwordless → SMS. Trial only texts verified numbers. |
+| 12 | Phone-number sign-in | | Code is done. Twilio trial (Account SID, Auth Token, phone number) → Auth0 → Authentication → Passwordless → SMS: switch on, paste the Twilio details, Applications tab → enable the app. Then Vercel → `NEXT_PUBLIC_PHONE_LOGIN` = `1` → redeploy. A "Use my phone number instead" button appears on the sign-in card. Twilio trial only texts verified numbers. |
 | 7 | Install the app on a phone | | Home → "Get the Lacuno app" → Install. Check it opens full-screen. |
 | — | Claude API credits | | Ask at the Anthropic booth / Cal Hacks Discord; redeem at console.anthropic.com → Billing |
 
