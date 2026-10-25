@@ -41,7 +41,7 @@ function Welcome() {
         <div className="space-y-3">
           <a href="/auth/login?screen_hint=signup" className={`${buttonClass("primary", "lg")} w-full`}>Create a free account</a>
           <a href="/auth/login" className={`${buttonClass("secondary", "lg")} w-full`}>I already have an account</a>
-          {/* Shown once Auth0's passwordless SMS connection is switched on (see docs/TEAM.md). */}
+          {/* Only when phone sign-in is switched on. */}
           {process.env.NEXT_PUBLIC_PHONE_LOGIN === "1" && (
             <a href="/auth/login" className={`${buttonClass("secondary", "lg")} w-full`}>Use my phone number instead</a>
           )}

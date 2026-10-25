@@ -38,8 +38,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // Self-contained server build for the Docker image (see Dockerfile).
-  output: "standalone",
   poweredByHeader: false,
   async headers() {
     return [
