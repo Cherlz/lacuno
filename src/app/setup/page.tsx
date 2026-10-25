@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Field, PageTitle, Spinner, field } from "@/components/ui";
-import { clearAll, savePatient } from "@/lib/db";
+import { deleteCurrentCase, savePatient } from "@/lib/db";
 import { COUNTRIES, countryByCode, guessCountry } from "@/lib/emergency";
 import { LANGUAGES } from "@/lib/languages";
 import { useCase } from "@/lib/useCase";
@@ -44,8 +44,8 @@ export default function Setup() {
 
   const reset = async () => {
     if (!confirm("Delete this whole case file from this device? This cannot be undone.")) return;
-    await clearAll();
-    router.push("/");
+    await deleteCurrentCase();
+    router.push("/case");
   };
 
   return (

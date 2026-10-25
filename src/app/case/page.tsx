@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAccount } from "@/components/Account";
 import { Appointments } from "@/components/Appointments";
+import { CaseSwitcher, OtherCases } from "@/components/CaseSwitcher";
 import { InstallApp } from "@/components/InstallApp";
 import { Icon } from "@/components/icons";
 import { ButtonLink, PageTitle, SectionHeader, Spinner, buttonClass } from "@/components/ui";
@@ -34,6 +35,8 @@ function Welcome() {
     <div className="mx-auto max-w-xl">
       <PageTitle title="Let's start your case" subtitle="Add the person you're caring for, then their records. Or try a sample first." />
 
+      {!needsSignIn && <OtherCases />}
+
       {needsSignIn ? (
         <div className="space-y-3">
           <a href="/auth/login?screen_hint=signup" className={`${buttonClass("primary", "lg")} w-full`}>Create a free account</a>
@@ -52,7 +55,7 @@ function Welcome() {
       )}
 
       <section className="mt-12 border-t border-line pt-8">
-        <SectionHeader title="Or explore a sample case" description="Fictional records, clearly labelled. Loading one replaces anything on this device." />
+        <SectionHeader title="Or explore a sample case" description="Fictional records, clearly labelled. A sample opens as its own case." />
         <ul className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
           {SAMPLE_CASES.map((s) => (
             <li key={s.key}>
@@ -98,6 +101,8 @@ function Dashboard() {
         subtitle={[p.age && `${p.age} years`, p.mainComplaints].filter(Boolean).join(" · ")}
         action={<ButtonLink href="/setup" variant="ghost" size="sm"><Icon name="pencil" size={16} />Edit</ButtonLink>}
       />
+
+      <CaseSwitcher className="-mt-2 mb-6" />
 
       <NextCard />
 
@@ -147,6 +152,8 @@ function Dashboard() {
           <Link href="/setup" className="underline underline-offset-2 hover:text-ink">Change</Link>
           <span className="mx-2" aria-hidden>·</span>
           <Link href="/impact" className="underline underline-offset-2 hover:text-ink">Tester feedback</Link>
+          <span className="mx-2" aria-hidden>·</span>
+          <Link href="/help#contact" className="underline underline-offset-2 hover:text-ink">Contact us</Link>
         </p>
       </div>
     </div>
