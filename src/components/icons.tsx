@@ -32,6 +32,7 @@ const paths = {
   note: "M5 4h14v12l-4 4H5z M15 20v-4h4",
   external: "M14 5h5v5 M19 5l-8 8 M17 13.5V19H5V7h5.5",
   trash: "M5 7h14 M10 7V4.5h4V7 M7 7l1 13h8l1-13",
+  menu: "M4 7h16 M4 12h16 M4 17h16",
   search: "M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z M15.5 15.5 20 20",
   shield: "M12 3 5 6v5.5c0 4.4 3 8 7 9.5 4-1.5 7-5.1 7-9.5V6z M9 12l2 2 4-4.5",
   lock: "M6.5 11h11v9h-11z M9 11V8a3 3 0 0 1 6 0v3",
