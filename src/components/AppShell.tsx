@@ -169,7 +169,6 @@ function AccountMenu({ name, picture }: { name: string | null; picture: string |
       </summary>
       <div className="absolute right-0 z-40 mt-2 w-64 rounded-xl border border-line bg-surface p-3 shadow-[0_8px_24px_rgba(20,34,33,0.10)]">
         <p className="truncate font-semibold">{name}</p>
-        <p className="mt-1 text-sm text-muted">Your case files are saved privately on this device, separate for each account.</p>
         <a href="/auth/logout" className={`${buttonClass("secondary", "sm")} mt-3 w-full`}>
           Sign out
         </a>
